@@ -8,17 +8,9 @@ import CartSidebar from '@/components/CartSidebar'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 
-// Helper function to get default images for categories
-const getDefaultImageForCategory = (category: string): string => {
-  const categoryImages: { [key: string]: string } = {
-    'Clothing': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRmMmY1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkNsb3RoaW5nPC90ZXh0Pjwvc3ZnPg==',
-    'Books': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZmVlMmUyIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJvb2s8L3RleHQ+PC9zdmc+',
-    'Accessories': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRmMmY1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFjY2Vzc29yeTwvdGV4dD48L3N2Zz4=',
-    'Donations': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjYmJmN2NiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRvbmF0aW9uPC90ZXh0Pjwvc3ZnPg==',
-    'General': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlByb2R1Y3Q8L3RleHQ+PC9zdmc+'
-  }
-  
-  return categoryImages[category] || categoryImages['General']
+// Helper function to get placeholder image if database image is missing
+const getPlaceholderImage = (productId: number): string => {
+  return `https://picsum.photos/400/300?random=${productId}&blur=2`
 }
 
 export default function ShopPage() {
@@ -43,19 +35,19 @@ export default function ShopPage() {
         const data = await response.json()
         
                         // Transform API data to match the expected format
-                const transformedProducts = data.products.map((product: any) => ({
-                  id: parseInt(product.id) || Math.random(),
-                  name: product.name,
-                  description: product.description || '',
-                  price: parseFloat(product.price),
-                  originalPrice: parseFloat(product.price) * 1.2, // 20% markup for display
-                  image: product.image_url || getDefaultImageForCategory(product.category || 'General'),
-                  category: product.category || 'General',
-                  rating: 4.5, // Default rating
-                  reviews: Math.floor(Math.random() * 50) + 5, // Random reviews
-                  inStock: product.in_stock,
-                  featured: false, // Default to false
-                }))
+        const transformedProducts = data.products.map((product: any) => ({
+          id: parseInt(product.id) || Math.random(),
+          name: product.name,
+          description: product.description || '',
+          price: parseFloat(product.price),
+          originalPrice: parseFloat(product.price) * 1.2, // 20% markup for display
+          image: product.image_url || getPlaceholderImage(parseInt(product.id) || Math.random()),
+          category: product.category || 'General',
+          rating: 4.5, // Default rating
+          reviews: Math.floor(Math.random() * 50) + 5, // Random reviews
+          inStock: product.in_stock,
+          featured: false, // Default to false
+        }))
         
         setProducts(transformedProducts)
       } catch (err) {

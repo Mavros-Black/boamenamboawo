@@ -25,6 +25,7 @@ interface Product {
   price: number
   originalPrice: number
   image: string
+  image_url?: string
   category: string
   rating: number
   reviews: number
@@ -34,17 +35,9 @@ interface Product {
   createdAt: string
 }
 
-// Helper function to get default images for categories
-const getDefaultImageForCategory = (category: string): string => {
-  const categoryImages: { [key: string]: string } = {
-    'Clothing': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRmMmY1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkNsb3RoaW5nPC90ZXh0Pjwvc3ZnPg==',
-    'Books': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZmVlMmUyIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJvb2s8L3RleHQ+PC9zdmc+',
-    'Accessories': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRmMmY1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkFjY2Vzc29yeTwvdGV4dD48L3N2Zz4=',
-    'Donations': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjYmJmN2NiIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkRvbmF0aW9uPC90ZXh0Pjwvc3ZnPg==',
-    'General': 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzY2NzM4NyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlByb2R1Y3Q8L3RleHQ+PC9zdmc+'
-  }
-  
-  return categoryImages[category] || categoryImages['General']
+// Helper function to get placeholder image if database image is missing
+const getPlaceholderImage = (productId: number): string => {
+  return `https://picsum.photos/400/300?random=${productId}&blur=2`
 }
 
 export default function ShopManagementPage() {
@@ -70,7 +63,7 @@ export default function ShopManagementPage() {
           description: product.description || '',
           price: parseFloat(product.price),
           originalPrice: parseFloat(product.price) * 1.2, // 20% markup for display
-          image: product.image_url || getDefaultImageForCategory(product.category || 'General'),
+          image: product.image_url || getPlaceholderImage(parseInt(product.id) || Math.random()),
           category: product.category || 'General',
           rating: 4.5, // Default rating
           reviews: Math.floor(Math.random() * 50) + 5, // Random reviews
@@ -129,7 +122,7 @@ export default function ShopManagementPage() {
         name: product.name,
         description: product.description,
         price: product.price,
-        image_url: product.image,
+                    image_url: product.image_url || getPlaceholderImage(product.id),
         category: product.category,
         in_stock: !product.inStock,
         stock_quantity: product.stockQuantity
@@ -221,7 +214,7 @@ export default function ShopManagementPage() {
         description: product.description || '',
         price: parseFloat(product.price),
         originalPrice: parseFloat(product.price) * 1.2, // 20% markup for display
-        image: product.image_url || getDefaultImageForCategory(product.category || 'General'),
+        image: product.image_url || getPlaceholderImage(parseInt(product.id)),
         category: product.category || 'General',
         rating: updatedProduct.rating, // Keep existing rating
         reviews: updatedProduct.reviews, // Keep existing reviews
@@ -356,7 +349,7 @@ export default function ShopManagementPage() {
         description: product.description || '',
         price: parseFloat(product.price),
         originalPrice: parseFloat(product.price) * 1.2, // 20% markup for display
-        image: product.image_url || getDefaultImageForCategory(product.category || 'General'),
+        image: product.image_url || getPlaceholderImage(parseInt(product.id)),
         category: product.category || 'General',
         rating: 4.5, // Default rating
         reviews: Math.floor(Math.random() * 50) + 5, // Random reviews
@@ -577,6 +570,11 @@ export default function ShopManagementPage() {
                         className="h-12 w-12 rounded-lg object-cover"
                         src={product.image}
                         alt={product.name}
+                        onError={(e) => {
+                          // Fallback to placeholder if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.src = `https://picsum.photos/48/48?random=${product.id}&blur=2`;
+                        }}
                       />
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">{product.name}</div>
