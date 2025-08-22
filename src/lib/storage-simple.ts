@@ -6,7 +6,7 @@ export interface UploadResult {
   error?: string
 }
 
-export async function uploadImage(
+export async function uploadImageSimple(
   file: File, 
   bucket: string = 'images',
   folder: string = 'uploads'
@@ -17,54 +17,7 @@ export async function uploadImage(
       throw new Error('Supabase not configured')
     }
 
-    // Check if user is authenticated - try multiple approaches
-    let currentUser = null
-    let session = null
-    
-    try {
-      // First try to get the current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      if (!userError && user) {
-        currentUser = user
-        console.log('User found via getUser:', user.id)
-      }
-    } catch (error) {
-      console.log('getUser failed, trying session...')
-    }
-    
-    // If no user, try to get session
-    if (!currentUser) {
-      try {
-        const { data: { session: sessionData }, error: sessionError } = await supabase.auth.getSession()
-        if (!sessionError && sessionData?.user) {
-          currentUser = sessionData.user
-          session = sessionData
-          console.log('User found via session:', sessionData.user.id)
-        }
-      } catch (error) {
-        console.log('getSession failed')
-      }
-    }
-    
-    // If still no user, try to refresh the session
-    if (!currentUser) {
-      try {
-        const { data: { session: refreshSession }, error: refreshError } = await supabase.auth.refreshSession()
-        if (!refreshError && refreshSession?.user) {
-          currentUser = refreshSession.user
-          session = refreshSession
-          console.log('User found via refresh:', refreshSession.user.id)
-        }
-      } catch (error) {
-        console.log('refreshSession failed')
-      }
-    }
-    
-    if (!currentUser) {
-      throw new Error('No active user session found. Please log in again.')
-    }
-    
-    console.log('User authenticated for upload:', currentUser.id)
+    console.log('Starting simple upload without auth check...')
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -81,9 +34,9 @@ export async function uploadImage(
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
     const filePath = `${folder}/${fileName}`
 
-    console.log('Uploading file to path:', filePath) // Debug log
+    console.log('Uploading file to path:', filePath)
 
-    // Upload to Supabase Storage
+    // Upload to Supabase Storage without auth check
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(filePath, file, {
@@ -96,14 +49,14 @@ export async function uploadImage(
       throw new Error(`Upload failed: ${error.message}`)
     }
 
-    console.log('Upload successful, data:', data) // Debug log
+    console.log('Upload successful, data:', data)
 
     // Get public URL
     const { data: urlData } = supabase.storage
       .from(bucket)
       .getPublicUrl(filePath)
 
-    console.log('Public URL generated:', urlData.publicUrl) // Debug log
+    console.log('Public URL generated:', urlData.publicUrl)
 
     return {
       url: urlData.publicUrl,

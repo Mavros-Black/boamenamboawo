@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { uploadImage } from '@/lib/storage'
+import { uploadImageSimple } from '@/lib/storage-simple'
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Upload the image with user ID if provided
-    const result = await uploadImage(file, bucket, folder)
+    // Upload the image using simple method (no auth check)
+    const result = await uploadImageSimple(file, bucket, folder)
 
     if (result.error) {
       console.error('Upload result error:', result.error) // Debug log
