@@ -117,26 +117,24 @@ export default function ShopPage() {
               </div>
             </div>
             
-            {user && (
-              <div className="flex items-center space-x-4">
-                {cartCount > 0 && (
-                  <Link
-                    href="/checkout"
-                    className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors"
-                  >
-                    <ShoppingCart className="h-5 w-5" />
-                    <span>Checkout ({cartCount})</span>
-                  </Link>
-                )}
-                <button
-                  onClick={() => setIsCartOpen(true)}
-                  className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors relative"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  <span>Cart ({cartCount})</span>
-                </button>
-              </div>
-            )}
+                         <div className="flex items-center space-x-4">
+               {cartCount > 0 && (
+                 <Link
+                   href="/checkout"
+                   className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition-colors"
+                 >
+                   <ShoppingCart className="h-5 w-5" />
+                   <span>Checkout ({cartCount})</span>
+                 </Link>
+               )}
+               <button
+                 onClick={() => setIsCartOpen(true)}
+                 className="flex items-center space-x-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md transition-colors relative"
+               >
+                 <ShoppingCart className="h-5 w-5" />
+                 <span>Cart ({cartCount})</span>
+               </button>
+             </div>
           </div>
 
           {/* Category Filter */}
@@ -216,8 +214,8 @@ export default function ShopPage() {
         </div>
       </section>
 
-      {/* Cart Sidebar - only show for logged-in users */}
-      {user && <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />}
+             {/* Cart Sidebar - show for all users */}
+       <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
 
       {/* Impact Section */}
       <section className="py-16 bg-gray-50">

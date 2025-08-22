@@ -108,41 +108,32 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
 
-        {/* Add to Cart Button - only show for logged-in users */}
-        {user ? (
-          <button
-            onClick={handleAddToCart}
-            disabled={!product.inStock || showAdded}
-            className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
-              showAdded
-                ? 'bg-green-500 text-white cursor-not-allowed'
-                : product.inStock
-                ? 'bg-green-600 hover:bg-green-700 text-white'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            {showAdded ? (
-              <div className="flex items-center justify-center">
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Added to Cart!
-              </div>
-            ) : product.inStock ? (
-              <div className="flex items-center justify-center">
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                Add to Cart
-              </div>
-            ) : (
-              'Out of Stock'
-            )}
-          </button>
-        ) : (
-          <Link
-            href="/auth/login"
-            className="w-full py-2 px-4 rounded-md font-medium bg-gray-600 hover:bg-gray-700 text-white text-center block transition-colors"
-          >
-            Sign In to Purchase
-          </Link>
-        )}
+        {/* Add to Cart Button - available for all users */}
+        <button
+          onClick={handleAddToCart}
+          disabled={!product.inStock || showAdded}
+          className={`w-full py-2 px-4 rounded-md font-medium transition-colors ${
+            showAdded
+              ? 'bg-green-500 text-white cursor-not-allowed'
+              : product.inStock
+              ? 'bg-green-600 hover:bg-green-700 text-white'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+          }`}
+        >
+          {showAdded ? (
+            <div className="flex items-center justify-center">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Added to Cart!
+            </div>
+          ) : product.inStock ? (
+            <div className="flex items-center justify-center">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Add to Cart
+            </div>
+          ) : (
+            'Out of Stock'
+          )}
+        </button>
       </div>
     </div>
   )
