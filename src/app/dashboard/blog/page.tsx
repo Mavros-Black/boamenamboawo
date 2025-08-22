@@ -135,7 +135,7 @@ export default function BlogPage() {
 
       console.log('Uploading to Supabase Storage with user ID:', user?.id) // Debug log
 
-      const response = await fetch('/api/upload-fallback', {
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       })

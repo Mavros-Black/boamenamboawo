@@ -29,6 +29,12 @@ export async function uploadImageSimple(
     }
 
     console.log('Starting simple upload without auth check...')
+    console.log('Supabase client available:', !!supabase)
+    console.log('Supabase storage available:', !!supabase.storage)
+    console.log('Environment variables:', {
+      url: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Not set',
+      key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set'
+    })
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -46,8 +52,19 @@ export async function uploadImageSimple(
     const filePath = `${folder}/${fileName}`
 
     console.log('Uploading file to path:', filePath)
+    console.log('Target bucket:', bucket)
+
+    // Check if bucket exists first
+    const { data: buckets, error: bucketError } = await supabase.storage.listBuckets()
+    console.log('Available buckets:', buckets?.map(b => b.name))
+    
+    if (bucketError) {
+      console.error('Error listing buckets:', bucketError)
+    }
 
     // Upload to Supabase Storage without auth check
+    console.log('Attempting upload to bucket:', bucket, 'path:', filePath)
+    
     const { data, error } = await supabase.storage
       .from(bucket)
       .upload(filePath, file, {
@@ -75,6 +92,11 @@ export async function uploadImageSimple(
     }
   } catch (error) {
     console.error('Image upload error:', error)
+    console.error('Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined
+    })
     return {
       url: '',
       path: '',
