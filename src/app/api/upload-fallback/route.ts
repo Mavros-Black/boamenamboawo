@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { generatePlaceholderImage } from '@/lib/placeholder-image'
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,9 +33,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate a mock URL for testing
+    // Generate a local data URL placeholder image
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.jpg`
-    const mockUrl = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(fileName)}`
+    const mockUrl = generatePlaceholderImage(400, 300, `Uploaded: ${fileName}`)
 
     console.log('Fallback upload successful, mock URL:', mockUrl)
 

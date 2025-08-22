@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Plus, Edit, Trash2, Eye, FileText, Calendar, User, Tag, Upload, X } from 'lucide-react'
+import PlaceholderImage from '@/components/PlaceholderImage'
 
 interface BlogPost {
   id: string
@@ -382,15 +383,36 @@ export default function BlogPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => (
             <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden">
-              {post.featured_image && (
-                <div className="h-48 bg-gray-200">
+              <div className="h-48 bg-gray-200">
+                {post.featured_image ? (
                   <img 
                     src={post.featured_image} 
                     alt={post.title}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Replace with placeholder on error
+                      const target = e.target as HTMLImageElement
+                      target.style.display = 'none'
+                      const placeholder = document.createElement('div')
+                      placeholder.className = 'w-full h-full flex items-center justify-center text-gray-600'
+                      placeholder.innerHTML = `
+                        <div class="text-center">
+                          <div class="text-4xl mb-2">📷</div>
+                          <div class="text-sm">Image not available</div>
+                        </div>
+                      `
+                      target.parentNode?.appendChild(placeholder)
+                    }}
                   />
-                </div>
-              )}
+                ) : (
+                  <PlaceholderImage 
+                    width={400} 
+                    height={192} 
+                    text="No Image" 
+                    className="w-full h-full"
+                  />
+                )}
+              </div>
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{post.title}</h3>
