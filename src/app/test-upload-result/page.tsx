@@ -9,20 +9,27 @@ export default function TestUploadResult() {
   const testUpload = async () => {
     setLoading(true)
     try {
-      // Create a test file
-      const testFile = new File(['test content'], 'test.txt', { type: 'text/plain' })
+      // Create a test image file (1x1 pixel PNG)
+      const imageData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+      
+      // Convert base64 to blob
+      const response = await fetch(imageData)
+      const blob = await response.blob()
+      
+      // Create file from blob
+      const testFile = new File([blob], 'test-image.png', { type: 'image/png' })
       
       const formData = new FormData()
       formData.append('file', testFile)
       formData.append('bucket', 'images')
       formData.append('folder', 'test')
 
-      const response = await fetch('/api/upload', {
+      const uploadResponse = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       })
 
-      const result = await response.json()
+      const result = await uploadResponse.json()
       setUploadResult(result)
       
       console.log('Upload test result:', result)
@@ -46,7 +53,7 @@ export default function TestUploadResult() {
             disabled={loading}
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
           >
-            {loading ? 'Testing...' : 'Test Upload API'}
+            {loading ? 'Testing...' : 'Test Upload API with Image'}
           </button>
         </div>
 
@@ -74,11 +81,19 @@ export default function TestUploadResult() {
         <div className="bg-white rounded-lg shadow p-6 mt-6">
           <h2 className="text-xl font-semibold mb-4">Instructions</h2>
           <ol className="list-decimal list-inside space-y-2">
-            <li>Click "Test Upload API" to see what URL the upload returns</li>
-            <li>Check if it's a Supabase storage URL or a placeholder</li>
+            <li>Click "Test Upload API with Image" to test with a real image file</li>
+            <li>Check if it returns a Supabase storage URL or a placeholder</li>
             <li>If it's a placeholder, the admin upload isn't working</li>
             <li>If it's Supabase, the issue is in the blog form saving</li>
           </ol>
+          
+          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded">
+            <h3 className="font-semibold text-yellow-800 mb-2">Note:</h3>
+            <p className="text-yellow-700 text-sm">
+              This test now uses a real 1x1 pixel PNG image instead of a text file. 
+              This should trigger the actual Supabase upload instead of falling back to mock.
+            </p>
+          </div>
         </div>
       </div>
     </div>
