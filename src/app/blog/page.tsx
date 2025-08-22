@@ -30,57 +30,38 @@ export default function BlogPage() {
 
   const fetchBlogPosts = async () => {
     try {
-      // Mock data for now - replace with actual API call
-      const mockBlogPosts = [
-        {
-          id: "1",
-          title: "Empowering Youth Through Technology",
-          content: "Technology has become an essential part of our daily lives, and it's crucial that young people have access to the skills and knowledge they need to thrive in the digital age. Our technology programs focus on teaching coding, digital design, and digital marketing skills that are in high demand in today's job market. Through hands-on workshops, mentorship programs, and real-world projects, we're helping young people develop the technical skills they need to succeed in the modern workforce. Our approach combines theoretical knowledge with practical application, ensuring that participants not only learn the concepts but also gain valuable experience working on actual projects. We believe that technology education should be accessible to everyone, regardless of their background or circumstances. That's why we offer our programs free of charge and provide all necessary equipment and resources. Our goal is to bridge the digital divide and create opportunities for young people to build successful careers in technology.",
-          excerpt: "Discover how our technology programs are helping young people develop essential digital skills for the modern workforce.",
-          author: "Admin User",
-          category: "Technology",
-          tags: ["technology", "youth", "skills", "digital"],
-          status: "published" as const,
-          featured_image: "/images/tech-youth.jpg",
-          created_at: "2025-08-21T10:00:00Z",
-          updated_at: "2025-08-21T10:00:00Z",
-          published_at: "2025-08-21T10:00:00Z"
-        },
-        {
-          id: "2",
-          title: "The Impact of Leadership Training on Community Development",
-          content: "Leadership is not just about leading others; it's about inspiring positive change in our communities. Our leadership training programs equip young people with the skills, confidence, and vision they need to become effective community leaders. We focus on developing essential leadership qualities such as communication, problem-solving, decision-making, and emotional intelligence. Through interactive workshops, group activities, and real-world challenges, participants learn how to motivate others, build strong teams, and create lasting positive impact in their communities. Our programs also emphasize the importance of ethical leadership and social responsibility, ensuring that our future leaders are committed to making a difference in the world. We believe that everyone has the potential to be a leader, and our goal is to help young people discover and develop their leadership abilities. By investing in youth leadership development, we're investing in the future of our communities and our country.",
-          excerpt: "Learn about the transformative impact of our leadership training programs on community development.",
-          author: "Admin User",
-          category: "Leadership",
-          tags: ["leadership", "community", "development", "training"],
-          status: "published" as const,
-          featured_image: "/images/leadership.jpg",
-          created_at: "2025-08-20T10:00:00Z",
-          updated_at: "2025-08-20T10:00:00Z",
-          published_at: "2025-08-20T10:00:00Z"
-        },
-        {
-          id: "3",
-          title: "Supporting Young Entrepreneurs in Ghana",
-          content: "Entrepreneurship is a powerful driver of economic growth and job creation. Our entrepreneurship programs provide young people with the knowledge, skills, and resources they need to start and grow successful businesses. We cover all aspects of entrepreneurship, from ideation and business planning to marketing, finance, and operations. Our programs include mentorship from successful entrepreneurs, access to funding opportunities, and networking events that connect young entrepreneurs with potential investors and partners. We also provide practical support such as business registration assistance, legal advice, and access to co-working spaces. Our goal is to create a thriving ecosystem of young entrepreneurs who can contribute to Ghana's economic development and create jobs for others. We believe that entrepreneurship is one of the most effective ways to address youth unemployment and create sustainable economic growth. By supporting young entrepreneurs, we're building a stronger, more prosperous future for Ghana.",
-          excerpt: "Explore how we're supporting the next generation of entrepreneurs in Ghana.",
-          author: "Admin User",
-          category: "Business",
-          tags: ["entrepreneurship", "business", "ghana", "startups"],
-          status: "published" as const,
-          featured_image: "/images/entrepreneurs.jpg",
-          created_at: "2025-08-19T10:00:00Z",
-          updated_at: "2025-08-19T10:00:00Z",
-          published_at: "2025-08-19T10:00:00Z"
-        }
-      ]
+      setLoading(true)
+      const response = await fetch('/api/blog')
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch blog posts')
+      }
+      
+      const { blogPosts: apiBlogPosts } = await response.json()
+      
+      // Transform API data to match our interface
+      const transformedPosts: BlogPost[] = (apiBlogPosts || []).map((post: any) => ({
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt || '',
+        author: post.author || 'Admin User',
+        category: post.category || 'General',
+        tags: post.tags || [],
+        status: post.status,
+        featured_image: post.image_url || '',
+        created_at: post.created_at,
+        updated_at: post.updated_at,
+        published_at: post.published_at
+      }))
       
       // Only show published posts
-      const publishedPosts = mockBlogPosts.filter(post => post.status === 'published')
+      const publishedPosts = transformedPosts.filter(post => post.status === 'published')
       setBlogPosts(publishedPosts)
     } catch (error) {
       console.error('Error fetching blog posts:', error)
+      // Fallback to empty array
+      setBlogPosts([])
     } finally {
       setLoading(false)
     }
