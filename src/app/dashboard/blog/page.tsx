@@ -199,7 +199,6 @@ export default function BlogPage() {
           content: formData.content,
           excerpt: formData.excerpt,
           image_url: formData.featured_image,
-          author_id: user?.id,
           status: formData.status
         }
         

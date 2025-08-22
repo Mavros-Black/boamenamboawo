@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       content,
       excerpt: excerpt || '',
       image_url: image_url || '',
-      author_id: author_id || null,
+      author_id: null, // Set to null to avoid foreign key constraint issues
       status: status || 'draft',
       published_at: status === 'published' ? new Date().toISOString() : null
     }
