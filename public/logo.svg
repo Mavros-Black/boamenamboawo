@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <defs>
+    <style>
+      .logo-text { font-family: Arial, sans-serif; font-weight: bold; }
+      .tagline-text { font-family: Arial, sans-serif; font-weight: normal; }
+    </style>
+  </defs>
+  
+  <!-- Background (optional - can be transparent) -->
+  <!-- <rect width="400" height="120" fill="#1E3A8A"/> -->
+  
+  <!-- Circular Emblem -->
+  <g transform="translate(60, 60)">
+    <!-- Outer Circle of Connected Figures -->
+    <g>
+      <!-- Figure 1 -->
+      <circle cx="0" cy="-35" r="8" fill="#10B981"/>
+      <rect x="-4" y="-27" width="8" height="12" fill="#10B981"/>
+      <rect x="-6" y="-25" width="3" height="8" fill="#10B981"/>
+      <rect x="3" y="-25" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 2 -->
+      <circle cx="25" cy="-25" r="8" fill="#10B981"/>
+      <rect x="21" y="-17" width="8" height="12" fill="#10B981"/>
+      <rect x="19" y="-15" width="3" height="8" fill="#10B981"/>
+      <rect x="28" y="-15" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 3 -->
+      <circle cx="35" cy="0" r="8" fill="#10B981"/>
+      <rect x="31" y="8" width="8" height="12" fill="#10B981"/>
+      <rect x="29" y="10" width="3" height="8" fill="#10B981"/>
+      <rect x="38" y="10" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 4 -->
+      <circle cx="25" cy="25" r="8" fill="#10B981"/>
+      <rect x="21" y="33" width="8" height="12" fill="#10B981"/>
+      <rect x="19" y="35" width="3" height="8" fill="#10B981"/>
+      <rect x="28" y="35" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 5 -->
+      <circle cx="0" cy="35" r="8" fill="#10B981"/>
+      <rect x="-4" y="43" width="8" height="12" fill="#10B981"/>
+      <rect x="-6" y="45" width="3" height="8" fill="#10B981"/>
+      <rect x="3" y="45" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 6 -->
+      <circle cx="-25" cy="25" r="8" fill="#10B981"/>
+      <rect x="-29" y="33" width="8" height="12" fill="#10B981"/>
+      <rect x="-31" y="35" width="3" height="8" fill="#10B981"/>
+      <rect x="-22" y="35" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 7 -->
+      <circle cx="-35" cy="0" r="8" fill="#10B981"/>
+      <rect x="-39" y="8" width="8" height="12" fill="#10B981"/>
+      <rect x="-41" y="10" width="3" height="8" fill="#10B981"/>
+      <rect x="-32" y="10" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 8 -->
+      <circle cx="-25" cy="-25" r="8" fill="#10B981"/>
+      <rect x="-29" y="-17" width="8" height="12" fill="#10B981"/>
+      <rect x="-31" y="-15" width="3" height="8" fill="#10B981"/>
+      <rect x="-22" y="-15" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 9 -->
+      <circle cx="-12" cy="-32" r="8" fill="#10B981"/>
+      <rect x="-16" y="-24" width="8" height="12" fill="#10B981"/>
+      <rect x="-18" y="-22" width="3" height="8" fill="#10B981"/>
+      <rect x="-9" y="-22" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 10 -->
+      <circle cx="12" cy="-32" r="8" fill="#10B981"/>
+      <rect x="8" y="-24" width="8" height="12" fill="#10B981"/>
+      <rect x="6" y="-22" width="3" height="8" fill="#10B981"/>
+      <rect x="15" y="-22" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 11 -->
+      <circle cx="32" cy="-12" r="8" fill="#10B981"/>
+      <rect x="28" y="-4" width="8" height="12" fill="#10B981"/>
+      <rect x="26" y="-2" width="3" height="8" fill="#10B981"/>
+      <rect x="35" y="-2" width="3" height="8" fill="#10B981"/>
+      
+      <!-- Figure 12 -->
+      <circle cx="32" cy="12" r="8" fill="#10B981"/>
+      <rect x="28" y="20" width="8" height="12" fill="#10B981"/>
+      <rect x="26" y="22" width="3" height="8" fill="#10B981"/>
+      <rect x="35" y="22" width="3" height="8" fill="#10B981"/>
+    </g>
+    
+    <!-- Inner Figures - Larger supporting figure -->
+    <g>
+      <!-- Supporting Figure (Left) -->
+      <circle cx="-8" cy="0" r="12" fill="#10B981"/>
+      <rect x="-12" y="12" width="24" height="20" fill="#10B981"/>
+      <rect x="-16" y="16" width="4" height="12" fill="#10B981"/>
+      <rect x="12" y="16" width="4" height="12" fill="#10B981"/>
+      <rect x="-8" y="32" width="6" height="16" fill="#10B981"/>
+      <rect x="2" y="32" width="6" height="16" fill="#10B981"/>
+      
+      <!-- Supported Figure (Right) -->
+      <circle cx="12" cy="8" r="8" fill="#10B981"/>
+      <rect x="8" y="16" width="16" height="14" fill="#10B981"/>
+      <rect x="6" y="18" width="3" height="10" fill="#10B981"/>
+      <rect x="19" y="18" width="3" height="10" fill="#10B981"/>
+      <rect x="10" y="30" width="4" height="12" fill="#10B981"/>
+      <rect x="18" y="30" width="4" height="12" fill="#10B981"/>
+    </g>
+  </g>
+  
+  <!-- Text Elements -->
+  <g>
+    <!-- Main Name "BOA ME" -->
+    <text x="140" y="45" class="logo-text" font-size="32" fill="#FFFFFF">BOA ME</text>
+    
+    <!-- Tagline "Youth Empowerment" -->
+    <text x="140" y="70" class="tagline-text" font-size="16" fill="#FFFFFF">Youth Empowerment</text>
+  </g>
+</svg>
+
