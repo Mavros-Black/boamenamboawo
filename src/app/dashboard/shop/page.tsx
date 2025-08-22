@@ -103,7 +103,7 @@ export default function ShopManagementPage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string>('')
   const [isDragOver, setIsDragOver] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
+
 
   const categories = ['All', 'Clothing', 'Books', 'Accessories']
   const stockOptions = ['All', 'In Stock', 'Out of Stock', 'Low Stock']
@@ -286,24 +286,23 @@ export default function ShopManagementPage() {
   }
 
   const uploadImage = async (file: File): Promise<string> => {
-    return new Promise((resolve) => {
-      // Simulate upload progress
-      let progress = 0
-      const interval = setInterval(() => {
-        progress += 10
-        setUploadProgress(progress)
-        if (progress >= 100) {
-          clearInterval(interval)
-          // In a real app, you would upload to your server/cloud storage here
-          // For now, we'll use the data URL as the image URL
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            resolve(e.target?.result as string)
-          }
-          reader.readAsDataURL(file)
-        }
-      }, 100)
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('bucket', 'images')
+    formData.append('folder', 'products')
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
     })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Upload failed')
+    }
+
+    const { url } = await response.json()
+    return url
   }
 
   const handleAddProduct = async (formData: FormData) => {
@@ -313,7 +312,14 @@ export default function ShopManagementPage() {
       
       // If an image was uploaded, process it
       if (selectedImage) {
-        imageUrl = await uploadImage(selectedImage)
+        try {
+          imageUrl = await uploadImage(selectedImage)
+        } catch (error) {
+          console.error('Image upload error:', error)
+          alert(`Image upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          setIsSubmitting(false)
+          return
+        }
       }
 
       // Prepare product data for API
@@ -367,7 +373,6 @@ export default function ShopManagementPage() {
       // Reset form
       setSelectedImage(null)
       setImagePreview('')
-      setUploadProgress(0)
     } catch (error) {
       console.error('Error adding product:', error)
       alert(`Failed to add product: ${error instanceof Error ? error.message : 'Unknown error'}`)
@@ -379,7 +384,6 @@ export default function ShopManagementPage() {
   const resetAddForm = () => {
     setSelectedImage(null)
     setImagePreview('')
-    setUploadProgress(0)
     setShowAddModal(false)
   }
 
@@ -853,21 +857,7 @@ export default function ShopManagementPage() {
                       )}
                     </div>
 
-                    {/* Upload Progress */}
-                    {uploadProgress > 0 && uploadProgress < 100 && (
-                      <div className="mt-2">
-                        <div className="flex items-center justify-between text-sm text-gray-600">
-                          <span>Uploading...</span>
-                          <span>{uploadProgress}%</span>
-                        </div>
-                        <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${uploadProgress}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    )}
+
 
                     {/* Fallback URL Input */}
                     <div className="mt-4">
