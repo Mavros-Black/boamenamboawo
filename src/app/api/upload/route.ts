@@ -7,6 +7,9 @@ export async function POST(request: NextRequest) {
     const file = formData.get('file') as File
     const bucket = formData.get('bucket') as string || 'images'
     const folder = formData.get('folder') as string || 'uploads'
+    const userId = formData.get('userId') as string
+
+    console.log('Upload API called with:', { bucket, folder, userId }) // Debug log
 
     if (!file) {
       return NextResponse.json(
@@ -15,15 +18,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Upload the image
+    // Upload the image with user ID if provided
     const result = await uploadImage(file, bucket, folder)
 
     if (result.error) {
+      console.error('Upload result error:', result.error) // Debug log
       return NextResponse.json(
         { error: result.error },
         { status: 400 }
       )
     }
+
+    console.log('Upload successful:', result) // Debug log
 
     return NextResponse.json({
       url: result.url,

@@ -102,6 +102,7 @@ export default function BlogPage() {
     if (!file) return
 
     console.log('Image upload started:', file.name, file.size, file.type) // Debug log
+    console.log('Current user:', user) // Debug log
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -122,13 +123,16 @@ export default function BlogPage() {
       const previewUrl = URL.createObjectURL(file)
       setImagePreview(previewUrl)
 
-      // Upload to Supabase Storage
+      // Upload to Supabase Storage with user ID
       const formData = new FormData()
       formData.append('file', file)
       formData.append('bucket', 'images')
       formData.append('folder', 'blog')
+      if (user?.id) {
+        formData.append('userId', user.id)
+      }
 
-      console.log('Uploading to Supabase Storage...') // Debug log
+      console.log('Uploading to Supabase Storage with user ID:', user?.id) // Debug log
 
       const response = await fetch('/api/upload', {
         method: 'POST',

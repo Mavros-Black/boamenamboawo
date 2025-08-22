@@ -1,56 +1,101 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { getUserRole, getUserName } from '@/utils/auth'
+import { supabase } from '@/lib/supabase'
 
 export default function TestAuthPage() {
-  const { user, loading, logout } = useAuth()
+  const { user, loading } = useAuth()
+  const [authStatus, setAuthStatus] = useState<any>(null)
+  const [sessionInfo, setSessionInfo] = useState<any>(null)
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    )
+  const checkAuth = async () => {
+    try {
+      // Check AuthContext user
+      console.log('AuthContext user:', user)
+      
+      // Check Supabase auth directly
+      const { data: { user: supabaseUser }, error: userError } = await supabase.auth.getUser()
+      console.log('Supabase user:', supabaseUser)
+      console.log('User error:', userError)
+      
+      // Check session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      console.log('Session:', session)
+      console.log('Session error:', sessionError)
+      
+      setAuthStatus({
+        authContextUser: user,
+        supabaseUser,
+        userError,
+        sessionError
+      })
+      
+      setSessionInfo(session)
+      
+    } catch (error) {
+      console.error('Auth check error:', error)
+      setAuthStatus({ error: error instanceof Error ? error.message : 'Unknown error' })
+    }
   }
 
+  useEffect(() => {
+    checkAuth()
+  }, [user])
+
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Authentication Test</h1>
-        
-        {user ? (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">✅ User is authenticated</h2>
-            <div className="space-y-2">
-              <p><strong>ID:</strong> {user.id}</p>
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-6">Authentication Test</h1>
+      
+      <div className="space-y-4">
+        <button
+          onClick={checkAuth}
+          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+        >
+          Check Authentication
+        </button>
+
+        <div className="bg-gray-100 p-4 rounded-md">
+          <h2 className="font-bold mb-2">AuthContext Status:</h2>
+          <p><strong>Loading:</strong> {loading ? 'Yes' : 'No'}</p>
+          <p><strong>User:</strong> {user ? 'Logged in' : 'Not logged in'}</p>
+          {user && (
+            <div className="mt-2">
+              <p><strong>User ID:</strong> {user.id}</p>
               <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Name:</strong> {getUserName(user)}</p>
-              <p><strong>Role:</strong> {getUserRole(user)}</p>
-              <p><strong>Created:</strong> {new Date(user.created_at).toLocaleString()}</p>
+              <p><strong>Role:</strong> {user.user_metadata?.role || 'No role'}</p>
             </div>
-            <button
-              onClick={logout}
-              className="mt-4 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-            >
-              Logout
-            </button>
-          </div>
-        ) : (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">❌ User is not authenticated</h2>
-            <p className="text-gray-600 mb-4">Please log in to test the authentication.</p>
-            <a
-              href="/auth/login"
-              className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-            >
-              Go to Login
-            </a>
+          )}
+        </div>
+
+        {authStatus && (
+          <div className="bg-gray-100 p-4 rounded-md">
+            <h2 className="font-bold mb-2">Supabase Auth Status:</h2>
+            <pre className="text-sm overflow-auto">
+              {JSON.stringify(authStatus, null, 2)}
+            </pre>
           </div>
         )}
+
+        {sessionInfo && (
+          <div className="bg-gray-100 p-4 rounded-md">
+            <h2 className="font-bold mb-2">Session Info:</h2>
+            <pre className="text-sm overflow-auto">
+              {JSON.stringify(sessionInfo, null, 2)}
+            </pre>
+          </div>
+        )}
+
+        <div className="bg-yellow-100 p-4 rounded-md">
+          <h2 className="font-bold mb-2">Troubleshooting Steps:</h2>
+          <ol className="list-decimal list-inside space-y-1">
+            <li>Check if user is logged in via AuthContext</li>
+            <li>Verify Supabase session is active</li>
+            <li>Ensure user has proper role (admin)</li>
+            <li>Check browser console for errors</li>
+            <li>Try logging out and back in</li>
+          </ol>
+        </div>
       </div>
     </div>
   )

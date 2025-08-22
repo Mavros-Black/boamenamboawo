@@ -6,10 +6,11 @@ export interface UploadResult {
   error?: string
 }
 
-export async function uploadImage(
+export async function uploadImageWithAuth(
   file: File, 
   bucket: string = 'images',
-  folder: string = 'uploads'
+  folder: string = 'uploads',
+  userId?: string
 ): Promise<UploadResult> {
   try {
     // Check if Supabase is configured
@@ -17,23 +18,16 @@ export async function uploadImage(
       throw new Error('Supabase not configured')
     }
 
-    // Check if user is authenticated
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
-    if (authError) {
-      console.error('Auth error:', authError)
-      throw new Error(`Authentication error: ${authError.message}`)
-    }
-    
-    if (!user) {
-      console.log('No user found, checking session...')
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        throw new Error('User must be authenticated to upload images. Please log in again.')
-      }
-      console.log('Session found, user ID:', session.user.id)
+    // If userId is provided, use it directly
+    if (userId) {
+      console.log('Using provided user ID:', userId)
     } else {
-      console.log('User authenticated for upload:', user.id) // Debug log
+      // Try to get user from session
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session?.user) {
+        throw new Error('No active session found. Please log in again.')
+      }
+      console.log('Using session user ID:', session.user.id)
     }
 
     // Validate file type
