@@ -1,6 +1,12 @@
--- Create orders table for Supabase
--- This table stores all shop orders with payment tracking
+-- Create orders table for Supabase (Safe version)
+-- This script handles existing policies and tables
 
+-- Drop existing policies first
+DROP POLICY IF EXISTS "Users can view their own orders" ON public.orders;
+DROP POLICY IF EXISTS "Anyone can create orders" ON public.orders;
+DROP POLICY IF EXISTS "Users can update their own orders" ON public.orders;
+
+-- Create orders table if it doesn't exist
 CREATE TABLE IF NOT EXISTS public.orders (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     customer_email TEXT NOT NULL,
@@ -22,7 +28,7 @@ CREATE TABLE IF NOT EXISTS public.orders (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create indexes for better performance
+-- Create indexes for better performance (IF NOT EXISTS)
 CREATE INDEX IF NOT EXISTS idx_orders_payment_reference ON public.orders(payment_reference);
 CREATE INDEX IF NOT EXISTS idx_orders_customer_email ON public.orders(customer_email);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON public.orders(created_at);
@@ -49,3 +55,16 @@ SELECT column_name, data_type, is_nullable, column_default
 FROM information_schema.columns 
 WHERE table_name = 'orders' AND table_schema = 'public'
 ORDER BY ordinal_position;
+
+-- Show existing policies
+SELECT 
+    schemaname,
+    tablename,
+    policyname,
+    permissive,
+    roles,
+    cmd,
+    qual,
+    with_check
+FROM pg_policies 
+WHERE tablename = 'orders';

@@ -3,10 +3,8 @@ import { supabase } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('id, name, email, role, created_at')
-      .order('created_at', { ascending: false })
+    // Get users from Supabase Auth instead of custom users table
+    const { data: { users }, error } = await supabase.auth.admin.listUsers()
 
     if (error) {
       console.error('Error fetching users:', error)
@@ -16,7 +14,16 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ users: data })
+    // Transform the data to match the expected format
+    const transformedUsers = users?.map(user => ({
+      id: user.id,
+      name: user.user_metadata?.name || 'User',
+      email: user.email,
+      role: user.user_metadata?.role || 'user',
+      created_at: user.created_at
+    })) || []
+
+    return NextResponse.json({ users: transformedUsers })
   } catch (error) {
     console.error('Users fetch error:', error)
     return NextResponse.json(

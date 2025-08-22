@@ -138,6 +138,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.log('✅ Login successful for:', authUser.email)
         setUser(authUser)
         
+
+        
         // Merge guest cart with user cart after successful login
         setTimeout(() => {
           const guestCart = localStorage.getItem('guest_cart')
@@ -216,6 +218,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         console.log('✅ Registration successful for:', authUser.email)
         setUser(authUser)
+        
+
         
         // Merge guest cart with user cart after successful registration
         setTimeout(() => {

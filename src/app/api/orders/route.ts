@@ -185,7 +185,7 @@ export async function GET(request: NextRequest) {
       .select('*')
       .order('created_at', { ascending: false })
 
-    // If user_id is provided, filter by user
+    // If user_id is provided, filter by customer email
     if (user_id) {
       query = query.eq('customer_email', user_id)
     }
