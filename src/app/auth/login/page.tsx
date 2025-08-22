@@ -60,15 +60,22 @@ function LoginForm() {
       // Check for redirect parameters first
       const redirectTo = searchParams.get('redirectTo')
       const redirect = searchParams.get('redirect')
+      console.log('🔍 Redirect parameters:', { redirectTo, redirect })
+      
       if (redirectTo || redirect) {
         const redirectPath = redirectTo || redirect
         console.log('🔄 Redirecting to:', redirectPath)
-        router.push(redirectPath)
+        // Add a small delay to ensure state is updated
+        setTimeout(() => {
+          router.push(redirectPath)
+        }, 100)
       } else {
         // Redirect based on user role
         const redirectPath = getDashboardRedirect(result.user || null)
         console.log('🔄 Redirecting to dashboard:', redirectPath)
-        router.push(redirectPath)
+        setTimeout(() => {
+          router.push(redirectPath)
+        }, 100)
       }
     } else {
       setError(result.error || 'Login failed')
