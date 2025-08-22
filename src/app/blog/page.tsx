@@ -40,24 +40,31 @@ export default function BlogPage() {
       const { blogPosts: apiBlogPosts } = await response.json()
       
       // Transform API data to match our interface
-      const transformedPosts: BlogPost[] = (apiBlogPosts || []).map((post: any) => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        excerpt: post.excerpt || '',
-        author: post.author || 'Admin User',
-        category: post.category || 'General',
-        tags: post.tags || [],
-        status: post.status,
-        featured_image: post.image_url || '',
-        created_at: post.created_at,
-        updated_at: post.updated_at,
-        published_at: post.published_at
-      }))
+      const transformedPosts: BlogPost[] = (apiBlogPosts || []).map((post: any) => {
+        console.log('Processing blog post:', post)
+        return {
+          id: post.id,
+          title: post.title,
+          content: post.content,
+          excerpt: post.excerpt || '',
+          author: post.author || 'Admin User',
+          category: post.category || 'General',
+          tags: post.tags || [],
+          status: post.status,
+          featured_image: post.image_url || '',
+          created_at: post.created_at,
+          updated_at: post.updated_at,
+          published_at: post.published_at
+        }
+      })
       
-      // Only show published posts
-      const publishedPosts = transformedPosts.filter(post => post.status === 'published')
-      setBlogPosts(publishedPosts)
+      // Show all posts for now (including drafts for testing)
+      console.log('All transformed posts:', transformedPosts)
+      setBlogPosts(transformedPosts)
+      
+      // Uncomment this line to only show published posts:
+      // const publishedPosts = transformedPosts.filter(post => post.status === 'published')
+      // setBlogPosts(publishedPosts)
     } catch (error) {
       console.error('Error fetching blog posts:', error)
       // Fallback to empty array
@@ -131,15 +138,39 @@ export default function BlogPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredPosts.map((post) => (
                   <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    {post.featured_image && (
-                      <div className="h-48 bg-gray-200">
+                    <div className="h-48 bg-gray-200">
+                      {post.featured_image ? (
                         <img 
                           src={post.featured_image} 
                           alt={post.title}
                           className="w-full h-full object-cover"
+                          onError={(e) => {
+                            console.error('Image failed to load:', post.featured_image)
+                            const target = e.target as HTMLImageElement
+                            target.style.display = 'none'
+                            const placeholder = document.createElement('div')
+                            placeholder.className = 'w-full h-full flex items-center justify-center text-gray-600'
+                            placeholder.innerHTML = `
+                              <div class="text-center">
+                                <div class="text-4xl mb-2">📷</div>
+                                <div class="text-sm">Image not available</div>
+                              </div>
+                            `
+                            target.parentNode?.appendChild(placeholder)
+                          }}
+                          onLoad={() => {
+                            console.log('Image loaded successfully:', post.featured_image)
+                          }}
                         />
-                      </div>
-                    )}
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-600">
+                          <div className="text-center">
+                            <div className="text-4xl mb-2">📷</div>
+                            <div className="text-sm">No Image</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                     <div className="p-6">
                       <div className="flex items-center text-sm text-gray-500 mb-3">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
