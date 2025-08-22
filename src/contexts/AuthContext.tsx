@@ -114,6 +114,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           error: 'Authentication service not configured. Please set up environment variables.' 
         }
       }
+
+
       
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -185,6 +187,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const register = async (name: string, email: string, password: string) => {
     try {
       console.log('📝 Attempting registration for:', email)
+      
+
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,

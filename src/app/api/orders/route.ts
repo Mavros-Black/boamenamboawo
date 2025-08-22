@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-// import { supabase } from '@/lib/supabase' // Commented out for now
+import { supabase } from '@/lib/supabase'
 
 // Mock orders data for development
 const mockOrders = [
@@ -116,31 +116,47 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // For now, just return success with mock data
-    // In production, you would save to Supabase
-    const newOrder = {
-      id: (mockOrders.length + 1).toString(),
-      customer_email,
-      customer_name,
-      customer_phone,
-      customer_address,
-      customer_city: customer_city || '',
-      customer_state: customer_state || '',
-      customer_zip_code: customer_zip_code || '',
-      customer_country: customer_country || 'Ghana',
-      items,
-      subtotal,
-      shipping,
-      total,
-      payment_reference,
-      status: 'pending',
-      payment_status: 'pending',
-      created_at: new Date().toISOString()
+    if (!supabase) {
+      console.error('Supabase not configured')
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 500 }
+      )
     }
 
-    mockOrders.push(newOrder)
+    // Save order to Supabase
+    const { data: order, error } = await supabase
+      .from('orders')
+      .insert({
+        customer_email,
+        customer_name,
+        customer_phone,
+        customer_address,
+        customer_city: customer_city || '',
+        customer_state: customer_state || '',
+        customer_zip_code: customer_zip_code || '',
+        customer_country: customer_country || 'Ghana',
+        items,
+        subtotal,
+        shipping,
+        total,
+        payment_reference,
+        status: 'pending',
+        payment_status: 'pending'
+      })
+      .select()
+      .single()
 
-    return NextResponse.json({ order: newOrder })
+    if (error) {
+      console.error('Error creating order:', error)
+      return NextResponse.json(
+        { error: 'Failed to create order' },
+        { status: 500 }
+      )
+    }
+
+    console.log('Order created successfully:', order)
+    return NextResponse.json({ order })
   } catch (error) {
     console.error('Order creation error:', error)
     return NextResponse.json(
@@ -156,23 +172,35 @@ export async function GET(request: NextRequest) {
     const user_id = searchParams.get('user_id')
     const admin = searchParams.get('admin')
 
-    // If admin parameter is present, return all orders (for admin dashboard)
-    if (admin === 'true') {
-      return NextResponse.json({ orders: mockOrders })
-    }
-
-    // If user_id is provided, return user-specific orders
-    if (user_id) {
-      // For now, return all orders since we don't have user_id in mock data
-      // In production, you would filter by user_id
-      const userOrders = mockOrders.filter(order => 
-        order.customer_email === user_id || order.customer_phone === user_id
+    if (!supabase) {
+      console.error('Supabase not configured')
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 500 }
       )
-      return NextResponse.json({ orders: userOrders })
     }
 
-    // If no parameters, return all orders (for admin dashboard)
-    return NextResponse.json({ orders: mockOrders })
+    let query = supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    // If user_id is provided, filter by user
+    if (user_id) {
+      query = query.eq('customer_email', user_id)
+    }
+
+    const { data: orders, error } = await query
+
+    if (error) {
+      console.error('Error fetching orders:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch orders' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ orders: orders || [] })
   } catch (error) {
     console.error('Order fetch error:', error)
     return NextResponse.json(

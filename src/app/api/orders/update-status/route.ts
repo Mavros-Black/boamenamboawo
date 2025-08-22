@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,14 +15,39 @@ export async function POST(request: NextRequest) {
 
     console.log('Updating order status:', { reference, status })
 
-    // For now, just log the update since we're using mock data
-    // In production, you would update the order in Supabase
-    console.log(`Order with reference ${reference} status updated to ${status}`)
+    if (!supabase) {
+      console.error('Supabase not configured')
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 500 }
+      )
+    }
 
+    // Update order status in Supabase
+    const { data, error } = await supabase
+      .from('orders')
+      .update({ 
+        status: status,
+        payment_status: status === 'completed' ? 'success' : 'pending',
+        updated_at: new Date().toISOString()
+      })
+      .eq('payment_reference', reference)
+      .select()
+
+    if (error) {
+      console.error('Error updating order status:', error)
+      return NextResponse.json(
+        { error: 'Failed to update order status' },
+        { status: 500 }
+      )
+    }
+
+    console.log(`Order with reference ${reference} status updated to ${status}`)
     return NextResponse.json({ 
       message: 'Order status updated successfully',
       reference,
-      status 
+      status,
+      order: data?.[0]
     })
   } catch (error) {
     console.error('Error updating order status:', error)

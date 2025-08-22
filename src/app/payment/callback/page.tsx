@@ -29,10 +29,13 @@ export default function PaymentCallbackPage() {
         const paymentRef = reference || trxref
 
         if (paymentRef) {
+          console.log('Verifying payment for reference:', paymentRef)
+          
           // Verify the payment with Paystack
           const verificationResult = await verifyPayment(paymentRef)
 
           if (verificationResult.status && verificationResult.data.status === 'success') {
+            console.log('Payment verification successful')
             setStatus('success')
             setMessage('Payment completed successfully!')
             
@@ -80,6 +83,8 @@ export default function PaymentCallbackPage() {
                 }
               }
 
+              console.log('Creating order with data:', orderData)
+
               const orderResponse = await fetch('/api/orders', {
                 method: 'POST',
                 headers: {
@@ -92,7 +97,7 @@ export default function PaymentCallbackPage() {
                 console.log('Order created successfully')
                 
                 // Update order status to completed
-                await fetch('/api/orders/update-status', {
+                const statusResponse = await fetch('/api/orders/update-status', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
@@ -102,6 +107,12 @@ export default function PaymentCallbackPage() {
                     status: 'completed'
                   })
                 })
+
+                if (statusResponse.ok) {
+                  console.log('Order status updated successfully')
+                } else {
+                  console.error('Failed to update order status')
+                }
               } else {
                 console.error('Failed to create order')
               }
@@ -112,6 +123,7 @@ export default function PaymentCallbackPage() {
             // Clear cart after successful payment
             clearCart()
           } else {
+            console.log('Payment verification failed:', verificationResult)
             setStatus('failed')
             setMessage('Payment verification failed or payment was not successful')
           }
@@ -126,8 +138,11 @@ export default function PaymentCallbackPage() {
       }
     }
 
-    verifyPaymentStatus()
-  }, [searchParams, clearCart])
+    // Only run once when component mounts
+    if (status === 'loading') {
+      verifyPaymentStatus()
+    }
+  }, []) // Remove dependencies to prevent infinite loops
 
   if (status === 'loading') {
     return (
