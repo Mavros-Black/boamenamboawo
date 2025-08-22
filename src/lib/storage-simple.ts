@@ -15,7 +15,17 @@ export async function uploadImageSimple(
     // Check if Supabase is configured
     if (!supabase) {
       console.error('Supabase not configured - check environment variables')
+      console.error('Environment variables:', {
+        url: process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'Not set',
+        key: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'Set' : 'Not set'
+      })
       throw new Error('Supabase not configured. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.')
+    }
+
+    // Additional check for Supabase client methods
+    if (!supabase.storage) {
+      console.error('Supabase storage not available')
+      throw new Error('Supabase storage is not available. Please check your Supabase configuration.')
     }
 
     console.log('Starting simple upload without auth check...')
