@@ -17,6 +17,14 @@ export async function uploadImage(
       throw new Error('Supabase not configured')
     }
 
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      throw new Error('User must be authenticated to upload images')
+    }
+
+    console.log('User authenticated for upload:', user.id) // Debug log
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
       throw new Error('File must be an image')
@@ -32,6 +40,8 @@ export async function uploadImage(
     const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
     const filePath = `${folder}/${fileName}`
 
+    console.log('Uploading file to path:', filePath) // Debug log
+
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -45,10 +55,14 @@ export async function uploadImage(
       throw new Error(`Upload failed: ${error.message}`)
     }
 
+    console.log('Upload successful, data:', data) // Debug log
+
     // Get public URL
     const { data: urlData } = supabase.storage
       .from(bucket)
       .getPublicUrl(filePath)
+
+    console.log('Public URL generated:', urlData.publicUrl) // Debug log
 
     return {
       url: urlData.publicUrl,
