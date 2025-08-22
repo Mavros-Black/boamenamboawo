@@ -27,14 +27,14 @@ export default function CheckoutPage() {
 
   const handleLoginRedirect = () => {
     console.log('🔄 Redirecting to login with checkout redirect')
-    const redirectUrl = '/auth/login?redirect=checkout'
+    const redirectUrl = '/auth/login?redirectTo=/checkout'
     console.log('📍 Redirect URL:', redirectUrl)
     router.push(redirectUrl)
   }
 
   const handleRegisterRedirect = () => {
     console.log('🔄 Redirecting to register with checkout redirect')
-    const redirectUrl = '/auth/register?redirect=checkout'
+    const redirectUrl = '/auth/register?redirectTo=/checkout'
     console.log('📍 Redirect URL:', redirectUrl)
     router.push(redirectUrl)
   }

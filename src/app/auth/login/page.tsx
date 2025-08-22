@@ -67,6 +67,7 @@ function LoginForm() {
         console.log('🔄 Redirecting to:', redirectPath)
         // Add a small delay to ensure state is updated
         setTimeout(() => {
+          console.log('🚀 Actually pushing to:', redirectPath)
           router.push(redirectPath)
         }, 100)
       } else {
