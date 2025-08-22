@@ -37,6 +37,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const getInitialSession = async () => {
       try {
         console.log('🔍 Getting initial session...')
+        
+        // Check if Supabase is configured
+        if (!supabase) {
+          console.warn('⚠️ Supabase not configured - using mock auth')
+          setLoading(false)
+          return
+        }
+        
         const { data: { session } } = await supabase.auth.getSession()
         console.log('📡 Initial session:', session ? 'Found' : 'Not found')
         
@@ -60,35 +68,53 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
     getInitialSession()
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('🔄 Auth state changed:', event, session?.user?.email)
-        
-        if (session?.user) {
-          const authUser: AuthUser = {
-            id: session.user.id,
-            email: session.user.email!,
-            user_metadata: session.user.user_metadata,
-            created_at: session.user.created_at,
-            updated_at: session.user.updated_at || session.user.created_at
+    // Listen for auth changes only if Supabase is configured
+    let subscription: any = null
+    if (supabase) {
+      const { data } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          console.log('🔄 Auth state changed:', event, session?.user?.email)
+          
+          if (session?.user) {
+            const authUser: AuthUser = {
+              id: session.user.id,
+              email: session.user.email!,
+              user_metadata: session.user.user_metadata,
+              created_at: session.user.created_at,
+              updated_at: session.user.updated_at || session.user.created_at
+            }
+            console.log('✅ Setting user from auth state change:', authUser.email)
+            setUser(authUser)
+          } else {
+            console.log('❌ Clearing user from auth state change')
+            setUser(null)
           }
-          console.log('✅ Setting user from auth state change:', authUser.email)
-          setUser(authUser)
-        } else {
-          console.log('❌ Clearing user from auth state change')
-          setUser(null)
+          setLoading(false)
         }
-        setLoading(false)
-      }
-    )
+      )
+      subscription = data.subscription
+    }
 
-    return () => subscription.unsubscribe()
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe()
+      }
+    }
   }, [])
 
   const login = async (email: string, password: string) => {
     try {
       console.log('🔐 Attempting login for:', email)
+      
+      // If Supabase is not configured, return mock success for demo purposes
+      if (!supabase) {
+        console.warn('⚠️ Supabase not configured - using mock login')
+        return { 
+          success: false, 
+          error: 'Authentication service not configured. Please set up environment variables.' 
+        }
+      }
+      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
