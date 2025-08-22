@@ -91,3 +91,105 @@ export async function POST(request: NextRequest) {
     )
   }
 }
+
+// PUT - Update an existing program
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { id, title, description, image_url, category, status, start_date, end_date, location, max_participants } = body
+
+    // Validate required fields
+    if (!id || !title) {
+      return NextResponse.json(
+        { error: 'ID and title are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!isSupabaseConfigured) {
+      return NextResponse.json(
+        { error: 'Database not configured. Please set up Supabase environment variables.' },
+        { status: 503 }
+      )
+    }
+
+    const updatedProgram = {
+      title,
+      description: description || '',
+      image_url: image_url || '',
+      category: category || 'General',
+      status: status || 'active',
+      start_date: start_date || null,
+      end_date: end_date || null,
+      location: location || '',
+      max_participants: max_participants || null,
+      updated_at: new Date().toISOString()
+    }
+
+    const { data: program, error } = await supabase
+      .from('programs')
+      .update(updatedProgram)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error updating program:', error)
+      return NextResponse.json(
+        { error: 'Failed to update program' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ program })
+  } catch (error) {
+    console.error('Error in PUT /api/programs:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE - Delete a program
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Program ID is required' },
+        { status: 400 }
+      )
+    }
+
+    if (!isSupabaseConfigured) {
+      return NextResponse.json(
+        { error: 'Database not configured. Please set up Supabase environment variables.' },
+        { status: 503 }
+      )
+    }
+
+    const { error } = await supabase
+      .from('programs')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error deleting program:', error)
+      return NextResponse.json(
+        { error: 'Failed to delete program' },
+        { status: 500 }
+      )
+    }
+
+    return NextResponse.json({ message: 'Program deleted successfully' })
+  } catch (error) {
+    console.error('Error in DELETE /api/programs:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
