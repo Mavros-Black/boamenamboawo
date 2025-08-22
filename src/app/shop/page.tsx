@@ -84,10 +84,18 @@ export default function ShopPage() {
       <section className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Boa Me Shop</h1>
-          <p className="text-xl max-w-3xl mx-auto">
+          <p className="text-xl max-w-3xl mx-auto mb-4">
             Support our mission while getting quality products. Every purchase helps fund 
             our youth empowerment programs in Ghana.
           </p>
+          {!user && (
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 max-w-2xl mx-auto">
+              <p className="text-sm">
+                💡 <strong>Guest Shopping:</strong> You can add items to your cart without an account. 
+                Login will be required only at checkout to complete your purchase.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

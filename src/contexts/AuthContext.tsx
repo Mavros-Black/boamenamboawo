@@ -135,6 +135,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         console.log('✅ Login successful for:', authUser.email)
         setUser(authUser)
+        
+        // Merge guest cart with user cart after successful login
+        setTimeout(() => {
+          const guestCart = localStorage.getItem('guest_cart')
+          if (guestCart) {
+            try {
+              const guestItems = JSON.parse(guestCart)
+              const userCartKey = `cart_${authUser.id}`
+              const existingUserCart = localStorage.getItem(userCartKey)
+              
+              if (existingUserCart) {
+                const userItems = JSON.parse(existingUserCart)
+                const mergedItems = [...userItems]
+                
+                guestItems.forEach((guestItem: any) => {
+                  const existingItem = mergedItems.find((item: any) => item.id === guestItem.id)
+                  if (existingItem) {
+                    existingItem.quantity += guestItem.quantity
+                  } else {
+                    mergedItems.push(guestItem)
+                  }
+                })
+                
+                localStorage.setItem(userCartKey, JSON.stringify(mergedItems))
+              } else {
+                localStorage.setItem(userCartKey, guestCart)
+              }
+              
+              // Clear guest cart after merging
+              localStorage.removeItem('guest_cart')
+              console.log('🛒 Guest cart merged with user cart')
+            } catch (error) {
+              console.error('Error merging guest cart:', error)
+            }
+          }
+        }, 100)
+        
         return { success: true, user: authUser }
       }
 
@@ -174,6 +211,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
         console.log('✅ Registration successful for:', authUser.email)
         setUser(authUser)
+        
+        // Merge guest cart with user cart after successful registration
+        setTimeout(() => {
+          const guestCart = localStorage.getItem('guest_cart')
+          if (guestCart) {
+            try {
+              const guestItems = JSON.parse(guestCart)
+              const userCartKey = `cart_${authUser.id}`
+              
+              // For new users, just move the guest cart to user cart
+              localStorage.setItem(userCartKey, guestCart)
+              
+              // Clear guest cart after merging
+              localStorage.removeItem('guest_cart')
+              console.log('🛒 Guest cart moved to new user cart')
+            } catch (error) {
+              console.error('Error merging guest cart:', error)
+            }
+          }
+        }, 100)
+        
         return { success: true, user: authUser }
       }
 

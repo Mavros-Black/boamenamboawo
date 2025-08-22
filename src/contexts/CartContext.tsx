@@ -18,6 +18,7 @@ interface CartContextType {
   removeFromCart: (productId: number) => void
   updateQuantity: (productId: number, quantity: number) => void
   clearCart: () => void
+  mergeGuestCart: () => void
   cartCount: number
   cartTotal: number
 }
@@ -44,8 +45,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         setCartItems([])
       }
     } else {
-      // Clear cart when no user is logged in
-      setCartItems([])
+      // Guest cart - load from localStorage
+      const guestCart = localStorage.getItem('guest_cart')
+      if (guestCart) {
+        try {
+          setCartItems(JSON.parse(guestCart))
+        } catch (error) {
+          console.error('Error loading guest cart from localStorage:', error)
+        }
+      } else {
+        setCartItems([])
+      }
     }
   }, [user])
 
@@ -54,6 +64,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
     if (user) {
       const cartKey = `cart_${user.id}`
       localStorage.setItem(cartKey, JSON.stringify(cartItems))
+    } else {
+      // Save guest cart
+      localStorage.setItem('guest_cart', JSON.stringify(cartItems))
     }
   }, [cartItems, user])
 
@@ -102,6 +115,35 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setCartItems([])
   }
 
+  const mergeGuestCart = () => {
+    const guestCart = localStorage.getItem('guest_cart')
+    if (guestCart && user) {
+      try {
+        const guestItems = JSON.parse(guestCart)
+        setCartItems(prevItems => {
+          // Merge guest items with existing user cart items
+          const mergedItems = [...prevItems]
+          
+          guestItems.forEach((guestItem: CartItem) => {
+            const existingItem = mergedItems.find(item => item.id === guestItem.id)
+            if (existingItem) {
+              existingItem.quantity += guestItem.quantity
+            } else {
+              mergedItems.push(guestItem)
+            }
+          })
+          
+          return mergedItems
+        })
+        
+        // Clear guest cart after merging
+        localStorage.removeItem('guest_cart')
+      } catch (error) {
+        console.error('Error merging guest cart:', error)
+      }
+    }
+  }
+
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0)
   const cartTotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0)
 
@@ -112,6 +154,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeFromCart,
       updateQuantity,
       clearCart,
+      mergeGuestCart,
       cartCount,
       cartTotal
     }}>

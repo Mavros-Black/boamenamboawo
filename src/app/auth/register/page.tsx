@@ -41,9 +41,17 @@ export default function RegisterPage() {
     const result = await register(name, email, password)
     
     if (result.success) {
-      // Redirect based on user role
-      const redirectPath = getDashboardRedirect(result.user || null)
-      router.push(redirectPath)
+      // Check for redirect parameters first
+      const redirectTo = searchParams.get('redirectTo')
+      const redirect = searchParams.get('redirect')
+      if (redirectTo || redirect) {
+        const redirectPath = redirectTo || redirect
+        router.push(redirectPath)
+      } else {
+        // Redirect based on user role
+        const redirectPath = getDashboardRedirect(result.user || null)
+        router.push(redirectPath)
+      }
     } else {
       setError(result.error || 'Registration failed')
     }

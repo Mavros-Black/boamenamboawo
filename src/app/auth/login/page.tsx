@@ -29,6 +29,7 @@ function LoginForm() {
     console.log('  - User:', user)
     console.log('  - Auth loading:', authLoading)
     console.log('  - RedirectTo:', searchParams.get('redirectTo'))
+    console.log('  - Redirect:', searchParams.get('redirect'))
     
     setDebugInfo(`User: ${user ? 'Logged in' : 'Not logged in'}, Loading: ${authLoading}`)
   }, [user, authLoading, searchParams])
@@ -38,7 +39,8 @@ function LoginForm() {
     if (user && !authLoading) {
       console.log('✅ User already logged in, redirecting...')
       const redirectTo = searchParams.get('redirectTo')
-      const redirectPath = redirectTo || getDashboardRedirect(user)
+      const redirect = searchParams.get('redirect')
+      const redirectPath = redirectTo || redirect || getDashboardRedirect(user)
       console.log('🔄 Redirecting to:', redirectPath)
       router.push(redirectPath)
     }
@@ -55,11 +57,13 @@ function LoginForm() {
       console.log('✅ Login successful, redirecting...')
       setRedirecting(true)
       
-      // Check for redirectTo parameter first
+      // Check for redirect parameters first
       const redirectTo = searchParams.get('redirectTo')
-      if (redirectTo) {
-        console.log('🔄 Redirecting to:', redirectTo)
-        router.push(redirectTo)
+      const redirect = searchParams.get('redirect')
+      if (redirectTo || redirect) {
+        const redirectPath = redirectTo || redirect
+        console.log('🔄 Redirecting to:', redirectPath)
+        router.push(redirectPath)
       } else {
         // Redirect based on user role
         const redirectPath = getDashboardRedirect(result.user || null)
