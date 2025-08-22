@@ -17,6 +17,7 @@ import {
   X,
   Image as ImageIcon
 } from 'lucide-react'
+import { useToast } from '@/components/Toast'
 
 interface Product {
   id: number
@@ -44,6 +45,7 @@ export default function ShopManagementPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { showToast } = useToast()
 
   // Fetch products from API
   useEffect(() => {
@@ -149,7 +151,7 @@ export default function ShopManagementPage() {
       ))
     } catch (error) {
       console.error('Error updating stock status:', error)
-      alert(`Failed to update stock status: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      showToast('error', `Failed to update stock status: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
@@ -165,12 +167,15 @@ export default function ShopManagementPage() {
           throw new Error(errorData.error || 'Failed to delete product')
         }
 
-        // Remove from local state
-        setProducts(products.filter(product => product.id !== productId))
-      } catch (error) {
-        console.error('Error deleting product:', error)
-        alert(`Failed to delete product: ${error instanceof Error ? error.message : 'Unknown error'}`)
-      }
+              // Remove from local state
+      setProducts(products.filter(product => product.id !== productId))
+      
+      // Show success message
+      showToast('success', 'Product deleted successfully!')
+          } catch (error) {
+      console.error('Error deleting product:', error)
+      showToast('error', `Failed to delete product: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
     }
   }
 
@@ -229,9 +234,12 @@ export default function ShopManagementPage() {
         product.id === updatedProduct.id ? transformedProduct : product
       ))
       setEditingProduct(null)
+      
+      // Show success message
+      showToast('success', 'Product updated successfully!')
     } catch (error) {
       console.error('Error updating product:', error)
-      alert(`Failed to update product: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      showToast('error', `Failed to update product: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
@@ -309,7 +317,7 @@ export default function ShopManagementPage() {
           imageUrl = await uploadImage(selectedImage)
         } catch (error) {
           console.error('Image upload error:', error)
-          alert(`Image upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          showToast('error', `Image upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
           setIsSubmitting(false)
           return
         }
@@ -363,12 +371,15 @@ export default function ShopManagementPage() {
       setProducts([transformedProduct, ...products])
       setShowAddModal(false)
       
+      // Show success message
+      showToast('success', 'Product added successfully!')
+      
       // Reset form
       setSelectedImage(null)
       setImagePreview('')
     } catch (error) {
       console.error('Error adding product:', error)
-      alert(`Failed to add product: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      showToast('error', `Failed to add product: ${error instanceof Error ? error.message : 'Unknown error'}`)
     } finally {
       setIsSubmitting(false)
     }

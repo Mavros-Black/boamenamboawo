@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Plus, Edit, Trash2, Eye, Calendar, Users, Target, Upload, X, Image as ImageIcon } from 'lucide-react'
+import { useToast } from '@/components/Toast'
 
 interface Program {
   id: string
@@ -23,6 +24,7 @@ interface Program {
 export default function ProgramsPage() {
   const { user } = useAuth()
   const router = useRouter()
+  const { showToast } = useToast()
   const [programs, setPrograms] = useState<Program[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -183,7 +185,7 @@ export default function ProgramsPage() {
           imageUrl = await uploadImage(selectedImage)
         } catch (error) {
           console.error('Image upload error:', error)
-          alert(`Image upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          showToast('error', `Image upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
           setUploadingImage(false)
           return
         } finally {
@@ -199,7 +201,7 @@ export default function ProgramsPage() {
             : program
         )
         setPrograms(updatedPrograms)
-        alert('Program updated successfully!')
+        showToast('success', 'Program updated successfully!')
       } else {
         // Create new program via API
         const response = await fetch('/api/programs', {
@@ -243,7 +245,7 @@ export default function ProgramsPage() {
         }
         
         setPrograms(prev => [newProgram, ...prev])
-        alert('Program created successfully!')
+        showToast('success', 'Program created successfully!')
       }
       
       setShowCreateModal(false)
@@ -251,7 +253,7 @@ export default function ProgramsPage() {
       resetForm()
     } catch (error) {
       console.error('Error saving program:', error)
-      alert(`Error saving program: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      showToast('error', `Error saving program: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
@@ -276,7 +278,7 @@ export default function ProgramsPage() {
   const handleDelete = async (programId: string) => {
     if (confirm('Are you sure you want to delete this program?')) {
       setPrograms(prev => prev.filter(program => program.id !== programId))
-      alert('Program deleted successfully!')
+      showToast('success', 'Program deleted successfully!')
     }
   }
 

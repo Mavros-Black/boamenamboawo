@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Plus, Edit, Trash2, Eye, FileText, Calendar, User, Tag, Upload, X } from 'lucide-react'
 import PlaceholderImage from '@/components/PlaceholderImage'
+import { useToast } from '@/components/Toast'
 
 interface BlogPost {
   id: string
@@ -24,6 +25,7 @@ interface BlogPost {
 export default function BlogPage() {
   const { user } = useAuth()
   const router = useRouter()
+  const { showToast } = useToast()
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([])
   const [loading, setLoading] = useState(true)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -107,13 +109,13 @@ export default function BlogPage() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file')
+      showToast('warning', 'Please select an image file')
       return
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size should be less than 5MB')
+      showToast('warning', 'Image size should be less than 5MB')
       return
     }
 
@@ -159,7 +161,7 @@ export default function BlogPage() {
 
     } catch (error) {
       console.error('Error uploading image:', error)
-      alert(`Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      showToast('error', `Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
       setUploadingImage(false)
     }
   }
@@ -226,7 +228,7 @@ export default function BlogPage() {
         setBlogPosts(prev => prev.map(post => 
           post.id === editingPost.id ? updatedPost : post
         ))
-        alert('Blog post updated successfully!')
+        showToast('success', 'Blog post updated successfully!')
       } else {
         // Create new post via API
         const requestBody = {
@@ -271,7 +273,7 @@ export default function BlogPage() {
         }
         
         setBlogPosts(prev => [newPost, ...prev])
-        alert('Blog post created successfully!')
+        showToast('success', 'Blog post created successfully!')
       }
       
       setShowCreateModal(false)
@@ -279,7 +281,7 @@ export default function BlogPage() {
       resetForm()
     } catch (error) {
       console.error('Error saving blog post:', error)
-      alert(`Error saving blog post: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      showToast('error', `Error saving blog post: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
@@ -311,10 +313,10 @@ export default function BlogPage() {
         }
 
         setBlogPosts(prev => prev.filter(post => post.id !== postId))
-        alert('Blog post deleted successfully!')
+        showToast('success', 'Blog post deleted successfully!')
       } catch (error) {
         console.error('Error deleting blog post:', error)
-        alert(`Error deleting blog post: ${error instanceof Error ? error.message : 'Unknown error'}`)
+        showToast('error', `Error deleting blog post: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
     }
   }
