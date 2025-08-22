@@ -14,7 +14,8 @@ export async function uploadImageSimple(
   try {
     // Check if Supabase is configured
     if (!supabase) {
-      throw new Error('Supabase not configured')
+      console.error('Supabase not configured - check environment variables')
+      throw new Error('Supabase not configured. Please check NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables.')
     }
 
     console.log('Starting simple upload without auth check...')
