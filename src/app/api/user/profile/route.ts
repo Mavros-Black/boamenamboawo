@@ -36,10 +36,10 @@ export const GET = requireAuth(async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url)
     const userId = searchParams.get('userId')
-    const user = (request as any).user
+    const user = (request as { user: { role: string; userId: string } }).user
 
     // Users can only access their own profile, admins can access any profile
-    if (!user.role === 'admin' && user.userId !== userId) {
+    if (user.role !== 'admin' && user.userId !== userId) {
       return NextResponse.json(
         { error: 'Access denied' },
         { status: 403 }
@@ -77,7 +77,7 @@ export const PUT = requireAuth(async (request: NextRequest) => {
   try {
     const body = await request.json()
     const { userId, profileData } = body
-    const user = (request as any).user
+    const user = (request as { user: { role: string; userId: string } }).user
 
     console.log('🔍 Profile update request:', {
       requestedUserId: userId,

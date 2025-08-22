@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function handleSuccessfulPayment(data: any) {
+async function handleSuccessfulPayment(data: { reference: string; amount: number; status: string; paidAt?: string }) {
   try {
     const { reference, amount, status, paidAt } = data
 
@@ -76,7 +76,7 @@ async function handleSuccessfulPayment(data: any) {
   }
 }
 
-async function handleFailedPayment(data: any) {
+async function handleFailedPayment(data: { reference: string; status: string }) {
   try {
     const { reference, status } = data
 

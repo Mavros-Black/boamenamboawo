@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { verifyPayment } from '@/lib/paystack'
 import { CheckCircle, XCircle, Loader } from 'lucide-react'
 
-export default function PaymentCallbackPage() {
+function PaymentCallbackForm() {
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading')
   const [message, setMessage] = useState('Verifying payment...')
@@ -185,5 +185,20 @@ export default function PaymentCallbackPage() {
         )}
       </div>
     </div>
+  )
+}
+
+export default function PaymentCallbackPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    }>
+      <PaymentCallbackForm />
+    </Suspense>
   )
 }
