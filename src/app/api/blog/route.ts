@@ -95,3 +95,110 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// PUT - Update an existing blog post
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { id, title, content, excerpt, image_url, status } = body
+
+    console.log('Blog PUT request body:', body) // Debug log
+
+    // Validate required fields
+    if (!id || !title || !content) {
+      return NextResponse.json(
+        { error: 'ID, title and content are required' },
+        { status: 400 }
+      )
+    }
+
+    if (!isSupabaseConfigured) {
+      return NextResponse.json(
+        { error: 'Database not configured. Please set up Supabase environment variables.' },
+        { status: 503 }
+      )
+    }
+
+    const updatedBlogPost = {
+      title,
+      content,
+      excerpt: excerpt || '',
+      image_url: image_url || '',
+      status: status || 'draft',
+      published_at: status === 'published' ? new Date().toISOString() : null,
+      updated_at: new Date().toISOString()
+    }
+
+    console.log('Blog post to update:', updatedBlogPost) // Debug log
+
+    const { data: blogPost, error } = await supabase
+      .from('blog_posts')
+      .update(updatedBlogPost)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      console.error('Error updating blog post:', error)
+      return NextResponse.json(
+        { error: `Failed to update blog post: ${error.message}` },
+        { status: 500 }
+      )
+    }
+
+    console.log('Blog post updated successfully:', blogPost) // Debug log
+    return NextResponse.json({ blogPost })
+  } catch (error) {
+    console.error('Error in PUT /api/blog:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE - Delete a blog post
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Blog post ID is required' },
+        { status: 400 }
+      )
+    }
+
+    if (!isSupabaseConfigured) {
+      return NextResponse.json(
+        { error: 'Database not configured. Please set up Supabase environment variables.' },
+        { status: 503 }
+      )
+    }
+
+    console.log('Deleting blog post with ID:', id) // Debug log
+
+    const { error } = await supabase
+      .from('blog_posts')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error deleting blog post:', error)
+      return NextResponse.json(
+        { error: `Failed to delete blog post: ${error.message}` },
+        { status: 500 }
+      )
+    }
+
+    console.log('Blog post deleted successfully') // Debug log
+    return NextResponse.json({ message: 'Blog post deleted successfully' })
+  } catch (error) {
+    console.error('Error in DELETE /api/blog:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+

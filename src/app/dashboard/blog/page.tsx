@@ -179,19 +179,53 @@ export default function BlogPage() {
       const tags = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
       
       if (editingPost) {
-        // Update existing post - TODO: Implement PUT API endpoint
-        const updatedPosts = blogPosts.map(post =>
-          post.id === editingPost.id
-            ? { 
-                ...post, 
-                ...formData, 
-                tags,
-                updated_at: new Date().toISOString(),
-                published_at: formData.status === 'published' ? new Date().toISOString() : undefined
-              }
-            : post
-        )
-        setBlogPosts(updatedPosts)
+        // Update existing post via API
+        const requestBody = {
+          id: editingPost.id,
+          title: formData.title,
+          content: formData.content,
+          excerpt: formData.excerpt,
+          image_url: formData.featured_image,
+          status: formData.status
+        }
+        
+        console.log('Updating blog post with data:', requestBody) // Debug log
+        
+        const response = await fetch('/api/blog', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody)
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to update blog post')
+        }
+
+        const { blogPost } = await response.json()
+        
+        // Transform API response to match our interface
+        const updatedPost: BlogPost = {
+          id: blogPost.id,
+          title: blogPost.title,
+          content: blogPost.content,
+          excerpt: blogPost.excerpt || '',
+          author: user?.name || 'Admin User',
+          category: formData.category,
+          tags,
+          status: blogPost.status,
+          featured_image: blogPost.image_url || '',
+          created_at: blogPost.created_at,
+          updated_at: blogPost.updated_at,
+          published_at: blogPost.published_at
+        }
+        
+        // Update the post in the list
+        setBlogPosts(prev => prev.map(post => 
+          post.id === editingPost.id ? updatedPost : post
+        ))
         alert('Blog post updated successfully!')
       } else {
         // Create new post via API
@@ -266,8 +300,22 @@ export default function BlogPage() {
 
   const handleDelete = async (postId: string) => {
     if (confirm('Are you sure you want to delete this blog post?')) {
-      setBlogPosts(prev => prev.filter(post => post.id !== postId))
-      alert('Blog post deleted successfully!')
+      try {
+        const response = await fetch(`/api/blog?id=${postId}`, {
+          method: 'DELETE'
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to delete blog post')
+        }
+
+        setBlogPosts(prev => prev.filter(post => post.id !== postId))
+        alert('Blog post deleted successfully!')
+      } catch (error) {
+        console.error('Error deleting blog post:', error)
+        alert(`Error deleting blog post: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      }
     }
   }
 
