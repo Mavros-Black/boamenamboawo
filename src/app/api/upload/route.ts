@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       // Final fallback to mock upload
       console.log('Falling back to mock upload...')
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.jpg`
-      const mockUrl = `https://picsum.photos/400/300?random=${Date.now()}`
+      const mockUrl = `https://picsum.photos/400/300?random=${Date.now()}&blur=2`
       
       return NextResponse.json({
         url: mockUrl,
