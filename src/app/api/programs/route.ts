@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
+// Check if Supabase is configured
+const isSupabaseConfigured = process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
 // GET - Fetch all programs
 export async function GET() {
   try {
+    if (!isSupabaseConfigured) {
+      console.warn('Supabase not configured - returning empty programs')
+      return NextResponse.json({ programs: [] })
+    }
+
     const { data: programs, error } = await supabase
       .from('programs')
       .select('*')
@@ -38,6 +46,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: 'Title is required' },
         { status: 400 }
+      )
+    }
+
+    if (!isSupabaseConfigured) {
+      return NextResponse.json(
+        { error: 'Database not configured. Please set up Supabase environment variables.' },
+        { status: 503 }
       )
     }
 

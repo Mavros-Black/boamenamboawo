@@ -54,54 +54,36 @@ export default function BlogPage() {
 
   const fetchBlogPosts = async () => {
     try {
-      // Mock data for now - replace with actual API call
-      const mockBlogPosts = [
-        {
-          id: "1",
-          title: "Empowering Youth Through Technology",
-          content: "Technology has become an essential part of our daily lives, and it's crucial that young people have access to the skills and knowledge they need to thrive in the digital age. Our technology programs focus on teaching coding, digital design, and digital marketing skills that are in high demand in today's job market...",
-          excerpt: "Discover how our technology programs are helping young people develop essential digital skills for the modern workforce.",
-          author: "Admin User",
-          category: "Technology",
-          tags: ["technology", "youth", "skills", "digital"],
-          status: "published" as const,
-          featured_image: "/images/tech-youth.jpg",
-          created_at: "2025-08-21T10:00:00Z",
-          updated_at: "2025-08-21T10:00:00Z",
-          published_at: "2025-08-21T10:00:00Z"
-        },
-        {
-          id: "2",
-          title: "The Impact of Leadership Training on Community Development",
-          content: "Leadership is not just about leading others; it's about inspiring positive change in our communities. Our leadership training programs equip young people with the skills, confidence, and vision they need to become effective community leaders...",
-          excerpt: "Learn about the transformative impact of our leadership training programs on community development.",
-          author: "Admin User",
-          category: "Leadership",
-          tags: ["leadership", "community", "development", "training"],
-          status: "published" as const,
-          featured_image: "/images/leadership.jpg",
-          created_at: "2025-08-20T10:00:00Z",
-          updated_at: "2025-08-20T10:00:00Z",
-          published_at: "2025-08-20T10:00:00Z"
-        },
-        {
-          id: "3",
-          title: "Supporting Young Entrepreneurs in Ghana",
-          content: "Entrepreneurship is a powerful driver of economic growth and job creation. Our entrepreneurship programs provide young people with the knowledge, skills, and resources they need to start and grow successful businesses...",
-          excerpt: "Explore how we're supporting the next generation of entrepreneurs in Ghana.",
-          author: "Admin User",
-          category: "Business",
-          tags: ["entrepreneurship", "business", "ghana", "startups"],
-          status: "draft" as const,
-          featured_image: "/images/entrepreneurs.jpg",
-          created_at: "2025-08-19T10:00:00Z",
-          updated_at: "2025-08-19T10:00:00Z"
-        }
-      ]
+      setLoading(true)
       
-      setBlogPosts(mockBlogPosts)
+      const response = await fetch('/api/blog')
+      if (!response.ok) {
+        throw new Error('Failed to fetch blog posts')
+      }
+      
+      const { blogPosts: apiBlogPosts } = await response.json()
+      
+      // Transform API data to match our interface
+      const transformedPosts: BlogPost[] = apiBlogPosts.map((post: any) => ({
+        id: post.id,
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt || '',
+        author: post.author || 'Admin User',
+        category: post.category || 'General',
+        tags: post.tags || [],
+        status: post.status,
+        featured_image: post.image_url || '',
+        created_at: post.created_at,
+        updated_at: post.updated_at,
+        published_at: post.published_at
+      }))
+      
+      setBlogPosts(transformedPosts)
     } catch (error) {
       console.error('Error fetching blog posts:', error)
+      // Fallback to empty array if API fails
+      setBlogPosts([])
     } finally {
       setLoading(false)
     }
@@ -171,7 +153,7 @@ export default function BlogPage() {
       const tags = formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag.length > 0)
       
       if (editingPost) {
-        // Update existing post
+        // Update existing post - TODO: Implement PUT API endpoint
         const updatedPosts = blogPosts.map(post =>
           post.id === editingPost.id
             ? { 
@@ -186,16 +168,45 @@ export default function BlogPage() {
         setBlogPosts(updatedPosts)
         alert('Blog post updated successfully!')
       } else {
-        // Create new post
-        const newPost: BlogPost = {
-          id: Date.now().toString(),
-          ...formData,
-          tags,
-          author: user?.name || 'Admin User',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          published_at: formData.status === 'published' ? new Date().toISOString() : undefined
+        // Create new post via API
+        const response = await fetch('/api/blog', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: formData.title,
+            content: formData.content,
+            excerpt: formData.excerpt,
+            image_url: formData.featured_image,
+            author_id: user?.id,
+            status: formData.status
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to create blog post')
         }
+
+        const { blogPost } = await response.json()
+        
+        // Transform API response to match our interface
+        const newPost: BlogPost = {
+          id: blogPost.id,
+          title: blogPost.title,
+          content: blogPost.content,
+          excerpt: blogPost.excerpt || '',
+          author: user?.name || 'Admin User',
+          category: formData.category,
+          tags,
+          status: blogPost.status,
+          featured_image: blogPost.image_url || '',
+          created_at: blogPost.created_at,
+          updated_at: blogPost.updated_at,
+          published_at: blogPost.published_at
+        }
+        
         setBlogPosts(prev => [newPost, ...prev])
         alert('Blog post created successfully!')
       }
@@ -205,7 +216,7 @@ export default function BlogPage() {
       resetForm()
     } catch (error) {
       console.error('Error saving blog post:', error)
-      alert('Error saving blog post. Please try again.')
+      alert(`Error saving blog post: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 

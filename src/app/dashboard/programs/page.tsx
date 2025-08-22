@@ -52,52 +52,35 @@ export default function ProgramsPage() {
 
   const fetchPrograms = async () => {
     try {
-      // Mock data for now - replace with actual API call
-      const mockPrograms = [
-        {
-          id: "1",
-          title: "Youth Leadership Training",
-          description: "Comprehensive leadership development program for young people aged 18-25",
-          category: "Leadership",
-          start_date: "2025-09-01",
-          end_date: "2025-12-01",
-          max_participants: 50,
-          current_participants: 35,
-          status: "active" as const,
-          location: "Accra, Ghana",
-          created_at: "2025-08-21T10:00:00Z"
-        },
-        {
-          id: "2",
-          title: "Digital Skills Workshop",
-          description: "Learn essential digital skills including coding, design, and digital marketing",
-          category: "Technology",
-          start_date: "2025-08-15",
-          end_date: "2025-10-15",
-          max_participants: 30,
-          current_participants: 30,
-          status: "active" as const,
-          location: "Kumasi, Ghana",
-          created_at: "2025-08-10T10:00:00Z"
-        },
-        {
-          id: "3",
-          title: "Entrepreneurship Bootcamp",
-          description: "Intensive program to help young entrepreneurs start and grow their businesses",
-          category: "Business",
-          start_date: "2025-07-01",
-          end_date: "2025-08-01",
-          max_participants: 25,
-          current_participants: 25,
-          status: "completed" as const,
-          location: "Accra, Ghana",
-          created_at: "2025-06-15T10:00:00Z"
-        }
-      ]
+      setLoading(true)
       
-      setPrograms(mockPrograms)
+      const response = await fetch('/api/programs')
+      if (!response.ok) {
+        throw new Error('Failed to fetch programs')
+      }
+      
+      const { programs: apiPrograms } = await response.json()
+      
+      // Transform API data to match our interface
+      const transformedPrograms: Program[] = apiPrograms.map((program: any) => ({
+        id: program.id,
+        title: program.title,
+        description: program.description || '',
+        category: program.category || 'General',
+        start_date: program.start_date || '',
+        end_date: program.end_date || '',
+        max_participants: program.max_participants || 0,
+        current_participants: program.current_participants || 0,
+        status: program.status || 'active',
+        location: program.location || '',
+        created_at: program.created_at
+      }))
+      
+      setPrograms(transformedPrograms)
     } catch (error) {
       console.error('Error fetching programs:', error)
+      // Fallback to empty array if API fails
+      setPrograms([])
     } finally {
       setLoading(false)
     }
@@ -116,7 +99,7 @@ export default function ProgramsPage() {
     
     try {
       if (editingProgram) {
-        // Update existing program
+        // Update existing program - TODO: Implement PUT API endpoint
         const updatedPrograms = programs.map(program =>
           program.id === editingProgram.id
             ? { ...program, ...formData, max_participants: parseInt(formData.max_participants) }
@@ -125,14 +108,46 @@ export default function ProgramsPage() {
         setPrograms(updatedPrograms)
         alert('Program updated successfully!')
       } else {
-        // Create new program
-        const newProgram: Program = {
-          id: Date.now().toString(),
-          ...formData,
-          max_participants: parseInt(formData.max_participants),
-          current_participants: 0,
-          created_at: new Date().toISOString()
+        // Create new program via API
+        const response = await fetch('/api/programs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: formData.title,
+            description: formData.description,
+            category: formData.category,
+            start_date: formData.start_date,
+            end_date: formData.end_date,
+            location: formData.location,
+            max_participants: parseInt(formData.max_participants),
+            status: formData.status
+          })
+        })
+
+        if (!response.ok) {
+          const errorData = await response.json()
+          throw new Error(errorData.error || 'Failed to create program')
         }
+
+        const { program: apiProgram } = await response.json()
+        
+        // Transform API response to match our interface
+        const newProgram: Program = {
+          id: apiProgram.id,
+          title: apiProgram.title,
+          description: apiProgram.description || '',
+          category: apiProgram.category || 'General',
+          start_date: apiProgram.start_date || '',
+          end_date: apiProgram.end_date || '',
+          max_participants: apiProgram.max_participants || 0,
+          current_participants: 0, // New programs start with 0 participants
+          status: apiProgram.status || 'active',
+          location: apiProgram.location || '',
+          created_at: apiProgram.created_at
+        }
+        
         setPrograms(prev => [newProgram, ...prev])
         alert('Program created successfully!')
       }
@@ -142,7 +157,7 @@ export default function ProgramsPage() {
       resetForm()
     } catch (error) {
       console.error('Error saving program:', error)
-      alert('Error saving program. Please try again.')
+      alert(`Error saving program: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 
