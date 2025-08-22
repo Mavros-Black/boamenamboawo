@@ -120,20 +120,32 @@ export default function BlogPage() {
       const previewUrl = URL.createObjectURL(file)
       setImagePreview(previewUrl)
 
-      // In a real application, you would upload the file to your server/cloud storage here
-      // For now, we'll simulate the upload and use a placeholder URL
-      setTimeout(() => {
-        const uploadedUrl = `/uploads/${Date.now()}_${file.name}`
-        setFormData(prev => ({
-          ...prev,
-          featured_image: uploadedUrl
-        }))
-        setUploadingImage(false)
-      }, 1000)
+      // Upload to Supabase Storage
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('bucket', 'images')
+      formData.append('folder', 'blog')
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Upload failed')
+      }
+
+      const { url } = await response.json()
+      setFormData(prev => ({
+        ...prev,
+        featured_image: url
+      }))
+      setUploadingImage(false)
 
     } catch (error) {
       console.error('Error uploading image:', error)
-      alert('Error uploading image. Please try again.')
+      alert(`Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
       setUploadingImage(false)
     }
   }

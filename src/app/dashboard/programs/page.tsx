@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { Plus, Edit, Trash2, Eye, Calendar, Users, Target } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, Calendar, Users, Target, Upload, X, Image as ImageIcon } from 'lucide-react'
 
 interface Program {
   id: string
@@ -16,6 +16,7 @@ interface Program {
   current_participants: number
   status: 'active' | 'inactive' | 'completed'
   location: string
+  image_url?: string
   created_at: string
 }
 
@@ -37,8 +38,15 @@ export default function ProgramsPage() {
     end_date: '',
     max_participants: '',
     location: '',
-    status: 'active'
+    status: 'active',
+    image_url: ''
   })
+
+  // Image upload states
+  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string>('')
+  const [isDragOver, setIsDragOver] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
 
   useEffect(() => {
     const userRole = user?.user_metadata?.role || 'user'
@@ -73,6 +81,7 @@ export default function ProgramsPage() {
         current_participants: program.current_participants || 0,
         status: program.status || 'active',
         location: program.location || '',
+        image_url: program.image_url || '',
         created_at: program.created_at
       }))
       
@@ -94,15 +103,99 @@ export default function ProgramsPage() {
     }))
   }
 
+  // Image upload handlers
+  const handleImageSelect = (file: File) => {
+    if (file && file.type.startsWith('image/')) {
+      setSelectedImage(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      handleImageSelect(file)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragOver(false)
+    const file = e.dataTransfer.files[0]
+    if (file) {
+      handleImageSelect(file)
+    }
+  }
+
+  const removeImage = () => {
+    setSelectedImage(null)
+    setImagePreview('')
+    setFormData(prev => ({
+      ...prev,
+      image_url: ''
+    }))
+  }
+
+  const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('bucket', 'images')
+    formData.append('folder', 'programs')
+
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Upload failed')
+    }
+
+    const { url } = await response.json()
+    return url
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
     try {
+      let imageUrl = formData.image_url
+      
+      // Upload image if selected
+      if (selectedImage) {
+        setUploadingImage(true)
+        try {
+          imageUrl = await uploadImage(selectedImage)
+        } catch (error) {
+          console.error('Image upload error:', error)
+          alert(`Image upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          setUploadingImage(false)
+          return
+        } finally {
+          setUploadingImage(false)
+        }
+      }
+
       if (editingProgram) {
         // Update existing program - TODO: Implement PUT API endpoint
         const updatedPrograms = programs.map(program =>
           program.id === editingProgram.id
-            ? { ...program, ...formData, max_participants: parseInt(formData.max_participants) }
+            ? { ...program, ...formData, max_participants: parseInt(formData.max_participants), image_url: imageUrl }
             : program
         )
         setPrograms(updatedPrograms)
@@ -122,7 +215,8 @@ export default function ProgramsPage() {
             end_date: formData.end_date,
             location: formData.location,
             max_participants: parseInt(formData.max_participants),
-            status: formData.status
+            status: formData.status,
+            image_url: imageUrl
           })
         })
 
@@ -171,8 +265,11 @@ export default function ProgramsPage() {
       end_date: program.end_date,
       max_participants: program.max_participants.toString(),
       location: program.location,
-      status: program.status
+      status: program.status,
+      image_url: program.image_url || ''
     })
+    setImagePreview(program.image_url || '')
+    setSelectedImage(null)
     setShowCreateModal(true)
   }
 
@@ -192,8 +289,13 @@ export default function ProgramsPage() {
       end_date: '',
       max_participants: '',
       location: '',
-      status: 'active'
+      status: 'active',
+      image_url: ''
     })
+    setSelectedImage(null)
+    setImagePreview('')
+    setIsDragOver(false)
+    setUploadingImage(false)
   }
 
   const filteredPrograms = programs.filter(program =>
@@ -294,6 +396,20 @@ export default function ProgramsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPrograms.map((program) => (
             <div key={program.id} className="bg-white rounded-lg shadow-md overflow-hidden">
+              {/* Program Image */}
+              {program.image_url && (
+                <div className="h-48 bg-gray-200">
+                  <img
+                    src={program.image_url}
+                    alt={program.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none'
+                    }}
+                  />
+                </div>
+              )}
+              
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">{program.title}</h3>
@@ -499,6 +615,76 @@ export default function ProgramsPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
                   placeholder="Describe the program details, objectives, and what participants will learn..."
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Program Image
+                </label>
+                
+                {/* Image Upload Area */}
+                <div className="mt-2">
+                  {!imagePreview ? (
+                    <div
+                      className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                        isDragOver 
+                          ? 'border-green-500 bg-green-50' 
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                    >
+                      <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                      <div className="mt-2">
+                        <label htmlFor="image-upload" className="cursor-pointer">
+                          <span className="text-sm font-medium text-green-600 hover:text-green-500">
+                            Click to upload
+                          </span>
+                          <span className="text-gray-500"> or drag and drop</span>
+                        </label>
+                        <input
+                          id="image-upload"
+                          name="image"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileInputChange}
+                          className="hidden"
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        PNG, JPG, GIF up to 5MB
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Program preview"
+                        className="w-full h-48 object-cover rounded-lg border border-gray-300"
+                      />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Upload Progress */}
+                {uploadingImage && (
+                  <div className="mt-2">
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <span>Uploading image...</span>
+                    </div>
+                    <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
+                      <div className="bg-green-600 h-2 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex justify-end space-x-3 pt-4">
