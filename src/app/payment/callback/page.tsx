@@ -1,16 +1,18 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import Link from 'next/link'
+import { useCart } from '@/contexts/CartContext'
 import { verifyPayment } from '@/lib/paystack'
-import { CheckCircle, XCircle, Loader } from 'lucide-react'
 
-function PaymentCallbackForm() {
-  const searchParams = useSearchParams()
+export default function PaymentCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading')
-  const [message, setMessage] = useState('Verifying payment...')
-  const [details, setDetails] = useState<any>(null)
-  const [paymentType, setPaymentType] = useState<'shop' | 'donation' | 'unknown'>('unknown')
+  const [message, setMessage] = useState('')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { clearCart } = useCart()
 
   useEffect(() => {
     const verifyPaymentStatus = async () => {
@@ -26,179 +28,90 @@ function PaymentCallbackForm() {
 
         const paymentRef = reference || trxref
 
-        // Verify the payment
-        const verificationResult = await verifyPayment(paymentRef!)
+        if (paymentRef) {
+          // Verify the payment with Paystack
+          const verificationResult = await verifyPayment(paymentRef)
 
-        console.log('Payment verification result:', verificationResult)
-
-        if (verificationResult.status && verificationResult.data.status === 'success') {
-          setStatus('success')
-          setDetails(verificationResult.data)
-          
-          // Determine if this is a shop order or donation based on reference prefix
-          const isShopOrder = paymentRef?.startsWith('BOA_ME_SHOP_')
-          const isDonation = paymentRef?.startsWith('BOA_ME_DONATION_')
-          
-          if (isShopOrder) {
-            setMessage('Payment successful! Your order has been confirmed.')
-            setPaymentType('shop')
-            
-            // Update order status in database
-            try {
-              const updateResponse = await fetch('/api/orders/update-status', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  reference: paymentRef,
-                  status: 'success'
-                })
-              })
-
-              if (!updateResponse.ok) {
-                console.error('Failed to update order status:', await updateResponse.text())
-              } else {
-                console.log('Order status updated successfully')
-              }
-            } catch (error) {
-              console.error('Failed to update order status:', error)
-            }
-          } else if (isDonation) {
-            setMessage('Payment successful! Thank you for your donation.')
-            setPaymentType('donation')
-            
-            // Update donation status in database
-            try {
-              const updateResponse = await fetch('/api/donations/update-status', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  reference: paymentRef,
-                  status: 'success'
-                })
-              })
-
-              if (!updateResponse.ok) {
-                console.error('Failed to update donation status:', await updateResponse.text())
-              } else {
-                console.log('Donation status updated successfully')
-              }
-            } catch (error) {
-              console.error('Failed to update donation status:', error)
-            }
+          if (verificationResult.status && verificationResult.data.status === 'success') {
+            setStatus('success')
+            setMessage('Payment completed successfully!')
+            // Clear cart after successful payment
+            clearCart()
           } else {
-            // Fallback for unknown payment types
-            setMessage('Payment successful! Thank you for your support.')
-            setPaymentType('unknown')
+            setStatus('failed')
+            setMessage('Payment verification failed or payment was not successful')
           }
         } else {
           setStatus('failed')
-          setMessage(verificationResult.message || 'Payment verification failed')
+          setMessage('Invalid payment reference')
         }
       } catch (error) {
         console.error('Payment verification error:', error)
         setStatus('failed')
-        setMessage('Payment verification failed. Please contact support.')
+        setMessage('Error verifying payment. Please contact support.')
       }
     }
 
     verifyPaymentStatus()
-  }, [searchParams])
+  }, [searchParams, clearCart])
+
+  if (status === 'loading') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="mx-auto h-12 w-12 text-green-600 animate-spin mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Verifying Payment</h2>
+          <p className="text-gray-600">Please wait while we verify your payment...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md text-center">
-        {status === 'loading' && (
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+        {status === 'success' ? (
           <>
-            <Loader className="h-16 w-16 text-blue-600 mx-auto mb-4 animate-spin" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Processing Payment</h1>
-            <p className="text-gray-600">{message}</p>
-          </>
-        )}
-
-        {status === 'success' && (
-          <>
-            <CheckCircle className="h-16 w-16 text-green-600 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h1>
-            <p className="text-gray-600 mb-4">{message}</p>
-            <div className="mt-4">
-              {paymentType === 'shop' ? (
-                <a 
-                  href="/dashboard/orders" 
-                  className="inline-block bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-                >
-                  View My Orders
-                </a>
-              ) : paymentType === 'donation' ? (
-                <a 
-                  href="/donate" 
-                  className="inline-block bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-                >
-                  Make Another Donation
-                </a>
-              ) : (
-                <a 
-                  href="/" 
-                  className="inline-block bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-                >
-                  Return Home
-                </a>
-              )}
+            <CheckCircle className="mx-auto h-16 w-16 text-green-600 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Successful!</h2>
+            <p className="text-gray-600 mb-6">{message}</p>
+            <div className="space-y-3">
+              <Link
+                href="/shop"
+                className="block w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors"
+              >
+                Continue Shopping
+              </Link>
+              <Link
+                href="/dashboard"
+                className="block w-full bg-gray-600 text-white py-3 px-4 rounded-md hover:bg-gray-700 transition-colors"
+              >
+                Go to Dashboard
+              </Link>
             </div>
-            {details && (
-              <div className="bg-green-50 p-4 rounded-md text-left">
-                <p className="text-sm text-green-800">
-                  <strong>Amount:</strong> ${(details.amount / 100).toFixed(2)}
-                </p>
-                <p className="text-sm text-green-800">
-                  <strong>Reference:</strong> {details.reference}
-                </p>
-                <p className="text-sm text-green-800">
-                  <strong>Date:</strong> {new Date(details.paidAt).toLocaleDateString()}
-                </p>
-              </div>
-            )}
-            <button
-              onClick={() => window.location.href = '/'}
-              className="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md"
-            >
-              Return to Home
-            </button>
           </>
-        )}
-
-        {status === 'failed' && (
+        ) : (
           <>
-            <XCircle className="h-16 w-16 text-red-600 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Payment Failed</h1>
-            <p className="text-gray-600 mb-4">{message}</p>
-            <button
-              onClick={() => window.location.href = '/donate'}
-              className="mt-6 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-md"
-            >
-              Try Again
-            </button>
+            <XCircle className="mx-auto h-16 w-16 text-red-600 mb-4" />
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Failed</h2>
+            <p className="text-gray-600 mb-6">{message}</p>
+            <div className="space-y-3">
+              <Link
+                href="/checkout"
+                className="block w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors"
+              >
+                Try Again
+              </Link>
+              <Link
+                href="/shop"
+                className="block w-full bg-gray-600 text-white py-3 px-4 rounded-md hover:bg-gray-700 transition-colors"
+              >
+                Back to Shop
+              </Link>
+            </div>
           </>
         )}
       </div>
     </div>
-  )
-}
-
-export default function PaymentCallbackPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    }>
-      <PaymentCallbackForm />
-    </Suspense>
   )
 }

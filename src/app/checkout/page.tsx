@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import { ShoppingCart, Lock, User, CreditCard, Truck, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
+import { initializePaystackPayment } from '@/lib/paystack'
 
 export default function CheckoutPage() {
   const { user, loading } = useAuth()
@@ -39,10 +40,45 @@ export default function CheckoutPage() {
     router.push(redirectUrl)
   }
 
-  const handlePlaceOrder = () => {
-    // Simulate order placement
-    setCheckoutStep('confirmation')
-    clearCart()
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [paymentError, setPaymentError] = useState('')
+
+  const handlePlaceOrder = async () => {
+    if (cartItems.length === 0) return
+
+    setIsProcessing(true)
+    setPaymentError('')
+    
+    try {
+      // Generate unique reference for this transaction
+      const reference = `BOA_ME_SHOP_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      
+      // Calculate total with shipping and tax
+      const subtotal = cartTotal
+      const shipping = 5.00
+      const tax = subtotal * 0.1
+      const total = subtotal + shipping + tax
+
+      // Initialize Paystack payment
+      const paymentData = await initializePaystackPayment(
+        total,
+        user?.email || '',
+        reference,
+        `${window.location.origin}/payment/callback`
+      )
+
+      if (paymentData.status && paymentData.data.authorization_url) {
+        // Redirect to Paystack payment page
+        window.location.href = paymentData.data.authorization_url
+      } else {
+        throw new Error(paymentData.message || 'Payment initialization failed')
+      }
+    } catch (error) {
+      console.error('Payment failed:', error)
+      setPaymentError('Payment failed. Please try again.')
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   if (loading) {
@@ -216,51 +252,64 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {checkoutStep === 'payment' && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Information</h2>
-                <form className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Card Number</label>
-                    <input
-                      type="text"
-                      placeholder="1234 5678 9012 3456"
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date</label>
-                      <input
-                        type="text"
-                        placeholder="MM/YY"
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">CVV</label>
-                      <input
-                        type="text"
-                        placeholder="123"
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <button
-                    type="button"
-                    onClick={handlePlaceOrder}
-                    className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors"
-                  >
-                    Place Order
-                  </button>
-                </form>
-              </div>
-            )}
+                         {checkoutStep === 'payment' && (
+               <div className="bg-white rounded-lg shadow p-6">
+                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Information</h2>
+                 
+                 {paymentError && (
+                   <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md mb-4">
+                     {paymentError}
+                   </div>
+                 )}
+                 
+                 <div className="space-y-4">
+                   <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-md">
+                     <p className="text-sm">
+                       <strong>Secure Payment:</strong> You'll be redirected to Paystack's secure payment gateway to complete your purchase.
+                     </p>
+                   </div>
+                   
+                   <div className="bg-gray-50 border border-gray-200 text-gray-700 px-4 py-3 rounded-md">
+                     <p className="text-sm">
+                       <strong>Supported Payment Methods:</strong>
+                     </p>
+                     <ul className="text-sm mt-2 space-y-1">
+                       <li>• Credit/Debit Cards (Visa, Mastercard, etc.)</li>
+                       <li>• Mobile Money (Ghana)</li>
+                       <li>• Bank Transfers</li>
+                       <li>• USSD Payments</li>
+                     </ul>
+                   </div>
+                   
+                   <button
+                     type="button"
+                     onClick={handlePlaceOrder}
+                     disabled={isProcessing}
+                     className={`w-full py-3 px-4 rounded-md font-medium transition-colors flex items-center justify-center ${
+                       isProcessing
+                         ? 'bg-gray-400 text-white cursor-not-allowed'
+                         : 'bg-green-600 hover:bg-green-700 text-white'
+                     }`}
+                   >
+                     {isProcessing ? (
+                       <>
+                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                         Processing Payment...
+                       </>
+                     ) : (
+                       <>
+                         <CreditCard className="h-5 w-5 mr-2" />
+                         Proceed to Payment
+                       </>
+                     )}
+                   </button>
+                   
+                   <p className="text-xs text-gray-500 text-center">
+                     By clicking "Proceed to Payment", you agree to our terms of service and privacy policy.
+                   </p>
+                 </div>
+               </div>
+             )}
 
             {checkoutStep === 'confirmation' && (
               <div className="bg-white rounded-lg shadow p-6 text-center">
