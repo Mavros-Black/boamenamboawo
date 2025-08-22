@@ -42,6 +42,15 @@ export default function CheckoutPage() {
 
   const [isProcessing, setIsProcessing] = useState(false)
   const [paymentError, setPaymentError] = useState('')
+  const [shippingInfo, setShippingInfo] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    address: '',
+    city: '',
+    state: '',
+    zipCode: ''
+  })
 
   const handlePlaceOrder = async () => {
     if (cartItems.length === 0) return
@@ -58,6 +67,18 @@ export default function CheckoutPage() {
       const shipping = 5.00
       const tax = subtotal * 0.1
       const total = subtotal + shipping + tax
+
+      // Save order data to localStorage for payment callback
+      const orderData = {
+        reference,
+        shippingInfo,
+        cartItems,
+        subtotal,
+        shipping,
+        tax,
+        total
+      }
+      localStorage.setItem('pending_order', JSON.stringify(orderData))
 
       // Initialize Paystack payment
       const paymentData = await initializePaystackPayment(
@@ -172,85 +193,100 @@ export default function CheckoutPage() {
               </div>
             )}
 
-            {checkoutStep === 'shipping' && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Shipping Information</h2>
-                <form className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                      <input
-                        type="text"
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                      <input
-                        type="text"
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input
-                      type="email"
-                      defaultValue={user?.email}
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      required
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                    <input
-                      type="text"
-                      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                      <input
-                        type="text"
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                      <input
-                        type="text"
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-                      <input
-                        type="text"
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <button
-                    type="button"
-                    onClick={() => setCheckoutStep('payment')}
-                    className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors"
-                  >
-                    Continue to Payment
-                  </button>
-                </form>
-              </div>
-            )}
+                         {checkoutStep === 'shipping' && (
+               <div className="bg-white rounded-lg shadow p-6">
+                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Shipping Information</h2>
+                 <form className="space-y-4" onSubmit={(e) => {
+                   e.preventDefault()
+                   setCheckoutStep('payment')
+                 }}>
+                   <div className="grid grid-cols-2 gap-4">
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                       <input
+                         type="text"
+                         value={shippingInfo.firstName}
+                         onChange={(e) => setShippingInfo(prev => ({ ...prev, firstName: e.target.value }))}
+                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                         required
+                       />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                       <input
+                         type="text"
+                         value={shippingInfo.lastName}
+                         onChange={(e) => setShippingInfo(prev => ({ ...prev, lastName: e.target.value }))}
+                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                         required
+                       />
+                     </div>
+                   </div>
+                   
+                   <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                     <input
+                       type="email"
+                       value={shippingInfo.email || user?.email || ''}
+                       onChange={(e) => setShippingInfo(prev => ({ ...prev, email: e.target.value }))}
+                       className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                       required
+                     />
+                   </div>
+                   
+                   <div>
+                     <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                     <input
+                       type="text"
+                       value={shippingInfo.address}
+                       onChange={(e) => setShippingInfo(prev => ({ ...prev, address: e.target.value }))}
+                       className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                       required
+                     />
+                   </div>
+                   
+                   <div className="grid grid-cols-3 gap-4">
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                       <input
+                         type="text"
+                         value={shippingInfo.city}
+                         onChange={(e) => setShippingInfo(prev => ({ ...prev, city: e.target.value }))}
+                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                         required
+                       />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                       <input
+                         type="text"
+                         value={shippingInfo.state}
+                         onChange={(e) => setShippingInfo(prev => ({ ...prev, state: e.target.value }))}
+                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                         required
+                       />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
+                       <input
+                         type="text"
+                         value={shippingInfo.zipCode}
+                         onChange={(e) => setShippingInfo(prev => ({ ...prev, zipCode: e.target.value }))}
+                         className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                         required
+                       />
+                     </div>
+                   </div>
+                   
+                   <button
+                     type="submit"
+                     className="w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors"
+                   >
+                     Continue to Payment
+                   </button>
+                 </form>
+               </div>
+             )}
 
                          {checkoutStep === 'payment' && (
                <div className="bg-white rounded-lg shadow p-6">

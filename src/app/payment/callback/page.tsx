@@ -35,6 +35,80 @@ export default function PaymentCallbackPage() {
           if (verificationResult.status && verificationResult.data.status === 'success') {
             setStatus('success')
             setMessage('Payment completed successfully!')
+            
+            // Create order in database
+            try {
+              // Get order data from localStorage
+              const pendingOrderData = localStorage.getItem('pending_order')
+              let orderData
+              
+              if (pendingOrderData) {
+                const savedOrder = JSON.parse(pendingOrderData)
+                orderData = {
+                  customer_email: verificationResult.data.customer.email,
+                  customer_name: `${savedOrder.shippingInfo.firstName} ${savedOrder.shippingInfo.lastName}`,
+                  customer_phone: verificationResult.data.customer.phone,
+                  customer_address: savedOrder.shippingInfo.address,
+                  customer_city: savedOrder.shippingInfo.city,
+                  customer_state: savedOrder.shippingInfo.state,
+                  customer_zip_code: savedOrder.shippingInfo.zipCode,
+                  customer_country: 'Ghana',
+                  items: savedOrder.cartItems,
+                  subtotal: savedOrder.subtotal,
+                  shipping: savedOrder.shipping,
+                  total: savedOrder.total,
+                  payment_reference: paymentRef
+                }
+                // Clear pending order data
+                localStorage.removeItem('pending_order')
+              } else {
+                // Fallback if no saved order data
+                orderData = {
+                  customer_email: verificationResult.data.customer.email,
+                  customer_name: `${verificationResult.data.customer.first_name} ${verificationResult.data.customer.last_name}`,
+                  customer_phone: verificationResult.data.customer.phone,
+                  customer_address: 'Address not available',
+                  customer_city: 'City not available',
+                  customer_state: 'State not available',
+                  customer_zip_code: 'ZIP not available',
+                  customer_country: 'Ghana',
+                  items: [],
+                  subtotal: verificationResult.data.amount / 100,
+                  shipping: 5.00,
+                  total: verificationResult.data.amount / 100,
+                  payment_reference: paymentRef
+                }
+              }
+
+              const orderResponse = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+              })
+
+              if (orderResponse.ok) {
+                console.log('Order created successfully')
+                
+                // Update order status to completed
+                await fetch('/api/orders/update-status', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    reference: paymentRef,
+                    status: 'completed'
+                  })
+                })
+              } else {
+                console.error('Failed to create order')
+              }
+            } catch (error) {
+              console.error('Error creating order:', error)
+            }
+            
             // Clear cart after successful payment
             clearCart()
           } else {
