@@ -41,6 +41,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, content, excerpt, image_url, author_id, status } = body
 
+    console.log('Blog POST request body:', body) // Debug log
+
     // Validate required fields
     if (!title || !content) {
       return NextResponse.json(
@@ -66,6 +68,8 @@ export async function POST(request: NextRequest) {
       published_at: status === 'published' ? new Date().toISOString() : null
     }
 
+    console.log('Blog post to insert:', newBlogPost) // Debug log
+
     const { data: blogPost, error } = await supabase
       .from('blog_posts')
       .insert([newBlogPost])
@@ -75,11 +79,12 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.error('Error creating blog post:', error)
       return NextResponse.json(
-        { error: 'Failed to create blog post' },
+        { error: `Failed to create blog post: ${error.message}` },
         { status: 500 }
       )
     }
 
+    console.log('Blog post created successfully:', blogPost) // Debug log
     return NextResponse.json({ blogPost }, { status: 201 })
   } catch (error) {
     console.error('Error in POST /api/blog:', error)

@@ -101,6 +101,8 @@ export default function BlogPage() {
     const file = e.target.files?.[0]
     if (!file) return
 
+    console.log('Image upload started:', file.name, file.size, file.type) // Debug log
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
       alert('Please select an image file')
@@ -126,17 +128,24 @@ export default function BlogPage() {
       formData.append('bucket', 'images')
       formData.append('folder', 'blog')
 
+      console.log('Uploading to Supabase Storage...') // Debug log
+
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       })
 
+      console.log('Upload response status:', response.status) // Debug log
+
       if (!response.ok) {
         const errorData = await response.json()
+        console.error('Upload error response:', errorData) // Debug log
         throw new Error(errorData.error || 'Upload failed')
       }
 
       const { url } = await response.json()
+      console.log('Upload successful, URL:', url) // Debug log
+      
       setFormData(prev => ({
         ...prev,
         featured_image: url
@@ -181,19 +190,23 @@ export default function BlogPage() {
         alert('Blog post updated successfully!')
       } else {
         // Create new post via API
+        const requestBody = {
+          title: formData.title,
+          content: formData.content,
+          excerpt: formData.excerpt,
+          image_url: formData.featured_image,
+          author_id: user?.id,
+          status: formData.status
+        }
+        
+        console.log('Submitting blog post with data:', requestBody) // Debug log
+        
         const response = await fetch('/api/blog', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            title: formData.title,
-            content: formData.content,
-            excerpt: formData.excerpt,
-            image_url: formData.featured_image,
-            author_id: user?.id,
-            status: formData.status
-          })
+          body: JSON.stringify(requestBody)
         })
 
         if (!response.ok) {
