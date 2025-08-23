@@ -6,6 +6,8 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { email, profileData } = body
 
+    console.log('Profile update request:', { email, profileData })
+
     if (!email || !profileData) {
       return NextResponse.json(
         { error: 'Email and profile data are required' },
@@ -13,9 +15,36 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    // Update user metadata in Supabase Auth
+    // First, get the user by email to get their ID
+    const { data: { users }, error: listError } = await supabase.auth.admin.listUsers()
+    
+    if (listError) {
+      console.error('Error listing users:', listError)
+      return NextResponse.json(
+        { error: 'Failed to find user' },
+        { status: 500 }
+      )
+    }
+
+    // Find the user by email
+    const user = users?.find(u => u.email === email)
+    
+    console.log('User lookup result:', { 
+      requestedEmail: email, 
+      foundUser: user ? { id: user.id, email: user.email } : null,
+      totalUsers: users?.length 
+    })
+    
+    if (!user) {
+      return NextResponse.json(
+        { error: 'User not found' },
+        { status: 404 }
+      )
+    }
+
+    // Update user metadata in Supabase Auth using the correct user ID
     const { data, error } = await supabase.auth.admin.updateUserById(
-      email, // This should be the user ID, not email
+      user.id,
       {
         user_metadata: {
           name: profileData.name,
