@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    console.log('Donation request body:', body)
+
     
     const { 
       donor_name, 
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!donor_name || !donor_email || !amount || !payment_reference) {
-      console.log('Validation failed:', { donor_name, donor_email, amount, payment_reference })
+  
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }

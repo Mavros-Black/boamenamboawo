@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Order created successfully:', order)
+    
     return NextResponse.json({ order })
   } catch (error) {
     console.error('Order creation error:', error)

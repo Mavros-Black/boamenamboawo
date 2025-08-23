@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { title, content, excerpt, image_url, author_id, status } = body
 
-    console.log('Blog POST request body:', body) // Debug log
+    
 
     // Validate required fields
     if (!title || !content) {
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       published_at: status === 'published' ? new Date().toISOString() : null
     }
 
-    console.log('Blog post to insert:', newBlogPost) // Debug log
+    
 
     const { data: blogPost, error } = await supabase
       .from('blog_posts')
@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Blog post created successfully:', blogPost) // Debug log
+    
     return NextResponse.json({ blogPost }, { status: 201 })
   } catch (error) {
     console.error('Error in POST /api/blog:', error)
@@ -101,7 +101,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { id, title, content, excerpt, image_url, status } = body
 
-    console.log('Blog PUT request body:', body) // Debug log
+    
 
     // Validate required fields
     if (!id || !title || !content) {
@@ -128,7 +128,7 @@ export async function PUT(request: NextRequest) {
       updated_at: new Date().toISOString()
     }
 
-    console.log('Blog post to update:', updatedBlogPost) // Debug log
+    
 
     const { data: blogPost, error } = await supabase
       .from('blog_posts')
@@ -145,7 +145,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    console.log('Blog post updated successfully:', blogPost) // Debug log
+    
     return NextResponse.json({ blogPost })
   } catch (error) {
     console.error('Error in PUT /api/blog:', error)
@@ -176,7 +176,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    console.log('Deleting blog post with ID:', id) // Debug log
+    
 
     const { error } = await supabase
       .from('blog_posts')
@@ -191,7 +191,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    console.log('Blog post deleted successfully') // Debug log
+    
     return NextResponse.json({ message: 'Blog post deleted successfully' })
   } catch (error) {
     console.error('Error in DELETE /api/blog:', error)

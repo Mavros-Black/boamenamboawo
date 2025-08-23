@@ -6,8 +6,6 @@ export async function PUT(request: NextRequest) {
     const body = await request.json()
     const { email, profileData } = body
 
-    console.log('Profile update request:', { email, profileData })
-
     if (!email || !profileData) {
       return NextResponse.json(
         { error: 'Email and profile data are required' },
@@ -28,12 +26,6 @@ export async function PUT(request: NextRequest) {
 
     // Find the user by email
     const user = users?.find(u => u.email === email)
-    
-    console.log('User lookup result:', { 
-      requestedEmail: email, 
-      foundUser: user ? { id: user.id, email: user.email } : null,
-      totalUsers: users?.length 
-    })
     
     if (!user) {
       return NextResponse.json(

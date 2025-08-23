@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Updating order status:', { reference, status })
+
 
     if (!supabase) {
       console.error('Supabase not configured')
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log(`Order with reference ${reference} status updated to ${status}`)
+
     return NextResponse.json({ 
       message: 'Order status updated successfully',
       reference,

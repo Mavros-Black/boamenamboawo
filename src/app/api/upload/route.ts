@@ -10,12 +10,7 @@ export async function POST(request: NextRequest) {
     const folder = formData.get('folder') as string || 'uploads'
     const userId = formData.get('userId') as string
 
-    console.log('Upload API called with:', { bucket, folder, userId }) // Debug log
-    console.log('File details:', { 
-      name: file?.name, 
-      size: file?.size, 
-      type: file?.type 
-    })
+
 
     if (!file) {
       return NextResponse.json(
@@ -25,12 +20,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Try admin upload first (bypasses RLS)
-    console.log('Trying admin upload with service role...')
+    
     const adminResult = await uploadImageAdmin(file, bucket, folder)
-    console.log('Admin upload result:', adminResult)
 
     if (!adminResult.error) {
-      console.log('Admin upload successful!')
       return NextResponse.json({
         url: adminResult.url,
         path: adminResult.path
@@ -38,15 +31,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Fallback to simple upload
-    console.log('Admin upload failed, trying simple upload...')
     const result = await uploadImageSimple(file, bucket, folder)
-    console.log('Simple upload result:', result)
 
     if (result.error) {
       console.error('All upload methods failed:', result.error)
       
       // Final fallback to mock upload
-      console.log('Falling back to mock upload...')
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.jpg`
       const mockUrl = `https://picsum.photos/400/300?random=${Date.now()}&blur=2`
       
@@ -57,7 +47,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    console.log('Upload successful:', result) // Debug log
+
 
     return NextResponse.json({
       url: result.url,

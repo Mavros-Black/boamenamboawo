@@ -192,7 +192,7 @@ export default function UserDashboardPage() {
       // Update local user data
       if (result.user) {
         // You might want to update the auth context here
-        console.log('Profile updated successfully:', result.user)
+        // Profile updated successfully
       }
 
       // Show success message using toast
