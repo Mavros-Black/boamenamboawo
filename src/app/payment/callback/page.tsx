@@ -41,50 +41,64 @@ function PaymentCallbackContent() {
             setStatus('success')
             setMessage('Payment completed successfully!')
             
-            // Create order in database
+                      // Check if this is a donation or order payment
+          const donationData = localStorage.getItem('donation_details')
+          const pendingOrderData = localStorage.getItem('pending_order')
+          
+          if (donationData) {
+            // Handle donation payment
             try {
-              // Get order data from localStorage
-              const pendingOrderData = localStorage.getItem('pending_order')
-              let orderData
+              const donation = JSON.parse(donationData)
+              console.log('Processing donation payment:', donation)
               
-              if (pendingOrderData) {
-                const savedOrder = JSON.parse(pendingOrderData)
-                orderData = {
-                  customer_email: user?.email || verificationResult.data.customer.email,
-                  customer_name: `${savedOrder.shippingInfo.firstName} ${savedOrder.shippingInfo.lastName}`,
-                  customer_phone: verificationResult.data.customer.phone,
-                  customer_address: savedOrder.shippingInfo.address,
-                  customer_city: savedOrder.shippingInfo.city,
-                  customer_state: savedOrder.shippingInfo.state,
-                  customer_zip_code: savedOrder.shippingInfo.zipCode,
-                  customer_country: 'Ghana',
-                  items: savedOrder.cartItems,
-                  subtotal: savedOrder.subtotal,
-                  shipping: savedOrder.shipping,
-                  total: savedOrder.total,
-                  payment_reference: paymentRef
-                }
-                // Clear pending order data
-                localStorage.removeItem('pending_order')
-              } else {
-                // Fallback if no saved order data
-                orderData = {
-                  customer_email: user?.email || verificationResult.data.customer.email,
-                  customer_name: `${verificationResult.data.customer.first_name} ${verificationResult.data.customer.last_name}`,
-                  customer_phone: verificationResult.data.customer.phone,
-                  customer_address: 'Address not available',
-                  customer_city: 'City not available',
-                  customer_state: 'State not available',
-                  customer_zip_code: 'ZIP not available',
-                  customer_country: 'Ghana',
-                  items: [],
-                  subtotal: verificationResult.data.amount / 100,
-                  shipping: 5.00,
-                  total: verificationResult.data.amount / 100,
-                  payment_reference: paymentRef
-                }
-              }
+              // Update donation status to success
+              const donationResponse = await fetch('/api/donations/update-status', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  reference: paymentRef,
+                  status: 'success'
+                })
+              })
 
+              if (donationResponse.ok) {
+                console.log('Donation status updated successfully')
+                // Clear donation data
+                localStorage.removeItem('donation_details')
+                
+                // Redirect to donation receipt
+                setTimeout(() => {
+                  router.push(`/dashboard/user/receipt/${donation.donationId}`)
+                }, 2000)
+              } else {
+                const donationError = await donationResponse.json()
+                console.error('Failed to update donation status:', donationError)
+              }
+            } catch (error) {
+              console.error('Error processing donation:', error)
+            }
+          } else if (pendingOrderData) {
+            // Handle order payment
+            try {
+              const savedOrder = JSON.parse(pendingOrderData)
+              const orderData = {
+                customer_email: user?.email || verificationResult.data.customer.email,
+                customer_name: `${savedOrder.shippingInfo.firstName} ${savedOrder.shippingInfo.lastName}`,
+                customer_phone: verificationResult.data.customer.phone,
+                customer_address: savedOrder.shippingInfo.address,
+                customer_city: savedOrder.shippingInfo.city,
+                customer_state: savedOrder.shippingInfo.state,
+                customer_zip_code: savedOrder.shippingInfo.zipCode,
+                customer_country: 'Ghana',
+                items: savedOrder.cartItems,
+                subtotal: savedOrder.subtotal,
+                shipping: savedOrder.shipping,
+                total: savedOrder.total,
+                payment_reference: paymentRef
+              }
+              
               console.log('Creating order with data:', orderData)
 
               const orderResponse = await fetch('/api/orders', {
@@ -122,12 +136,15 @@ function PaymentCallbackContent() {
                 console.error('Failed to create order:', orderError)
                 throw new Error(`Failed to create order: ${orderError.error || 'Unknown error'}`)
               }
+              
+              // Clear pending order data
+              localStorage.removeItem('pending_order')
+              // Clear cart after successful payment
+              clearCart()
             } catch (error) {
               console.error('Error creating order:', error)
             }
-            
-            // Clear cart after successful payment
-            clearCart()
+          }
           } else {
             console.log('Payment verification failed:', verificationResult)
             setStatus('failed')

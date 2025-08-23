@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from '@/components/Toast'
+import { initializePaystackPayment } from '@/lib/paystack'
 import { 
   User, 
   ShoppingCart, 
@@ -250,9 +251,6 @@ export default function UserDashboardPage() {
     setDonationError('')
 
     try {
-      // For now, we'll proceed without token validation
-      // In a real app, you would validate the user session
-
       const amount = parseFloat(donationForm.amount)
       if (isNaN(amount) || amount <= 0) {
         throw new Error('Please enter a valid amount')
@@ -261,7 +259,7 @@ export default function UserDashboardPage() {
       // Generate unique reference
       const reference = `BOA_ME_DONATION_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-      // Create donation record
+      // Create donation record with pending status
       const donationResponse = await fetch('/api/donations', {
         method: 'POST',
         headers: {
@@ -285,26 +283,30 @@ export default function UserDashboardPage() {
       // Get the created donation data
       const donationData = await donationResponse.json()
 
-      // Add the new donation to the user's donations list
-      const newDonation: UserDonation = {
-        id: donationData.id || `donation_${Date.now()}`,
-        amount: amount,
-        payment_status: 'success',
-        created_at: new Date().toISOString(),
-        message: donationForm.message || undefined
+      // Initialize Paystack payment
+      const paymentData = await initializePaystackPayment(
+        amount,
+        donationForm.donorEmail,
+        reference,
+        `${window.location.origin}/payment/callback`
+      )
+
+      if (paymentData.status && paymentData.data.authorization_url) {
+        // Store donation details in localStorage for callback
+        localStorage.setItem('donation_details', JSON.stringify({
+          amount: amount,
+          donorName: donationForm.isAnonymous ? 'Anonymous' : donationForm.donorName,
+          donorEmail: donationForm.donorEmail,
+          donorMessage: donationForm.message,
+          reference,
+          donationId: donationData.donation.id
+        }))
+        
+        // Redirect to Paystack payment page
+        window.location.href = paymentData.data.authorization_url
+      } else {
+        throw new Error(paymentData.message || 'Payment initialization failed')
       }
-
-      // Update the user's donations list
-      setUserDonations(prev => [newDonation, ...prev])
-
-      // Reset form and show success
-      setDonationStatus('success')
-      setDonationForm(prev => ({ ...prev, amount: '', message: '' }))
-      
-      // Redirect to receipt page after a short delay
-      setTimeout(() => {
-        router.push(`/dashboard/user/receipt/${newDonation.id}`)
-      }, 1500)
       
     } catch (error) {
       console.error('Donation error:', error)
