@@ -64,16 +64,18 @@ export default function ProductDetailPage() {
   const handleAddToCart = () => {
     if (!product) return
 
-    if (!user) {
-      showToast('Please log in to add items to cart', 'warning')
-      router.push('/auth/login?redirectTo=/shop')
-      return
-    }
-
     if (product.stock_quantity < quantity) {
       showToast('Not enough stock available', 'error')
       return
     }
+
+    console.log('Adding to cart:', {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image_url,
+      category: product.category
+    })
 
     addToCart({
       id: product.id,

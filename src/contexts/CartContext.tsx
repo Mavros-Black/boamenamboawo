@@ -71,11 +71,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [cartItems, user])
 
   const addToCart = (product: { id: string; name: string; price: number; image: string; category: string }) => {
+    console.log('CartContext: addToCart called with:', product)
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id)
       
       if (existingItem) {
         // If item exists, increase quantity
+        console.log('CartContext: Updating existing item quantity')
         return prevItems.map(item =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
@@ -83,6 +85,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         )
       } else {
         // If item doesn't exist, add new item
+        console.log('CartContext: Adding new item to cart')
         return [...prevItems, {
           id: product.id,
           name: product.name,

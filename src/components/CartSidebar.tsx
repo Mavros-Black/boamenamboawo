@@ -18,7 +18,7 @@ export default function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
   const [customerEmail, setCustomerEmail] = useState('')
   const { cartItems, updateQuantity, removeFromCart, clearCart, cartTotal } = useCart()
 
-  const removeItem = (itemId: number) => {
+  const removeItem = (itemId: string) => {
     removeFromCart(itemId)
   }
 
