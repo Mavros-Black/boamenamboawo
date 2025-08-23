@@ -43,22 +43,25 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       {/* Product Image */}
-      <div className="relative h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
-        {product.image ? (
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              // Fallback to placeholder if image fails to load
-              const target = e.target as HTMLImageElement;
-              target.src = `https://picsum.photos/400/300?random=${product.id}&blur=2`;
-              target.onerror = null; // Prevent infinite loop
-            }}
-          />
-        ) : (
-          <ShoppingCart className="h-16 w-16 text-gray-400" />
-        )}
+      <Link href={`/shop/${product.id}`} className="block">
+        <div className="relative h-48 bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to placeholder if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.src = `https://picsum.photos/400/300?random=${product.id}&blur=2`;
+                target.onerror = null; // Prevent infinite loop
+              }}
+            />
+          ) : (
+            <ShoppingCart className="h-16 w-16 text-gray-400" />
+          )}
+        </div>
+      </Link>
         {product.featured && (
           <div className="absolute top-2 left-2 bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">
             Featured
@@ -82,9 +85,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="text-sm text-gray-500 mb-2">{product.category}</div>
 
         {/* Title */}
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-          {product.name}
-        </h3>
+        <Link href={`/shop/${product.id}`} className="block">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-green-600 transition-colors cursor-pointer">
+            {product.name}
+          </h3>
+        </Link>
 
         {/* Description */}
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">

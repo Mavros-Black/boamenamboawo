@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabase } from '@/lib/supabase'
 
-// GET - Fetch a single product by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params
+    const { id } = params
 
+    if (!id) {
+      return NextResponse.json(
+        { error: 'Product ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Fetch the product from Supabase
     const { data: product, error } = await supabase
       .from('products')
       .select('*')
@@ -16,22 +23,23 @@ export async function GET(
       .single()
 
     if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Product not found' },
-          { status: 404 }
-        )
-      }
       console.error('Error fetching product:', error)
       return NextResponse.json(
-        { error: 'Failed to fetch product' },
-        { status: 500 }
+        { error: 'Product not found' },
+        { status: 404 }
+      )
+    }
+
+    if (!product) {
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
       )
     }
 
     return NextResponse.json({ product })
   } catch (error) {
-    console.error('Error in GET /api/products/[id]:', error)
+    console.error('Product fetch error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

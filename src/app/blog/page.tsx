@@ -138,7 +138,8 @@ export default function BlogPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredPosts.map((post) => (
                   <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    <div className="h-48 bg-gray-200">
+                    <Link href={`/blog/${post.id}`} className="block">
+                      <div className="h-48 bg-gray-200 cursor-pointer hover:opacity-90 transition-opacity">
                       {post.featured_image ? (
                         <img 
                           src={post.featured_image} 
@@ -170,7 +171,8 @@ export default function BlogPage() {
                           </div>
                         </div>
                       )}
-                    </div>
+                      </div>
+                    </Link>
                     <div className="p-6">
                       <div className="flex items-center text-sm text-gray-500 mb-3">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -183,9 +185,11 @@ export default function BlogPage() {
                         </span>
                       </div>
                       
-                      <h2 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
-                        {post.title}
-                      </h2>
+                      <Link href={`/blog/${post.id}`} className="block">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2 hover:text-green-600 transition-colors cursor-pointer">
+                          {post.title}
+                        </h2>
+                      </Link>
                       
                       <p className="text-gray-600 mb-4 line-clamp-3">
                         {post.excerpt}
@@ -196,10 +200,10 @@ export default function BlogPage() {
                           <User className="h-4 w-4 mr-1" />
                           {post.author}
                         </div>
-                        <button className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center">
+                        <Link href={`/blog/${post.id}`} className="text-green-600 hover:text-green-700 font-medium text-sm flex items-center">
                           Read More
                           <ArrowRight className="h-4 w-4 ml-1" />
-                        </button>
+                        </Link>
                       </div>
                       
                       {post.tags.length > 0 && (
