@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useToast } from '@/components/Toast'
@@ -68,6 +68,7 @@ export default function UserDashboardPage() {
   const [userDonations, setUserDonations] = useState<UserDonation[]>([])
   const [userPrograms, setUserPrograms] = useState<UserProgram[]>([])
   const [editProfile, setEditProfile] = useState(false)
+  const loadingRef = useRef(false)
   const [profileData, setProfileData] = useState({
     name: user?.user_metadata?.name || '',
     email: user?.email || '',
@@ -111,9 +112,8 @@ export default function UserDashboardPage() {
     }))
     
     // Always load data for new user sessions
-    if (user.email) {
+    if (user.email && !loadingRef.current) {
       console.log('Loading user data for:', user.email)
-      setLoading(true)
       setDataLoaded(false) // Reset data loaded state for new user
       loadUserData()
     }
@@ -124,6 +124,7 @@ export default function UserDashboardPage() {
     if (!user) {
       setDataLoaded(false)
       setLoading(false)
+      loadingRef.current = false
       setUserOrders([])
       setUserDonations([])
       setUserPrograms([])
@@ -131,15 +132,17 @@ export default function UserDashboardPage() {
   }, [user])
 
   const loadUserData = async () => {
-    // Prevent multiple simultaneous calls
-    if (loading) {
+    // Prevent multiple simultaneous calls using ref
+    if (loadingRef.current) {
       console.log('Already loading, skipping...')
       return
     }
     
+    // Set loading state at the start
+    loadingRef.current = true
+    setLoading(true)
+    
     try {
-      setLoading(true)
-      
       if (!user?.email) {
         console.error('No user email available')
         return
@@ -183,6 +186,7 @@ export default function UserDashboardPage() {
       console.log('User data loading completed')
       setLoading(false)
       setDataLoaded(true)
+      loadingRef.current = false
     }
   }
 
