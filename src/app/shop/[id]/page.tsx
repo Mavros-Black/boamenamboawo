@@ -79,8 +79,8 @@ export default function ProductDetailPage() {
       id: product.id,
       name: product.name,
       price: product.price,
-      image_url: product.image_url,
-      quantity: quantity
+      image: product.image_url,
+      category: product.category
     })
 
     showToast(`${product.name} added to cart!`, 'success')

@@ -9,7 +9,7 @@ import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 
 // Helper function to get placeholder image if database image is missing
-const getPlaceholderImage = (productId: number): string => {
+const getPlaceholderImage = (productId: string): string => {
   return `https://picsum.photos/400/300?random=${productId}&blur=2`
 }
 
@@ -36,12 +36,12 @@ export default function ShopPage() {
         
                         // Transform API data to match the expected format
         const transformedProducts = data.products.map((product: any) => ({
-          id: parseInt(product.id) || Math.random(),
+          id: product.id, // Keep as string (UUID)
           name: product.name,
           description: product.description || '',
           price: parseFloat(product.price),
           originalPrice: parseFloat(product.price) * 1.2, // 20% markup for display
-          image: product.image_url || getPlaceholderImage(parseInt(product.id) || Math.random()),
+          image: product.image_url || getPlaceholderImage(product.id),
           category: product.category || 'General',
           rating: 4.5, // Default rating
           reviews: Math.floor(Math.random() * 50) + 5, // Random reviews

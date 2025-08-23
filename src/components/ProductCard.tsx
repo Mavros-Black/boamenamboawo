@@ -7,7 +7,7 @@ import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface Product {
-  id: number
+  id: string
   name: string
   description: string
   price: number
