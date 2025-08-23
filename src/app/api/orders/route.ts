@@ -125,25 +125,29 @@ export async function POST(request: NextRequest) {
     }
 
     // Save order to Supabase
+    const orderData = {
+      customer_email,
+      customer_name,
+      customer_phone,
+      customer_address,
+      customer_city: customer_city || '',
+      customer_state: customer_state || '',
+      customer_zip_code: customer_zip_code || '',
+      customer_country: customer_country || 'Ghana',
+      items,
+      subtotal,
+      shipping,
+      total,
+      payment_reference,
+      status: 'pending',
+      payment_status: 'pending'
+    }
+
+    console.log('Inserting order data:', orderData)
+
     const { data: order, error } = await supabase
       .from('orders')
-      .insert({
-        customer_email,
-        customer_name,
-        customer_phone,
-        customer_address,
-        customer_city: customer_city || '',
-        customer_state: customer_state || '',
-        customer_zip_code: customer_zip_code || '',
-        customer_country: customer_country || 'Ghana',
-        items,
-        subtotal,
-        shipping,
-        total,
-        payment_reference,
-        status: 'pending',
-        payment_status: 'pending'
-      })
+      .insert(orderData)
       .select()
       .single()
 

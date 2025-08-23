@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { verifyPayment } from '@/lib/paystack'
 
 function PaymentCallbackContent() {
@@ -13,6 +14,7 @@ function PaymentCallbackContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { clearCart } = useCart()
+  const { user } = useAuth()
 
   useEffect(() => {
     const verifyPaymentStatus = async () => {
@@ -48,7 +50,7 @@ function PaymentCallbackContent() {
               if (pendingOrderData) {
                 const savedOrder = JSON.parse(pendingOrderData)
                 orderData = {
-                  customer_email: verificationResult.data.customer.email,
+                  customer_email: user?.email || verificationResult.data.customer.email,
                   customer_name: `${savedOrder.shippingInfo.firstName} ${savedOrder.shippingInfo.lastName}`,
                   customer_phone: verificationResult.data.customer.phone,
                   customer_address: savedOrder.shippingInfo.address,
@@ -67,7 +69,7 @@ function PaymentCallbackContent() {
               } else {
                 // Fallback if no saved order data
                 orderData = {
-                  customer_email: verificationResult.data.customer.email,
+                  customer_email: user?.email || verificationResult.data.customer.email,
                   customer_name: `${verificationResult.data.customer.first_name} ${verificationResult.data.customer.last_name}`,
                   customer_phone: verificationResult.data.customer.phone,
                   customer_address: 'Address not available',
@@ -94,7 +96,8 @@ function PaymentCallbackContent() {
               })
 
               if (orderResponse.ok) {
-                console.log('Order created successfully')
+                const orderResult = await orderResponse.json()
+                console.log('Order created successfully:', orderResult)
                 
                 // Update order status to completed
                 const statusResponse = await fetch('/api/orders/update-status', {
@@ -111,10 +114,13 @@ function PaymentCallbackContent() {
                 if (statusResponse.ok) {
                   console.log('Order status updated successfully')
                 } else {
-                  console.error('Failed to update order status')
+                  const statusError = await statusResponse.json()
+                  console.error('Failed to update order status:', statusError)
                 }
               } else {
-                console.error('Failed to create order')
+                const orderError = await orderResponse.json()
+                console.error('Failed to create order:', orderError)
+                throw new Error(`Failed to create order: ${orderError.error || 'Unknown error'}`)
               }
             } catch (error) {
               console.error('Error creating order:', error)
