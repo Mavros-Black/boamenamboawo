@@ -35,11 +35,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
       // User-specific cart key
       const cartKey = `cart_${user.id}`
       const savedCart = localStorage.getItem(cartKey)
+      const guestCart = localStorage.getItem('guest_cart')
+      
       if (savedCart) {
         try {
-          setCartItems(JSON.parse(savedCart))
+          const userCartItems = JSON.parse(savedCart)
+          setCartItems(userCartItems)
         } catch (error) {
-          console.error('Error loading cart from localStorage:', error)
+          console.error('Error loading user cart from localStorage:', error)
+          setCartItems([])
+        }
+      } else if (guestCart) {
+        // If user has no saved cart but has guest cart, merge it
+        try {
+          const guestItems = JSON.parse(guestCart)
+          setCartItems(guestItems)
+          // Save the guest cart as user cart
+          localStorage.setItem(cartKey, guestCart)
+          // Clear guest cart after merging
+          localStorage.removeItem('guest_cart')
+        } catch (error) {
+          console.error('Error merging guest cart:', error)
+          setCartItems([])
         }
       } else {
         setCartItems([])
@@ -52,6 +69,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           setCartItems(JSON.parse(guestCart))
         } catch (error) {
           console.error('Error loading guest cart from localStorage:', error)
+          setCartItems([])
         }
       } else {
         setCartItems([])
@@ -69,6 +87,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('guest_cart', JSON.stringify(cartItems))
     }
   }, [cartItems, user])
+
+  // Handle user logout - save current cart as guest cart
+  useEffect(() => {
+    if (!user && cartItems.length > 0) {
+      // When user logs out, save their cart as guest cart
+      localStorage.setItem('guest_cart', JSON.stringify(cartItems))
+    }
+  }, [user, cartItems])
 
   const addToCart = (product: { id: string; name: string; price: number; image: string; category: string }) => {
     setCartItems(prevItems => {
