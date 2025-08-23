@@ -42,6 +42,14 @@ function RegisterForm() {
     const result = await register(name, email, password)
     
     if (result.success) {
+      if (result.requiresConfirmation) {
+        // Show confirmation message instead of redirecting
+        setError('') // Clear any previous errors
+        // You could show a success message here instead of an error
+        alert(result.message || 'Please check your email to confirm your account.')
+        return
+      }
+      
       // Check for redirect parameters first
       const redirectTo = searchParams.get('redirectTo')
       const redirect = searchParams.get('redirect')

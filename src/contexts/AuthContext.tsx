@@ -8,7 +8,7 @@ interface AuthContextType {
   user: AuthUser | null
   loading: boolean
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string; user?: AuthUser }>
-  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string; user?: AuthUser }>
+  register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string; user?: AuthUser; requiresConfirmation?: boolean; message?: string }>
   logout: () => Promise<void>
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>
   updateProfile: (updates: { name?: string; role?: 'admin' | 'user' }) => Promise<{ success: boolean; error?: string }>
@@ -199,7 +199,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           data: {
             name,
             role: 'user' // Default role for new users
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback`
         }
       })
 
@@ -209,15 +210,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (data.user) {
-        const authUser: AuthUser = {
-          id: data.user.id,
-          email: data.user.email!,
-          user_metadata: data.user.user_metadata,
-          created_at: data.user.created_at,
-          updated_at: data.user.updated_at || data.user.created_at
+        // Check if email confirmation is required
+        if (data.user.email_confirmed_at) {
+          // User is confirmed, set them as logged in
+          const authUser: AuthUser = {
+            id: data.user.id,
+            email: data.user.email!,
+            user_metadata: data.user.user_metadata,
+            created_at: data.user.created_at,
+            updated_at: data.user.updated_at || data.user.created_at
+          }
+          console.log('✅ Registration successful for:', authUser.email)
+          setUser(authUser)
+        } else {
+          // User needs to confirm email
+          console.log('📧 Registration successful, email confirmation required for:', data.user.email)
+          return { 
+            success: true, 
+            user: null, 
+            requiresConfirmation: true,
+            message: 'Please check your email to confirm your account before logging in.'
+          }
         }
-        console.log('✅ Registration successful for:', authUser.email)
-        setUser(authUser)
         
 
         
