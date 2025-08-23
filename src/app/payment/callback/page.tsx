@@ -178,7 +178,7 @@ function PaymentCallbackContent() {
                 Continue Shopping
               </Link>
               <Link
-                href="/dashboard"
+                href="/dashboard/user"
                 className="block w-full bg-gray-600 text-white py-3 px-4 rounded-md hover:bg-gray-700 transition-colors"
               >
                 Go to Dashboard

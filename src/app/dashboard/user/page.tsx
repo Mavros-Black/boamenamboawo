@@ -110,9 +110,14 @@ export default function UserDashboardPage() {
       donorEmail: user.email || ''
     }))
     
-    // Load user data only if we have a user email and haven't loaded data yet
+    // Reset loading state when user changes
     if (user.email && !dataLoaded) {
+      console.log('Loading user data for:', user.email)
+      setLoading(true)
       loadUserData()
+    } else if (user.email && dataLoaded) {
+      // If data is already loaded, ensure loading is false
+      setLoading(false)
     }
   }, [user, searchParams, router])
 
@@ -165,6 +170,7 @@ export default function UserDashboardPage() {
       setUserDonations([])
       setUserPrograms([])
     } finally {
+      console.log('User data loading completed')
       setLoading(false)
       setDataLoaded(true)
     }

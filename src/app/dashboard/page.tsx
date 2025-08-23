@@ -89,6 +89,12 @@ export default function DashboardPage() {
       return
     }
 
+    // Redirect regular users to user dashboard
+    if (user.user_metadata?.role !== 'admin') {
+      router.push('/dashboard/user')
+      return
+    }
+
     fetchDashboardData()
   }, [user, router])
 
