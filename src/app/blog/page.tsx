@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Calendar, User, Tag, Search, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 interface BlogPost {
   id: string
