@@ -40,10 +40,27 @@ export default function BlogDetailPage() {
         }
         
         const data = await response.json()
-        setPost(data.post)
+        
+        // Transform the API response to match our interface
+        const transformedPost: BlogPost = {
+          id: data.post.id,
+          title: data.post.title,
+          content: data.post.content,
+          excerpt: data.post.excerpt || '',
+          image_url: data.post.image_url || '',
+          author_name: data.post.author || data.post.author_name || 'Admin User',
+          author_id: data.post.author_id || '',
+          category: data.post.category || 'General',
+          tags: Array.isArray(data.post.tags) ? data.post.tags : [],
+          is_published: data.post.status === 'published' || data.post.is_published || true,
+          created_at: data.post.created_at,
+          updated_at: data.post.updated_at
+        }
+        
+        setPost(transformedPost)
         
         // Calculate reading time (average 200 words per minute)
-        const wordCount = data.post.content.split(' ').length
+        const wordCount = transformedPost.content.split(' ').length
         setReadingTime(Math.ceil(wordCount / 200))
       } catch (error) {
         console.error('Error fetching blog post:', error)
