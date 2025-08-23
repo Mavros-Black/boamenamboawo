@@ -6,9 +6,11 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useCart } from '@/contexts/CartContext'
 import { getUserName } from '@/utils/auth'
 import { Menu, X, ShoppingCart, Heart, User, LogOut } from 'lucide-react'
+import CartSidebar from './CartSidebar'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isCartOpen, setIsCartOpen] = useState(false)
   const { user, logout } = useAuth()
   const { cartCount } = useCart()
 
@@ -60,8 +62,8 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link
-              href="/shop"
+            <button
+              onClick={() => setIsCartOpen(true)}
               className="text-gray-700 hover:text-green-600 p-2 rounded-md relative"
             >
               <ShoppingCart className="h-5 w-5" />
@@ -70,7 +72,7 @@ const Navbar = () => {
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
             
             {user ? (
               <div className="flex items-center space-x-4">
@@ -141,12 +143,14 @@ const Navbar = () => {
             ))}
             
             {/* Cart in mobile menu - show for all users */}
-            <Link
-              href="/shop"
-              className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between"
-              onClick={() => setIsMenuOpen(false)}
+            <button
+              onClick={() => {
+                setIsCartOpen(true)
+                setIsMenuOpen(false)
+              }}
+              className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between w-full text-left"
             >
-              <span>Shop</span>
+              <span>Cart</span>
               <div className="flex items-center space-x-2">
                 <ShoppingCart className="h-5 w-5" />
                 {cartCount > 0 && (
@@ -155,7 +159,7 @@ const Navbar = () => {
                   </span>
                 )}
               </div>
-            </Link>
+            </button>
             
             {user ? (
               <div className="pt-4 pb-3 border-t border-gray-200 space-y-2">
@@ -197,6 +201,9 @@ const Navbar = () => {
           </div>
         </div>
       )}
+      
+      {/* Cart Sidebar */}
+      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </nav>
   )
 }
