@@ -63,6 +63,7 @@ export default function UserDashboardPage() {
   const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState('overview')
   const [loading, setLoading] = useState(true)
+  const [dataLoaded, setDataLoaded] = useState(false)
   const [userOrders, setUserOrders] = useState<UserOrder[]>([])
   const [userDonations, setUserDonations] = useState<UserDonation[]>([])
   const [userPrograms, setUserPrograms] = useState<UserProgram[]>([])
@@ -102,22 +103,25 @@ export default function UserDashboardPage() {
       setActiveTab(tab)
     }
     
-    // Load user data
-    loadUserData()
+    // Update donation form with user data
+    setDonationForm(prev => ({
+      ...prev,
+      donorName: user.user_metadata?.name || '',
+      donorEmail: user.email || ''
+    }))
+    
+    // Load user data only if we have a user email and haven't loaded data yet
+    if (user.email && !dataLoaded) {
+      loadUserData()
+    }
   }, [user, searchParams, router])
 
-  // Update donation form when user data changes
-  useEffect(() => {
-    if (user) {
-      setDonationForm(prev => ({
-        ...prev,
-        donorName: user.user_metadata?.name || '',
-        donorEmail: user.email || ''
-      }))
-    }
-  }, [user])
-
   const loadUserData = async () => {
+    // Prevent multiple simultaneous calls
+    if (loading) {
+      return
+    }
+    
     try {
       setLoading(true)
       
@@ -162,6 +166,7 @@ export default function UserDashboardPage() {
       setUserPrograms([])
     } finally {
       setLoading(false)
+      setDataLoaded(true)
     }
   }
 
