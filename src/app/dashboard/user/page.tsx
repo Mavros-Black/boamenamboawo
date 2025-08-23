@@ -110,20 +110,30 @@ export default function UserDashboardPage() {
       donorEmail: user.email || ''
     }))
     
-    // Reset loading state when user changes
-    if (user.email && !dataLoaded) {
+    // Always load data for new user sessions
+    if (user.email) {
       console.log('Loading user data for:', user.email)
       setLoading(true)
+      setDataLoaded(false) // Reset data loaded state for new user
       loadUserData()
-    } else if (user.email && dataLoaded) {
-      // If data is already loaded, ensure loading is false
-      setLoading(false)
     }
   }, [user, searchParams, router])
+
+  // Reset data loaded state when user logs out
+  useEffect(() => {
+    if (!user) {
+      setDataLoaded(false)
+      setLoading(false)
+      setUserOrders([])
+      setUserDonations([])
+      setUserPrograms([])
+    }
+  }, [user])
 
   const loadUserData = async () => {
     // Prevent multiple simultaneous calls
     if (loading) {
+      console.log('Already loading, skipping...')
       return
     }
     
