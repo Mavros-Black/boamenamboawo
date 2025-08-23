@@ -43,25 +43,26 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       {/* Product Image */}
-      <Link href={`/shop/${product.id}`} className="block">
-        <div className="relative h-48 bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // Fallback to placeholder if image fails to load
-                const target = e.target as HTMLImageElement;
-                target.src = `https://picsum.photos/400/300?random=${product.id}&blur=2`;
-                target.onerror = null; // Prevent infinite loop
-              }}
-            />
-          ) : (
-            <ShoppingCart className="h-16 w-16 text-gray-400" />
-          )}
-        </div>
-      </Link>
+      <div className="relative h-48 bg-gray-200 flex items-center justify-center overflow-hidden">
+        <Link href={`/shop/${product.id}`} className="block w-full h-full">
+          <div className="w-full h-full cursor-pointer hover:opacity-90 transition-opacity">
+            {product.image ? (
+              <img
+                src={product.image}
+                alt={product.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to placeholder if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.src = `https://picsum.photos/400/300?random=${product.id}&blur=2`;
+                  target.onerror = null; // Prevent infinite loop
+                }}
+              />
+            ) : (
+              <ShoppingCart className="h-16 w-16 text-gray-400" />
+            )}
+          </div>
+        </Link>
         {product.featured && (
           <div className="absolute top-2 left-2 bg-green-600 text-white px-2 py-1 rounded text-xs font-medium">
             Featured
