@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useToast } from '@/components/Toast'
 import { 
   User, 
   ShoppingCart, 
@@ -59,6 +60,7 @@ export default function UserDashboardPage() {
   const { user } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { showToast } = useToast()
   const [activeTab, setActiveTab] = useState('overview')
   const [loading, setLoading] = useState(true)
   const [userOrders, setUserOrders] = useState<UserOrder[]>([])
@@ -68,12 +70,12 @@ export default function UserDashboardPage() {
   const [profileData, setProfileData] = useState({
     name: user?.user_metadata?.name || '',
     email: user?.email || '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    zipCode: '',
-    country: 'Ghana'
+    phone: user?.user_metadata?.phone || '',
+    address: user?.user_metadata?.address || '',
+    city: user?.user_metadata?.city || '',
+    state: user?.user_metadata?.state || '',
+    zipCode: user?.user_metadata?.zipCode || '',
+    country: user?.user_metadata?.country || 'Ghana'
   })
 
   // Donation state
@@ -81,8 +83,8 @@ export default function UserDashboardPage() {
   const [donationStatus, setDonationStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
   const [donationError, setDonationError] = useState('')
   const [donationForm, setDonationForm] = useState({
-    donorName: '',
-    donorEmail: '',
+    donorName: user?.user_metadata?.name || '',
+    donorEmail: user?.email || '',
     amount: '',
     message: '',
     isAnonymous: false
@@ -104,50 +106,60 @@ export default function UserDashboardPage() {
     loadUserData()
   }, [user, searchParams, router])
 
+  // Update donation form when user data changes
+  useEffect(() => {
+    if (user) {
+      setDonationForm(prev => ({
+        ...prev,
+        donorName: user.user_metadata?.name || '',
+        donorEmail: user.email || ''
+      }))
+    }
+  }, [user])
+
   const loadUserData = async () => {
     try {
       setLoading(true)
       
-      // Load orders, donations, and programs
-      // For now, we'll use mock data
-      const mockOrders: UserOrder[] = [
-        {
-          id: '1',
-          items: [{ name: 'Youth Empowerment Book', price: 25, quantity: 1 }],
-          total: 25,
-          status: 'completed',
-          created_at: '2024-01-15T10:30:00Z'
-        }
-      ]
-      
-      const mockDonations: UserDonation[] = [
-        {
-          id: '1',
-          amount: 50,
-          payment_status: 'success',
-          created_at: '2024-01-10T14:20:00Z',
-          message: 'Supporting youth education'
-        }
-      ]
-      
-      const mockPrograms: UserProgram[] = [
-        {
-          id: '1',
-          title: 'Leadership Development',
-          category: 'Education',
-          start_date: '2024-02-01',
-          end_date: '2024-05-01',
-          status: 'enrolled',
-          progress: 75
-        }
-      ]
-      
-      setUserOrders(mockOrders)
-      setUserDonations(mockDonations)
+      if (!user?.email) {
+        console.error('No user email available')
+        return
+      }
+
+      // Load real data from API endpoints
+      const [ordersResponse, donationsResponse] = await Promise.all([
+        fetch(`/api/user/orders?email=${encodeURIComponent(user.email)}`),
+        fetch(`/api/user/donations?email=${encodeURIComponent(user.email)}`)
+      ])
+
+      // Load orders
+      if (ordersResponse.ok) {
+        const { orders } = await ordersResponse.json()
+        setUserOrders(orders || [])
+      } else {
+        console.error('Failed to load orders')
+        setUserOrders([])
+      }
+
+      // Load donations
+      if (donationsResponse.ok) {
+        const { donations } = await donationsResponse.json()
+        setUserDonations(donations || [])
+      } else {
+        console.error('Failed to load donations')
+        setUserDonations([])
+      }
+
+      // For now, programs are still mock data since we don't have a programs enrollment system
+      const mockPrograms: UserProgram[] = []
       setUserPrograms(mockPrograms)
       
     } catch (error) {
       console.error('Error loading user data:', error)
+      // Set empty arrays on error
+      setUserOrders([])
+      setUserDonations([])
+      setUserPrograms([])
     } finally {
       setLoading(false)
     }
@@ -155,13 +167,43 @@ export default function UserDashboardPage() {
 
   const handleProfileUpdate = async () => {
     try {
-      // For now, we'll just show a success message
-      // In a real app, you would update the user profile in Supabase
-      alert('Profile updated successfully!')
+      if (!user?.email) {
+        throw new Error('No user email available')
+      }
+
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.email,
+          profileData
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update profile')
+      }
+
+      const result = await response.json()
+      
+      // Update local user data
+      if (result.user) {
+        // You might want to update the auth context here
+        console.log('Profile updated successfully:', result.user)
+      }
+
+      // Show success message using toast
+      showToast('success', 'Profile updated successfully!')
+      
       setEditProfile(false)
     } catch (error) {
       console.error('Error updating profile:', error)
-      alert(`Error updating profile: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      
+      showToast('error', `Error updating profile: ${errorMessage}`)
     }
   }
 
