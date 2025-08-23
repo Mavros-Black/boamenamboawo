@@ -17,31 +17,31 @@ function PaymentCallbackContent() {
   const { user } = useAuth()
 
   useEffect(() => {
-    const verifyPaymentStatus = async () => {
-      try {
-        const reference = searchParams.get('reference')
-        const trxref = searchParams.get('trxref')
+      const verifyPaymentStatus = async () => {
+    try {
+      const reference = searchParams.get('reference')
+      const trxref = searchParams.get('trxref')
 
-        if (!reference && !trxref) {
-          setStatus('failed')
-          setMessage('No payment reference found')
-          return
-        }
+      if (!reference && !trxref) {
+        setStatus('failed')
+        setMessage('No payment reference found')
+        return
+      }
 
-        const paymentRef = reference || trxref
+      const paymentRef = reference || trxref
 
-        if (paymentRef) {
-          console.log('Verifying payment for reference:', paymentRef)
+      if (paymentRef) {
+        console.log('Verifying payment for reference:', paymentRef)
+        
+        // Verify the payment with Paystack
+        const verificationResult = await verifyPayment(paymentRef)
+
+        if (verificationResult.status && verificationResult.data.status === 'success') {
+          console.log('Payment verification successful:', verificationResult)
+          setStatus('success')
+          setMessage('Payment completed successfully!')
           
-          // Verify the payment with Paystack
-          const verificationResult = await verifyPayment(paymentRef)
-
-          if (verificationResult.status && verificationResult.data.status === 'success') {
-            console.log('Payment verification successful')
-            setStatus('success')
-            setMessage('Payment completed successfully!')
-            
-                      // Check if this is a donation or order payment
+          // Check if this is a donation or order payment
           const donationData = localStorage.getItem('donation_details')
           const pendingOrderData = localStorage.getItem('pending_order')
           
@@ -51,7 +51,7 @@ function PaymentCallbackContent() {
               const donation = JSON.parse(donationData)
               console.log('Processing donation payment:', donation)
               
-              // Update donation status to success
+              // Update donation status to success based on Paystack response
               const donationResponse = await fetch('/api/donations/update-status', {
                 method: 'POST',
                 headers: {
@@ -145,21 +145,21 @@ function PaymentCallbackContent() {
               console.error('Error creating order:', error)
             }
           }
-          } else {
-            console.log('Payment verification failed:', verificationResult)
-            setStatus('failed')
-            setMessage('Payment verification failed or payment was not successful')
-          }
         } else {
+          console.log('Payment verification failed:', verificationResult)
           setStatus('failed')
-          setMessage('Invalid payment reference')
+          setMessage('Payment verification failed or payment was not successful')
         }
-      } catch (error) {
-        console.error('Payment verification error:', error)
+      } else {
         setStatus('failed')
-        setMessage('Error verifying payment. Please contact support.')
+        setMessage('Invalid payment reference')
       }
+    } catch (error) {
+      console.error('Payment verification error:', error)
+      setStatus('failed')
+      setMessage('Error verifying payment. Please contact support.')
     }
+  }
 
     // Only run once when component mounts
     if (status === 'loading') {

@@ -17,8 +17,7 @@ export async function POST(request: NextRequest) {
     const { data, error } = await supabase
       .from('donations')
       .update({ 
-        payment_status: status,
-        updated_at: new Date().toISOString()
+        payment_status: status
       })
       .eq('payment_reference', reference)
       .select()
