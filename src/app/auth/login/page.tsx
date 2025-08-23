@@ -36,7 +36,7 @@ function LoginForm() {
 
   // Redirect already logged-in users
   useEffect(() => {
-    if (user && !authLoading) {
+    if (user && !authLoading && !redirecting) {
       console.log('✅ User already logged in, redirecting...')
       const redirectTo = searchParams.get('redirectTo')
       const redirect = searchParams.get('redirect')
@@ -44,7 +44,7 @@ function LoginForm() {
       console.log('🔄 Redirecting to:', redirectPath)
       router.push(redirectPath)
     }
-  }, [user, authLoading, searchParams, router])
+  }, [user, authLoading, redirecting, searchParams, router])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
