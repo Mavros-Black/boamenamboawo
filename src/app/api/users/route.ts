@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
     // Get users from Supabase Auth instead of custom users table
-    const { data: { users }, error } = await supabase.auth.admin.listUsers()
+    const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers()
 
     if (error) {
       console.error('Error fetching users:', error)

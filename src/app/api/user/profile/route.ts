@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 
 export async function PUT(request: NextRequest) {
   try {
@@ -14,7 +14,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // First, get the user by email to get their ID
-    const { data: { users }, error: listError } = await supabase.auth.admin.listUsers()
+    const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers()
     
     if (listError) {
       console.error('Error listing users:', listError)
@@ -24,18 +24,24 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    console.log('📧 Looking for user with email:', email)
+    console.log('👥 Total users found:', users?.length || 0)
+    
     // Find the user by email
     const user = users?.find(u => u.email === email)
     
     if (!user) {
+      console.error('❌ User not found in list. Available emails:', users?.map(u => u.email))
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       )
     }
 
+    console.log('✅ User found:', user.id)
+
     // Update user metadata in Supabase Auth using the correct user ID
-    const { data, error } = await supabase.auth.admin.updateUserById(
+    const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
       user.id,
       {
         user_metadata: {
