@@ -5,7 +5,6 @@ import { useParams, useRouter } from 'next/navigation'
 import { ArrowLeft, ShoppingCart, Heart, Star, Truck, Shield, RefreshCw } from 'lucide-react'
 import { useCart } from '@/contexts/CartContext'
 import { useAuth } from '@/contexts/AuthContext'
-import { useToast } from '@/components/Toast'
 import Link from 'next/link'
 
 interface Product {
@@ -27,7 +26,6 @@ export default function ProductDetailPage() {
   const router = useRouter()
   const { addToCart } = useCart()
   const { user } = useAuth()
-  const { showToast } = useToast()
   
   const [product, setProduct] = useState<Product | null>(null)
   const [loading, setLoading] = useState(true)
@@ -65,7 +63,6 @@ export default function ProductDetailPage() {
     if (!product) return
 
     if (product.stock_quantity < quantity) {
-      showToast('Not enough stock available', 'error')
       return
     }
 
@@ -78,8 +75,6 @@ export default function ProductDetailPage() {
       image: product.image_url,
       category: product.category
     })
-
-    showToast(`${product.name} added to cart!`, 'success')
   }
 
   const handleQuantityChange = (newQuantity: number) => {
