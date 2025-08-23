@@ -60,19 +60,17 @@ const Navbar = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {user && (
-              <Link
-                href="/shop"
-                className="text-gray-700 hover:text-green-600 p-2 rounded-md relative"
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Link>
-            )}
+            <Link
+              href="/shop"
+              className="text-gray-700 hover:text-green-600 p-2 rounded-md relative"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </Link>
             
             {user ? (
               <div className="flex items-center space-x-4">
@@ -142,24 +140,22 @@ const Navbar = () => {
               </Link>
             ))}
             
-            {/* Cart in mobile menu - only show for logged in users */}
-            {user && (
-              <Link
-                href="/shop"
-                className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span>Shop</span>
-                <div className="flex items-center space-x-2">
-                  <ShoppingCart className="h-5 w-5" />
-                  {cartCount > 0 && (
-                    <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
-                </div>
-              </Link>
-            )}
+            {/* Cart in mobile menu - show for all users */}
+            <Link
+              href="/shop"
+              className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <span>Shop</span>
+              <div className="flex items-center space-x-2">
+                <ShoppingCart className="h-5 w-5" />
+                {cartCount > 0 && (
+                  <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+            </Link>
             
             {user ? (
               <div className="pt-4 pb-3 border-t border-gray-200 space-y-2">
