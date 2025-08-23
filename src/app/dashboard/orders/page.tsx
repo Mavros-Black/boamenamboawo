@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { ShoppingCart, Search, Eye, Download } from 'lucide-react'
+import { ShoppingCart, Search, Eye, Download, CheckCircle, Clock, XCircle } from 'lucide-react'
 
 interface Order {
   id: string
@@ -20,6 +20,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null)
 
   useEffect(() => {
     const userRole = user?.user_metadata?.role || 'user'
@@ -42,6 +43,39 @@ export default function OrdersPage() {
       console.error('Error fetching orders:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const updateOrderStatus = async (orderId: string, newStatus: string) => {
+    setUpdatingStatus(orderId)
+    try {
+      const response = await fetch('/api/orders/update-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId,
+          status: newStatus
+        })
+      })
+
+      if (response.ok) {
+        // Update the order in the local state
+        setOrders(prevOrders => 
+          prevOrders.map(order => 
+            order.id === orderId 
+              ? { ...order, status: newStatus }
+              : order
+          )
+        )
+      } else {
+        console.error('Failed to update order status')
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error)
+    } finally {
+      setUpdatingStatus(null)
     }
   }
 
@@ -108,7 +142,7 @@ export default function OrdersPage() {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Completed</p>
               <p className="text-2xl font-bold text-gray-900">
-                {filteredOrders.filter(o => o.status === 'paid').length}
+                {filteredOrders.filter(o => o.status === 'completed').length}
               </p>
             </div>
           </div>
@@ -168,15 +202,35 @@ export default function OrdersPage() {
                     ₵{order.total.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      order.status === 'paid' 
-                        ? 'bg-green-100 text-green-800' 
-                        : order.status === 'pending'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {order.status}
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        order.status === 'completed' 
+                          ? 'bg-green-100 text-green-800' 
+                          : order.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : order.status === 'processing'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {order.status}
+                      </span>
+                      <select
+                        value={order.status}
+                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                        disabled={updatingStatus === order.id}
+                        className={`text-xs border border-gray-300 rounded px-2 py-1 focus:ring-1 focus:ring-green-500 focus:border-green-500 ${
+                          updatingStatus === order.id ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
+                      {updatingStatus === order.id && (
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-green-600"></div>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(order.created_at).toLocaleDateString()}

@@ -4,11 +4,18 @@ import { supabase } from '@/lib/supabase'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { reference, status } = body
+    const { reference, status, orderId } = body
 
-    if (!reference || !status) {
+    if (!status) {
       return NextResponse.json(
-        { error: 'Reference and status are required' },
+        { error: 'Status is required' },
+        { status: 400 }
+      )
+    }
+
+    if (!reference && !orderId) {
+      return NextResponse.json(
+        { error: 'Either reference or orderId is required' },
         { status: 400 }
       )
     }
@@ -24,15 +31,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Update order status in Supabase
-    const { data, error } = await supabase
+    let query = supabase
       .from('orders')
       .update({ 
         status: status,
         payment_status: status === 'completed' ? 'success' : 'pending',
         updated_at: new Date().toISOString()
       })
-      .eq('payment_reference', reference)
-      .select()
+
+    // Use orderId if provided, otherwise use reference
+    if (orderId) {
+      query = query.eq('id', orderId)
+    } else {
+      query = query.eq('payment_reference', reference)
+    }
+
+    const { data, error } = await query.select()
 
     if (error) {
       console.error('Error updating order status:', error)
