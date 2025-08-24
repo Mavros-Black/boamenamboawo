@@ -1,23 +1,19 @@
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { CheckCircle, XCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
-function AuthCallbackContent() {
+export default function AuthCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading')
   const [message, setMessage] = useState('')
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Get redirect URL from search params if available
-        const redirectTo = searchParams.get('redirectTo')
-        
         const { data, error } = await supabase.auth.getSession()
         
         if (error) {
@@ -32,13 +28,9 @@ function AuthCallbackContent() {
           setStatus('success')
           setMessage('Email confirmed successfully! You can now log in.')
           
-          // Redirect to specified URL or login after a short delay
+          // Redirect to login after a short delay
           setTimeout(() => {
-            if (redirectTo) {
-              router.push(redirectTo)
-            } else {
-              router.push('/auth/login')
-            }
+            router.push('/auth/login')
           }, 3000)
         } else {
           setStatus('error')
@@ -52,7 +44,7 @@ function AuthCallbackContent() {
     }
 
     handleAuthCallback()
-  }, [router, searchParams])
+  }, [router])
 
   if (status === 'loading') {
     return (
@@ -112,21 +104,5 @@ function AuthCallbackContent() {
         )}
       </div>
     </div>
-  )
-}
-
-export default function AuthCallbackPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="mx-auto h-12 w-12 text-green-600 animate-spin mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Loading...</h2>
-          <p className="text-gray-600">Please wait...</p>
-        </div>
-      </div>
-    }>
-      <AuthCallbackContent />
-    </Suspense>
   )
 }
