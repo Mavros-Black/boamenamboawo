@@ -15,6 +15,9 @@ function AuthCallbackContent() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
+        // Get redirect URL from search params if available
+        const redirectTo = searchParams.get('redirectTo')
+        
         const { data, error } = await supabase.auth.getSession()
         
         if (error) {
@@ -29,9 +32,13 @@ function AuthCallbackContent() {
           setStatus('success')
           setMessage('Email confirmed successfully! You can now log in.')
           
-          // Redirect to login after a short delay
+          // Redirect to specified URL or login after a short delay
           setTimeout(() => {
-            router.push('/auth/login')
+            if (redirectTo) {
+              router.push(redirectTo)
+            } else {
+              router.push('/auth/login')
+            }
           }, 3000)
         } else {
           setStatus('error')
@@ -45,7 +52,7 @@ function AuthCallbackContent() {
     }
 
     handleAuthCallback()
-  }, [router])
+  }, [router, searchParams])
 
   if (status === 'loading') {
     return (
