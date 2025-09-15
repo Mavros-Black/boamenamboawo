@@ -343,10 +343,10 @@ export default function Home() {
                 <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
-                href="/shop"
+                href="/programs"
                 className="group border-3 border-white text-white hover:bg-white hover:text-green-600 px-10 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl inline-flex items-center justify-center backdrop-blur-sm bg-white/10"
               >
-                <span className="mr-2">Visit Shop</span>
+                <span className="mr-2">View Programs</span>
                 <ArrowRight className="h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>

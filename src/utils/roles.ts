@@ -43,7 +43,7 @@ export const hasPermission = (userRole: UserRole, resource: string, action: stri
   const rolePermissions = PERMISSIONS[userRole.toUpperCase() as keyof typeof PERMISSIONS]
   if (!rolePermissions) return false
 
-  const resourcePermissions = rolePermissions[resource as keyof typeof rolePermissions]
+  const resourcePermissions = rolePermissions[resource as keyof typeof rolePermissions] as readonly string[] | undefined
   if (!resourcePermissions) return false
 
   return resourcePermissions.includes(action)
@@ -58,6 +58,7 @@ export const canAccessPage = (userRole: UserRole, page: string): boolean => {
     '/dashboard/finance': userRole === ROLES.ADMIN,
     '/dashboard/orders': userRole === ROLES.ADMIN,
     '/dashboard/donations': userRole === ROLES.ADMIN,
+    '/dashboard/events': userRole === ROLES.ADMIN, // Admin-only events management
     '/dashboard/programs': true, // All users can view programs
     '/dashboard/blog': true, // All users can view blog
     '/dashboard/donate': true, // All users can donate

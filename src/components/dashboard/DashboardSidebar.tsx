@@ -24,7 +24,7 @@ export default function DashboardSidebar() {
   const { user } = useAuth()
   const pathname = usePathname()
 
-  const isAdmin = user?.role === 'admin'
+  const isAdmin = user?.user_metadata?.role === 'admin'
 
   const navigationItems = [
     {
@@ -32,6 +32,12 @@ export default function DashboardSidebar() {
       href: '/dashboard',
       icon: Home,
       showFor: ['admin', 'user'],
+    },
+    {
+      name: 'Events',
+      href: '/dashboard/events',
+      icon: Calendar,
+      showFor: ['admin'],
     },
     {
       name: 'Users',
@@ -70,12 +76,6 @@ export default function DashboardSidebar() {
       showFor: ['admin'],
     },
     {
-      name: 'Events',
-      href: '/dashboard/events',
-      icon: Calendar,
-      showFor: ['admin', 'user'],
-    },
-    {
       name: 'Finance',
       href: '/dashboard/finance',
       icon: DollarSign,
@@ -90,23 +90,29 @@ export default function DashboardSidebar() {
   ]
 
   const filteredNavigation = navigationItems.filter(item =>
-    item.showFor.includes(user?.role || 'user')
+    item.showFor.includes(user?.user_metadata?.role || 'user')
   )
 
   const NavItem = ({ item }: { item: typeof navigationItems[0] }) => {
     const isActive = pathname === item.href
+    const isEventsItem = item.name === 'Events'
     return (
       <Link
         href={item.href}
         className={`flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
           isActive
             ? 'bg-green-100 text-green-700'
+            : isEventsItem && process.env.NODE_ENV === 'development'
+            ? 'text-red-600 hover:bg-red-50 hover:text-red-900 border-2 border-red-300'
             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
         }`}
         onClick={() => setIsMobileMenuOpen(false)}
       >
         <item.icon className="mr-3 h-5 w-5" />
         {item.name}
+        {isEventsItem && process.env.NODE_ENV === 'development' && (
+          <span className="ml-2 text-xs bg-red-100 text-red-800 px-1 rounded">DEBUG</span>
+        )}
       </Link>
     )
   }
@@ -144,6 +150,15 @@ export default function DashboardSidebar() {
         <div className="flex flex-col h-full">
           {/* Navigation */}
           <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+            {/* Debug info - remove in production */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mb-4 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs">
+                <p>Role: {user?.user_metadata?.role || 'undefined'}</p>
+                <p>Items shown: {filteredNavigation.length}</p>
+                <p>Items: {filteredNavigation.map(item => item.name).join(', ')}</p>
+                <p>Events in list: {navigationItems.find(item => item.name === 'Events') ? 'YES' : 'NO'}</p>
+              </div>
+            )}
             {filteredNavigation.map((item) => (
               <NavItem key={item.name} item={item} />
             ))}
@@ -156,8 +171,8 @@ export default function DashboardSidebar() {
                 <Users className="h-5 w-5 text-white" />
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">{user?.name}</p>
-                <p className="text-xs text-gray-500 capitalize">{user?.role}</p>
+                <p className="text-sm font-medium text-gray-700">{user?.user_metadata?.name || user?.email}</p>
+                <p className="text-xs text-gray-500 capitalize">{user?.user_metadata?.role || 'user'}</p>
               </div>
             </div>
           </div>

@@ -32,6 +32,7 @@ export const canAccessPage = (user: AuthUser | null, page: string): boolean => {
     '/dashboard/finance': role === 'admin',
     '/dashboard/orders': role === 'admin',
     '/dashboard/donations': role === 'admin',
+    '/dashboard/events': role === 'admin', // Admin-only events management
     '/dashboard/programs': true, // All users can view programs
     '/dashboard/blog': true, // All users can view blog
     '/dashboard/donate': true, // All users can donate

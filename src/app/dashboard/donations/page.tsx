@@ -35,40 +35,55 @@ export default function DonationsPage() {
 
   const fetchDonations = async () => {
     try {
-      // For now, use mock data since Supabase might not be configured
-      const mockDonations = [
-        {
-          id: "4563634e-9b39-4778-9d50-467e948e3241",
-          donor_name: "Anonymous",
-          donor_email: "kusi@exam.com",
-          amount: 100,
-          payment_reference: "BOA_ME_DONATION_1755783743734_2hzj5dny5",
-          payment_status: "pending",
-          created_at: "2025-08-21T13:42:25.389951+00:00"
-        },
-        {
-          id: "3723477e-7d03-4051-9f62-dd2fb6ce669b",
-          donor_name: "Test Auth",
-          donor_email: "test@auth.com",
-          amount: 15,
-          payment_reference: "AUTH_TEST_001",
-          payment_status: "pending",
-          created_at: "2025-08-21T12:36:19.838413+00:00"
-        },
-        {
-          id: "5ad5c825-52e6-4451-8df9-1da14a7fc6ba",
-          donor_name: "John Doe",
-          donor_email: "john@example.com",
-          amount: 50,
-          payment_reference: "ADMIN_TEST_001",
-          payment_status: "pending",
-          created_at: "2025-08-21T12:29:01.341252+00:00"
-        }
-      ]
+      setLoading(true)
       
-      setDonations(mockDonations)
+      // Fetch real donations from database
+      const response = await fetch('/api/donations')
+      
+      if (response.ok) {
+        const data = await response.json()
+        setDonations(data.donations || [])
+        console.log('Fetched donations from database:', data.donations)
+      } else {
+        console.error('Failed to fetch donations from database')
+        
+        // Fallback to mock data for development
+        const mockDonations = [
+          {
+            id: "4563634e-9b39-4778-9d50-467e948e3241",
+            donor_name: "Anonymous",
+            donor_email: "kusi@exam.com",
+            amount: 100,
+            payment_reference: "BOA_ME_DONATION_1755783743734_2hzj5dny5",
+            payment_status: "pending",
+            created_at: "2025-08-21T13:42:25.389951+00:00"
+          },
+          {
+            id: "3723477e-7d03-4051-9f62-dd2fb6ce669b",
+            donor_name: "Test Auth",
+            donor_email: "test@auth.com",
+            amount: 15,
+            payment_reference: "AUTH_TEST_001",
+            payment_status: "pending",
+            created_at: "2025-08-21T12:36:19.838413+00:00"
+          },
+          {
+            id: "5ad5c825-52e6-4451-8df9-1da14a7fc6ba",
+            donor_name: "John Doe",
+            donor_email: "john@example.com",
+            amount: 50,
+            payment_reference: "ADMIN_TEST_001",
+            payment_status: "pending",
+            created_at: "2025-08-21T12:29:01.341252+00:00"
+          }
+        ]
+        
+        setDonations(mockDonations)
+        console.log('Using mock donations data')
+      }
     } catch (error) {
       console.error('Error fetching donations:', error)
+      setDonations([])
     } finally {
       setLoading(false)
     }

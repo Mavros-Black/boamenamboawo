@@ -91,6 +91,39 @@ export default function ShopPage() {
         </div>
       </section>
 
+      {/* Temporary Shop Disabled Notice */}
+      <section className="py-12 bg-yellow-50 border-t border-b border-yellow-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-100 rounded-full mb-4">
+              <ShoppingCart className="h-8 w-8 text-yellow-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Shop Temporarily Unavailable</h2>
+            <p className="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
+              Our shop is currently undergoing updates to serve you better. 
+              We apologize for any inconvenience and appreciate your patience.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link
+                href="/donate"
+                className="bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 transition-colors font-medium"
+              >
+                Support Our Mission
+              </Link>
+              <Link
+                href="/programs"
+                className="bg-gray-600 text-white px-6 py-3 rounded-md hover:bg-gray-700 transition-colors font-medium"
+              >
+                View Our Programs
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Products Section - Commented out temporarily */}
+      {/*
+
       {/* Shop Content */}
       <section className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -206,8 +239,9 @@ export default function ShopPage() {
         </div>
       </section>
 
-             {/* Cart Sidebar - show for all users */}
+             {/* Cart Sidebar - show for all users
        <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+       */}
 
       {/* Impact Section */}
       <section className="py-16 bg-gray-50">

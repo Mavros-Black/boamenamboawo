@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+  <!-- Background Circle -->
+  <circle cx="8" cy="8" r="8" fill="#10B981"/>
+  
+  <!-- Simplified Community Emblem for Small Favicon -->
+  <g transform="translate(8, 8)">
+    <!-- Outer Circle of Connected Figures - Very Simplified -->
+    <g>
+      <!-- Top -->
+      <circle cx="0" cy="-5" r="1" fill="#FFFFFF"/>
+      <!-- Right -->
+      <circle cx="4" cy="0" r="1" fill="#FFFFFF"/>
+      <!-- Bottom -->
+      <circle cx="0" cy="5" r="1" fill="#FFFFFF"/>
+      <!-- Left -->
+      <circle cx="-4" cy="0" r="1" fill="#FFFFFF"/>
+      <!-- Diagonal positions -->
+      <circle cx="3" cy="-3" r="1" fill="#FFFFFF"/>
+      <circle cx="3" cy="3" r="1" fill="#FFFFFF"/>
+      <circle cx="-3" cy="3" r="1" fill="#FFFFFF"/>
+      <circle cx="-3" cy="-3" r="1" fill="#FFFFFF"/>
+    </g>
+    
+    <!-- Central Figures - Very Simple -->
+    <g>
+      <!-- Central supporting figures -->
+      <circle cx="-1" cy="0" r="1.5" fill="#FFFFFF"/>
+      <circle cx="2" cy="1" r="1" fill="#FFFFFF"/>
+    </g>
+  </g>
+</svg>

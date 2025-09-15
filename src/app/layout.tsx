@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/Navbar'
-import Footer from '@/components/Footer'
+import ConditionalLayout from '@/components/ConditionalLayout'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { CartProvider } from '@/contexts/CartContext'
 import { ToastProvider } from '@/components/Toast'
@@ -13,6 +12,52 @@ export const metadata: Metadata = {
   title: 'Boa Me Youth Empowerment',
   description: 'Empowering Youth, Building Futures. Join us in creating opportunities for young people in Ghana.',
   keywords: 'NGO, youth empowerment, Ghana, education, community development',
+  icons: {
+    icon: [
+      {
+        url: '/favicon-16x16.svg',
+        type: 'image/svg+xml',
+        sizes: '16x16',
+      },
+      {
+        url: '/favicon-32x32.svg',
+        type: 'image/svg+xml',
+        sizes: '32x32',
+      },
+      {
+        url: '/favicon.svg',
+        type: 'image/svg+xml',
+        sizes: '64x64',
+      },
+    ],
+    shortcut: '/favicon.svg',
+    apple: {
+      url: '/favicon.svg',
+      type: 'image/svg+xml',
+    },
+  },
+  openGraph: {
+    title: 'Boa Me Youth Empowerment',
+    description: 'Empowering Youth, Building Futures. Join us in creating opportunities for young people in Ghana.',
+    url: 'https://boame.org',
+    siteName: 'Boa Me Youth Empowerment',
+    images: [
+      {
+        url: '/logo.svg',
+        width: 400,
+        height: 120,
+        alt: 'Boa Me Youth Empowerment Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Boa Me Youth Empowerment',
+    description: 'Empowering Youth, Building Futures. Join us in creating opportunities for young people in Ghana.',
+    images: ['/logo.svg'],
+  },
 }
 
 export default function RootLayout({
@@ -26,9 +71,7 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <ToastProvider>
-              <Navbar />
-              {children}
-              <Footer />
+              <ConditionalLayout>{children}</ConditionalLayout>
             </ToastProvider>
           </CartProvider>
         </AuthProvider>

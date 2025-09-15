@@ -16,6 +16,7 @@ interface Program {
   start_date: string
   end_date: string
   created_at: string
+  image_url?: string
 }
 
 export default function ProgramsPage() {
@@ -95,13 +96,11 @@ export default function ProgramsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">{programs.length}</div>
+              <div className="text-3xl font-bold text-green-600 mb-2">25</div>
               <div className="text-gray-600">Total Programs</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">
-                {programs.reduce((total, program) => total + program.current_participants, 0)}+
-              </div>
+              <div className="text-3xl font-bold text-green-600 mb-2">15,000+</div>
               <div className="text-gray-600">Youth Served</div>
             </div>
             <div className="text-center">
@@ -111,9 +110,7 @@ export default function ProgramsPage() {
               <div className="text-gray-600">Active Programs</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl font-bold text-green-600 mb-2">
-                {programs.length > 0 ? Math.round((programs.filter(p => p.status === 'completed').length / programs.length) * 100) : 0}%
-              </div>
+              <div className="text-3xl font-bold text-green-600 mb-2">85%</div>
               <div className="text-gray-600">Completion Rate</div>
             </div>
           </div>

@@ -221,21 +221,21 @@ export default function AboutPage() {
       {/* Contact Section */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-green-600 text-white p-8 rounded-lg text-center">
+          <div className="bg-green-600 text-black p-8 rounded-lg text-center">
             <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
             <p className="text-xl mb-8 max-w-2xl mx-auto">
               Want to learn more about our work or get involved? We&apos;d love to hear from you.
             </p>
             <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center text-black">
                 <Mail className="h-6 w-6 mr-3" />
-                <span>info@boamenameboawo.com</span>
+                <span>boamenameboawo@gmail.com</span>
               </div>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center text-black">
                 <Phone className="h-6 w-6 mr-3" />
-                <span>+233 XX XXX XXXX</span>
+                <span>+233 54 481 8418</span>
               </div>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center text-black">
                 <MapPin className="h-6 w-6 mr-3" />
                 <span>Accra, Ghana</span>
               </div>

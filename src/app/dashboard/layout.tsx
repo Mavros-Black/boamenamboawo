@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { canAccessPage, getUnauthorizedRedirect } from '@/utils/auth'
+import DashboardTopNav from '@/components/DashboardTopNav'
 import RoleBadge from '@/components/RoleBadge'
 import { 
   Home, 
@@ -19,7 +20,8 @@ import {
   User,
   LogOut,
   Menu,
-  X
+  X,
+  Calendar
 } from 'lucide-react'
 
 export default function DashboardLayout({
@@ -76,6 +78,7 @@ export default function DashboardLayout({
 
   // Admin-only navigation
   const adminNavigation = [
+    { name: 'Events Management', href: '/dashboard/events', icon: Calendar, current: false },
     { name: 'Shop Management', href: '/dashboard/shop', icon: Package, current: false },
     { name: 'Analytics', href: '/dashboard/analytics', icon: BarChart3, current: false },
     { name: 'Finance', href: '/dashboard/finance', icon: DollarSign, current: false },
@@ -107,6 +110,12 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Dashboard Top Navigation */}
+      <DashboardTopNav 
+        onMenuClick={() => setSidebarOpen(true)}
+        showMobileMenuButton={!isUserDashboard}
+      />
+
       {/* Only show sidebar if NOT on user dashboard */}
       {!isUserDashboard && (
         <>
@@ -118,7 +127,7 @@ export default function DashboardLayout({
                 <img 
                   src="/logo.svg" 
                   alt="BOA ME Youth Empowerment" 
-                  className="h-8 w-auto"
+                  className="h-10 w-auto"
                 />
                 <button
                   onClick={() => setSidebarOpen(false)}
@@ -210,7 +219,7 @@ export default function DashboardLayout({
                 <img 
                   src="/logo.svg" 
                   alt="BOA ME Youth Empowerment" 
-                  className="h-8 w-auto"
+                  className="h-10 w-auto"
                 />
               </div>
               <nav className="flex-1 space-y-1 px-2 py-4">
@@ -283,7 +292,7 @@ export default function DashboardLayout({
                     <User className="h-4 w-4 text-white" />
                   </div>
                   <div className="ml-3">
-                    <p className="text-sm font-medium text-gray-700">{user.name}</p>
+                    <p className="text-sm font-medium text-gray-700">{user.user_metadata?.name || user.email}</p>
                     <p className="text-xs text-gray-500">{user.email}</p>
                     <RoleBadge role={user?.user_metadata?.role || 'user'} size="sm" />
                   </div>
@@ -303,34 +312,6 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <div className={isUserDashboard ? "" : "lg:pl-64"}>
-        {/* Mobile header - only show if NOT on user dashboard */}
-        {!isUserDashboard && (
-          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:hidden">
-            <button
-              type="button"
-              className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <div className="flex flex-1"></div>
-              <div className="flex items-center gap-x-4 lg:gap-x-6">
-                <div className="flex items-center gap-x-4">
-                  <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                    <User className="h-4 w-4 text-white" />
-                  </div>
-                  <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-gray-700">{user.name}</p>
-                    <p className="text-xs text-gray-500">{user.email}</p>
-                    <RoleBadge role={user?.user_metadata?.role || 'user'} size="sm" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Page content */}
         <main className={isUserDashboard ? "" : "py-6"}>
           <div className={isUserDashboard ? "" : "mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"}>

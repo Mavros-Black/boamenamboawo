@@ -41,11 +41,45 @@ function PaymentCallbackContent() {
           setStatus('success')
           setMessage('Payment completed successfully!')
           
-          // Check if this is a donation or order payment
+          // Check payment type from metadata or localStorage
           const donationData = localStorage.getItem('donation_details')
           const pendingOrderData = localStorage.getItem('pending_order')
+          const isEventTicket = verificationResult.data.metadata?.custom_fields?.some(
+            (field: any) => field.variable_name === 'event_ticket' && field.value === 'true'
+          )
           
-          if (donationData) {
+          if (isEventTicket) {
+            // Handle event ticket payment
+            try {
+              console.log('Processing event ticket payment:', paymentRef)
+              
+              // Update ticket purchase status using dedicated endpoint
+              const ticketResponse = await fetch('/api/events/verify-payment', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  reference: paymentRef
+                })
+              })
+
+              if (ticketResponse.ok) {
+                const ticketData = await ticketResponse.json()
+                console.log('Ticket purchase confirmed successfully:', ticketData)
+                
+                // Redirect to ticket confirmation page
+                setTimeout(() => {
+                  router.push(`/events/confirmation?reference=${paymentRef}`)
+                }, 2000)
+              } else {
+                const ticketError = await ticketResponse.json()
+                console.error('Failed to confirm ticket purchase:', ticketError)
+              }
+            } catch (error) {
+              console.error('Error processing ticket purchase:', error)
+            }
+          } else if (donationData) {
             // Handle donation payment
             try {
               const donation = JSON.parse(donationData)
@@ -63,6 +97,10 @@ function PaymentCallbackContent() {
                 })
               })
 
+              console.log('Donation update response status:', donationResponse.status)
+              const donationResult = await donationResponse.json()
+              console.log('Donation update response data:', donationResult)
+
               if (donationResponse.ok) {
                 console.log('Donation status updated successfully')
                 // Clear donation data
@@ -73,11 +111,15 @@ function PaymentCallbackContent() {
                   router.push(`/dashboard/user/receipt/${donation.donationId}`)
                 }, 2000)
               } else {
-                const donationError = await donationResponse.json()
-                console.error('Failed to update donation status:', donationError)
+                console.error('Failed to update donation status:', donationResult)
+                // Set error status but don't block the flow completely
+                setStatus('failed')
+                setMessage(`Failed to update donation status: ${donationResult.error || 'Unknown error'}`)
               }
             } catch (error) {
               console.error('Error processing donation:', error)
+              setStatus('failed')
+              setMessage('Error processing donation payment. Please contact support.')
             }
           } else if (pendingOrderData) {
             // Handle order payment
@@ -195,6 +237,12 @@ function PaymentCallbackContent() {
                 Continue Shopping
               </Link>
               <Link
+                href="/events"
+                className="block w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                View Events
+              </Link>
+              <Link
                 href="/dashboard/user"
                 className="block w-full bg-gray-600 text-white py-3 px-4 rounded-md hover:bg-gray-700 transition-colors"
               >
@@ -213,6 +261,12 @@ function PaymentCallbackContent() {
                 className="block w-full bg-green-600 text-white py-3 px-4 rounded-md hover:bg-green-700 transition-colors"
               >
                 Try Again
+              </Link>
+              <Link
+                href="/events"
+                className="block w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors"
+              >
+                View Events
               </Link>
               <Link
                 href="/shop"

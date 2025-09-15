@@ -10,8 +10,11 @@ export default function ContactPage() {
     subject: '',
     message: '',
   })
+  const [newsletterEmail, setNewsletterEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isNewsletterSubmitting, setIsNewsletterSubmitting] = useState(false)
+  const [isNewsletterSubmitted, setIsNewsletterSubmitted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,7 +30,8 @@ export default function ContactPage() {
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          message: `${formData.subject ? `Subject: ${formData.subject}\n\n` : ''}${formData.message}`
+          subject: formData.subject,
+          message: formData.message
         })
       })
 
@@ -53,17 +57,45 @@ export default function ContactPage() {
     })
   }
 
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsNewsletterSubmitting(true)
+
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: newsletterEmail })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to subscribe')
+      }
+      
+      setIsNewsletterSubmitted(true)
+      setNewsletterEmail('')
+    } catch (error) {
+      console.error('Newsletter subscription failed:', error)
+      alert('Failed to subscribe. Please try again.')
+    } finally {
+      setIsNewsletterSubmitting(false)
+    }
+  }
+
   const contactInfo = [
     {
       icon: Mail,
       title: 'Email',
-      value: 'info@boamenameboawo.com',
+      value: 'boamenameboawo@gmail.com',
       description: 'Send us an email anytime',
     },
     {
       icon: Phone,
       title: 'Phone',
-      value: '+233 XX XXX XXXX',
+      value: '+233 54 481 8418',
       description: 'Mon-Fri from 8am to 6pm',
     },
     {
@@ -326,18 +358,43 @@ export default function ContactPage() {
             Subscribe to our newsletter to receive updates about our programs, 
             success stories, and ways to get involved.
           </p>
-          <div className="max-w-md mx-auto">
-            <div className="flex">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-l-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-400"
-              />
-              <button className="bg-green-800 hover:bg-green-900 px-6 py-3 rounded-r-md font-medium transition-colors">
-                Subscribe
+          {isNewsletterSubmitted ? (
+            <div className="max-w-md mx-auto">
+              <CheckCircle className="h-12 w-12 mx-auto mb-4" />
+              <p className="text-lg font-medium mb-4">Successfully subscribed!</p>
+              <p className="mb-4">Thank you for subscribing to our newsletter.</p>
+              <button
+                onClick={() => setIsNewsletterSubmitted(false)}
+                className="bg-green-800 hover:bg-green-900 px-6 py-2 rounded-md font-medium transition-colors"
+              >
+                Subscribe Another Email
               </button>
             </div>
-          </div>
+          ) : (
+            <form onSubmit={handleNewsletterSubmit} className="max-w-md mx-auto">
+              <div className="flex">
+                <input
+                  type="email"
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  required
+                  className="flex-1 px-4 py-3 rounded-l-md text-gray-900 focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+                <button 
+                  type="submit"
+                  disabled={isNewsletterSubmitting}
+                  className={`px-6 py-3 rounded-r-md font-medium transition-colors ${
+                    isNewsletterSubmitting
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-green-800 hover:bg-green-900'
+                  }`}
+                >
+                  {isNewsletterSubmitting ? 'Subscribing...' : 'Subscribe'}
+                </button>
+              </div>
+            </form>
+          )}
         </div>
       </section>
     </div>

@@ -115,6 +115,41 @@ CREATE TABLE IF NOT EXISTS newsletter_subscriptions (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 9. EVENTS TABLE
+CREATE TABLE IF NOT EXISTS events (
+  id VARCHAR(255) PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  start_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  end_date TIMESTAMP WITH TIME ZONE NOT NULL,
+  location VARCHAR(255),
+  venue VARCHAR(255),
+  status VARCHAR(20) DEFAULT 'published' CHECK (status IN ('draft', 'published', 'ongoing', 'completed', 'cancelled')),
+  ticket_price DECIMAL(10,2) NOT NULL DEFAULT 0,
+  max_tickets INTEGER NOT NULL DEFAULT 0,
+  available_tickets INTEGER NOT NULL DEFAULT 0,
+  image_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 10. TICKET PURCHASES TABLE
+CREATE TABLE IF NOT EXISTS ticket_purchases (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  event_id VARCHAR(255) REFERENCES events(id) ON DELETE CASCADE,
+  customer_name VARCHAR(255) NOT NULL,
+  customer_email VARCHAR(255) NOT NULL,
+  customer_phone VARCHAR(20),
+  quantity INTEGER NOT NULL DEFAULT 1,
+  total_amount DECIMAL(10,2) NOT NULL,
+  payment_reference VARCHAR(255) UNIQUE NOT NULL,
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled')),
+  payment_status VARCHAR(20) DEFAULT 'pending' CHECK (payment_status IN ('pending', 'success', 'failed')),
+  verified_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- =====================================================
 -- INDEXES FOR BETTER PERFORMANCE
 -- =====================================================
@@ -157,6 +192,13 @@ CREATE INDEX IF NOT EXISTS idx_contacts_created_at ON contacts(created_at);
 CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscriptions(email);
 CREATE INDEX IF NOT EXISTS idx_newsletter_is_active ON newsletter_subscriptions(is_active);
 
+-- Events indexes
+CREATE INDEX IF NOT EXISTS idx_events_status ON events(status);
+CREATE INDEX IF NOT EXISTS idx_events_start_date ON events(start_date);
+CREATE INDEX IF NOT EXISTS idx_ticket_purchases_event_id ON ticket_purchases(event_id);
+CREATE INDEX IF NOT EXISTS idx_ticket_purchases_email ON ticket_purchases(customer_email);
+CREATE INDEX IF NOT EXISTS idx_ticket_purchases_payment_reference ON ticket_purchases(payment_reference);
+
 -- =====================================================
 -- ROW LEVEL SECURITY (RLS)
 -- =====================================================
@@ -170,8 +212,48 @@ ALTER TABLE programs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE newsletter_subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE ticket_purchases ENABLE ROW LEVEL SECURITY;
 
 -- Create policies (basic - allow all operations for now)
+-- Drop existing policies first to avoid conflicts
+DO $$
+BEGIN
+    -- Only drop policies if tables exist
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users') THEN
+        DROP POLICY IF EXISTS "Allow all operations on users" ON users;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'products') THEN
+        DROP POLICY IF EXISTS "Allow all operations on products" ON products;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'donations') THEN
+        DROP POLICY IF EXISTS "Allow all operations on donations" ON donations;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'orders') THEN
+        DROP POLICY IF EXISTS "Allow all operations on orders" ON orders;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'programs') THEN
+        DROP POLICY IF EXISTS "Allow all operations on programs" ON programs;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'blog_posts') THEN
+        DROP POLICY IF EXISTS "Allow all operations on blog_posts" ON blog_posts;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'contacts') THEN
+        DROP POLICY IF EXISTS "Allow all operations on contacts" ON contacts;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'newsletter_subscriptions') THEN
+        DROP POLICY IF EXISTS "Allow all operations on newsletter_subscriptions" ON newsletter_subscriptions;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'events') THEN
+        DROP POLICY IF EXISTS "Allow all operations on events" ON events;
+        DROP POLICY IF EXISTS "Public can view published events" ON events;
+    END IF;
+    IF EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'ticket_purchases') THEN
+        DROP POLICY IF EXISTS "Allow all operations on ticket_purchases" ON ticket_purchases;
+    END IF;
+END $$;
+
+-- Create new policies
 CREATE POLICY "Allow all operations on users" ON users FOR ALL USING (true);
 CREATE POLICY "Allow all operations on products" ON products FOR ALL USING (true);
 CREATE POLICY "Allow all operations on donations" ON donations FOR ALL USING (true);
@@ -180,6 +262,9 @@ CREATE POLICY "Allow all operations on programs" ON programs FOR ALL USING (true
 CREATE POLICY "Allow all operations on blog_posts" ON blog_posts FOR ALL USING (true);
 CREATE POLICY "Allow all operations on contacts" ON contacts FOR ALL USING (true);
 CREATE POLICY "Allow all operations on newsletter_subscriptions" ON newsletter_subscriptions FOR ALL USING (true);
+CREATE POLICY "Public can view published events" ON events FOR SELECT USING (status = 'published');
+CREATE POLICY "Allow all operations on events" ON events FOR ALL USING (true);
+CREATE POLICY "Allow all operations on ticket_purchases" ON ticket_purchases FOR ALL USING (true);
 
 -- =====================================================
 -- SAMPLE DATA INSERTION
@@ -212,3 +297,12 @@ SELECT * FROM (VALUES
   ('Healthcare Access in Rural Areas', 'Access to healthcare is a fundamental human right...', 'Addressing healthcare challenges in rural communities', 'published', NOW())
 ) AS v(title, content, excerpt, status, published_at)
 WHERE NOT EXISTS (SELECT 1 FROM blog_posts WHERE title = v.title);
+
+-- Insert sample events (if not exists)
+INSERT INTO events (id, title, description, start_date, end_date, location, venue, status, ticket_price, max_tickets, available_tickets)
+SELECT * FROM (VALUES
+  ('youth-leadership-summit-2024', 'Youth Leadership Summit 2024', 'Empowering the next generation of leaders through interactive workshops and networking.', TIMESTAMP WITH TIME ZONE '2024-11-15 09:00:00+00', TIMESTAMP WITH TIME ZONE '2024-11-15 17:00:00+00', 'Accra', 'Accra International Conference Centre', 'published', 75::DECIMAL(10,2), 300, 180),
+  ('digital-skills-workshop', 'Digital Skills Workshop', 'Learn essential digital skills for the modern workplace including coding and digital marketing.', TIMESTAMP WITH TIME ZONE '2024-12-08 10:00:00+00', TIMESTAMP WITH TIME ZONE '2024-12-08 16:00:00+00', 'Kumasi', 'University of Ghana, Legon', 'published', 30::DECIMAL(10,2), 50, 45),
+  ('community-impact-awards', 'Community Impact Awards', 'Celebrating young changemakers and their contributions to community development.', TIMESTAMP WITH TIME ZONE '2024-12-20 18:00:00+00', TIMESTAMP WITH TIME ZONE '2024-12-20 22:00:00+00', 'Accra', 'Kempinski Hotel Gold Coast City', 'published', 50::DECIMAL(10,2), 200, 0)
+) AS v(id, title, description, start_date, end_date, location, venue, status, ticket_price, max_tickets, available_tickets)
+WHERE NOT EXISTS (SELECT 1 FROM events WHERE id = v.id);

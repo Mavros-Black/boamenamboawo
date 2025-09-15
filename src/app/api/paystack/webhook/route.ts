@@ -5,6 +5,11 @@ import crypto from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
+    if (!supabase) {
+      console.error('Supabase client not configured')
+      return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
+    }
+
     const body = await request.text()
     const signature = request.headers.get('x-paystack-signature')
 
@@ -53,12 +58,15 @@ async function handleSuccessfulPayment(data: { reference: string; amount: number
 
     console.log('Processing successful payment:', { reference, amount, status })
 
+    if (!supabase) {
+      throw new Error('Supabase client not configured')
+    }
+
     // Update donation status in database
     const { data: donation, error } = await supabase
       .from('donations')
       .update({ 
-        payment_status: 'success',
-        updated_at: new Date().toISOString()
+        payment_status: 'success'
       })
       .eq('payment_reference', reference)
       .select()
@@ -82,12 +90,15 @@ async function handleFailedPayment(data: { reference: string; status: string }) 
 
     console.log('Processing failed payment:', { reference, status })
 
+    if (!supabase) {
+      throw new Error('Supabase client not configured')
+    }
+
     // Update donation status in database
     const { data: donation, error } = await supabase
       .from('donations')
       .update({ 
-        payment_status: 'failed',
-        updated_at: new Date().toISOString()
+        payment_status: 'failed'
       })
       .eq('payment_reference', reference)
       .select()
