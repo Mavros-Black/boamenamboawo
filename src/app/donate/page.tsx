@@ -14,32 +14,32 @@ export default function DonatePage() {
   const [isProcessing, setIsProcessing] = useState(false)
 
   const presetAmounts = [
-    { value: '10', label: '$10' },
-    { value: '25', label: '$25' },
-    { value: '50', label: '$50' },
-    { value: '100', label: '$100' },
-    { value: '250', label: '$250' },
-    { value: '500', label: '$500' },
+    { value: '10', label: '₵10' },
+    { value: '25', label: '₵25' },
+    { value: '50', label: '₵50' },
+    { value: '100', label: '₵100' },
+    { value: '250', label: '₵250' },
+    { value: '500', label: '₵500' },
   ]
 
   const impactExamples = [
     {
-      amount: '$25',
+      amount: '₵25',
       impact: 'Provides school supplies for one student for a month',
       icon: '📚',
     },
     {
-      amount: '$50',
+      amount: '₵50',
       impact: 'Funds a week of skills training for a youth',
       icon: '🛠️',
     },
     {
-      amount: '$100',
+      amount: '₵100',
       impact: 'Supports a student\'s education for three months',
       icon: '🎓',
     },
     {
-      amount: '$250',
+      amount: '₵250',
       impact: 'Helps launch a youth-led community project',
       icon: '🏘️',
     },
@@ -168,7 +168,7 @@ export default function DonatePage() {
                   </div>
                   
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">₵</span>
                     <input
                       type="number"
                       placeholder="Or enter custom amount"

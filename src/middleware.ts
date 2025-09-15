@@ -3,6 +3,12 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
+  // Handle favicon.ico requests
+  if (req.nextUrl.pathname === '/favicon.ico') {
+    // Redirect to the SVG favicon
+    return NextResponse.redirect(new URL('/favicon.svg', req.url))
+  }
+  
   // Temporarily disable middleware for testing
   return NextResponse.next()
   
@@ -135,6 +141,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api|_next/static|_next/image|public).*)',
   ],
 }

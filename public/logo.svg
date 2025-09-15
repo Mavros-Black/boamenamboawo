@@ -109,10 +109,10 @@
   <!-- Text Elements -->
   <g>
     <!-- Main Name "BOA ME" -->
-    <text x="140" y="45" class="logo-text" font-size="32" fill="#FFFFFF">BOA ME</text>
+    <text x="140" y="55" class="logo-text" font-size="32" fill="#000000">BOA ME</text>
     
     <!-- Tagline "Youth Empowerment" -->
-    <text x="140" y="70" class="tagline-text" font-size="16" fill="#FFFFFF">Youth Empowerment</text>
+    <text x="140" y="85" class="tagline-text" font-size="16" fill="#000000">Youth Empowerment</text>
   </g>
 </svg>
 
