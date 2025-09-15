@@ -1,24 +1,22 @@
 'use client'
+'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
-import { useCart } from '@/contexts/CartContext'
-import { getUserName } from '@/utils/auth'
-import { Menu, X, ShoppingCart, Heart, User, LogOut } from 'lucide-react'
-import CartSidebar from './CartSidebar'
+import { Menu, X, User, LogOut, ChevronDown } from 'lucide-react'
+// import CartSidebar from './CartSidebar'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
   const { user, logout } = useAuth()
-  const { cartCount } = useCart()
 
   const navItems = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Programs', href: '/programs' },
-    { name: 'Shop', href: '/shop' },
+    // { name: 'Shop', href: '/shop' }, // Temporarily disabled
     { name: 'Blog', href: '/blog' },
     { name: 'Donate', href: '/donate' },
     { name: 'Contact', href: '/contact' },
@@ -27,8 +25,6 @@ const Navbar = () => {
   const handleLogout = async () => {
     await logout()
   }
-
-  const userName = getUserName(user)
 
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
@@ -61,40 +57,50 @@ const Navbar = () => {
           </div>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="text-gray-700 hover:text-green-600 p-2 rounded-md relative"
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </button>
-            
+          <div className="hidden md:flex items-center space-x-4">            
             {user ? (
-              <div className="flex items-center space-x-4">
-                <Link
-                  href="/dashboard"
-                  className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+              <div className="relative">
+                <button
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="flex items-center space-x-2 text-gray-700 hover:text-green-600 px-3 py-2 rounded-md transition-colors"
                 >
-                  Dashboard
-                </Link>
-                <div className="flex items-center space-x-2">
                   <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
                     <User className="h-3 w-3 text-white" />
                   </div>
-                  <span className="text-sm text-gray-700">{userName}</span>
-                  <button
-                    onClick={handleLogout}
-                    className="text-gray-700 hover:text-red-600 p-1 rounded-md"
-                    title="Logout"
-                  >
-                    <LogOut className="h-4 w-4" />
-                  </button>
-                </div>
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+                
+                {/* Dropdown Menu */}
+                {isUserDropdownOpen && (
+                  <>
+                    {/* Backdrop */}
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setIsUserDropdownOpen(false)}
+                    ></div>
+                    
+                    {/* Dropdown Content */}
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border">
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                        onClick={() => setIsUserDropdownOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <button
+                        onClick={() => {
+                          handleLogout()
+                          setIsUserDropdownOpen(false)
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors"
+                      >
+                        <LogOut className="h-4 w-4 mr-2 inline" />
+                        Logout
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             ) : (
               <>
@@ -142,38 +148,17 @@ const Navbar = () => {
               </Link>
             ))}
             
-            {/* Cart in mobile menu - show for all users */}
-            <button
-              onClick={() => {
-                setIsCartOpen(true)
-                setIsMenuOpen(false)
-              }}
-              className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between w-full text-left"
-            >
-              <span>Cart</span>
-              <div className="flex items-center space-x-2">
-                <ShoppingCart className="h-5 w-5" />
-                {cartCount > 0 && (
-                  <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </div>
-            </button>
-            
             {user ? (
-              <div className="pt-4 pb-3 border-t border-gray-200 space-y-2">
-                <Link
-                  href="/dashboard"
-                  className="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Dashboard
-                </Link>
+              <div className="pt-4 pb-3 border-t border-gray-200">
                 <div className="flex items-center justify-between px-3 py-2">
-                  <span className="text-gray-700">{userName}</span>
+                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                    <User className="h-3 w-3 text-white" />
+                  </div>
                   <button
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout()
+                      setIsMenuOpen(false)
+                    }}
                     className="text-red-600 hover:text-red-800"
                   >
                     <LogOut className="h-4 w-4" />
@@ -202,8 +187,8 @@ const Navbar = () => {
         </div>
       )}
       
-      {/* Cart Sidebar */}
-      <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      {/* Cart Sidebar - Hidden for now */}
+      {/* <CartSidebar isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} /> */}
     </nav>
   )
 }
