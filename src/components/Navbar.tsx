@@ -41,118 +41,134 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-4 w-full z-50 transition-all duration-300">
-      {/* Transparent left side */}
-      <div className="absolute left-0 top-0 h-16 w-[10%] bg-transparent"></div>
-      
-      {/* Main content with background */}
-      <div className={`absolute left-[10%] right-[10%] top-0 h-16 flex items-center transition-all duration-300 rounded-lg ${
-        scrolled ? 'bg-white/90 backdrop-blur-sm shadow-md' : 'bg-white/80 backdrop-blur-sm'
-      }`}>
-        <div className="w-full max-w-7xl mx-auto flex justify-between items-center px-4">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center">
-              <img 
-                src="/logo.svg" 
-                alt="Boame Logo" 
-                className="h-12 w-auto drop-shadow-sm"
-              />
-            </Link>
-          </div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {navItems.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-800 hover:text-green-600 transition-colors"
-                >
-                  {item.name}
-                </Link>
-              ))}
+      {/* Mobile version - full width */}
+      <div className="md:hidden">
+        <div className={`h-16 flex items-center transition-all duration-300 ${
+          scrolled ? 'bg-white/90 backdrop-blur-sm shadow-md' : 'bg-white/80 backdrop-blur-sm'
+        }`}>
+          <div className="w-full flex justify-between items-center px-4">
+            {/* Logo */}
+            <div className="flex-shrink-0">
+              <Link href="/" className="flex items-center">
+                <img 
+                  src="/logo.svg" 
+                  alt="Boame Logo" 
+                  className="h-12 w-auto drop-shadow-sm"
+                />
+              </Link>
             </div>
-          </div>
 
-          {/* CTA Buttons */}
-          <div className="hidden md:flex items-center space-x-4">            
-            {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-800 hover:text-green-600 transition-colors"
-                >
-                  <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
-                    <User className="h-3 w-3 text-white" />
-                  </div>
-                  <ChevronDown className="h-4 w-4" />
-                </button>
-                
-                {/* Dropdown Menu */}
-                {isUserDropdownOpen && (
-                  <>
-                    {/* Backdrop */}
-                    <div 
-                      className="fixed inset-0 z-10" 
-                      onClick={() => setIsUserDropdownOpen(false)}
-                    ></div>
-                    
-                    {/* Dropdown Content */}
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border">
-                      <Link
-                        href="/dashboard"
-                        className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 transition-colors"
-                        onClick={() => setIsUserDropdownOpen(false)}
-                      >
-                        Dashboard
-                      </Link>
-                      <button
-                        onClick={() => {
-                          handleLogout()
-                          setIsUserDropdownOpen(false)
-                        }}
-                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors"
-                      >
-                        <LogOut className="h-4 w-4 mr-2 inline" />
-                        Logout
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <>
-                <Link
-                  href="/auth/login"
-                  className="px-3 py-2 rounded-md text-sm font-medium text-gray-800 hover:text-green-600 transition-colors"
-                >
-                  Sign In
-                </Link>
-
-                <Link
-                  href="/donate"
-                  className="px-4 py-2 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
-                >
-                  Get Started
-                </Link>
-              </>
-            )}
+            {/* Mobile menu button */}
+            <div className="absolute right-4 top-4 z-10">
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 rounded-md text-gray-800 hover:text-green-600"
+              >
+                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
           </div>
         </div>
       </div>
-      
-      {/* Transparent right side */}
-      <div className="absolute right-0 top-0 h-16 w-[10%] bg-transparent"></div>
-      
-      {/* Mobile menu button */}
-      <div className="md:hidden absolute right-4 top-4 z-10">
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="p-2 rounded-md text-gray-800 hover:text-green-600"
-        >
-          {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
+
+      {/* Desktop version - 80% width and centered */}
+      <div className="hidden md:block">
+        <div className="w-[80%] mx-auto">
+          <div className={`h-16 flex items-center transition-all duration-300 rounded-[10px] ${
+            scrolled ? 'bg-white/90 backdrop-blur-sm shadow-md' : 'bg-white/80 backdrop-blur-sm'
+          }`}>
+            <div className="w-full max-w-7xl mx-auto flex justify-between items-center px-4">
+              {/* Logo */}
+              <div className="flex-shrink-0">
+                <Link href="/" className="flex items-center">
+                  <img 
+                    src="/logo.svg" 
+                    alt="Boame Logo" 
+                    className="h-12 w-auto drop-shadow-sm"
+                  />
+                </Link>
+              </div>
+
+              {/* Desktop Navigation */}
+              <div className="ml-10 flex items-baseline space-x-4">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className="px-3 py-2 rounded-md text-sm font-medium text-gray-800 hover:text-green-600 transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+
+              {/* CTA Buttons */}
+              <div className="flex items-center space-x-4">            
+                {user ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                      className="flex items-center space-x-2 px-3 py-2 rounded-md text-gray-800 hover:text-green-600 transition-colors"
+                    >
+                      <div className="w-6 h-6 bg-green-600 rounded-full flex items-center justify-center">
+                        <User className="h-3 w-3 text-white" />
+                      </div>
+                      <ChevronDown className="h-4 w-4" />
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    {isUserDropdownOpen && (
+                      <>
+                        {/* Backdrop */}
+                        <div 
+                          className="fixed inset-0 z-10" 
+                          onClick={() => setIsUserDropdownOpen(false)}
+                        ></div>
+                        
+                        {/* Dropdown Content */}
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20 border">
+                          <Link
+                            href="/dashboard"
+                            className="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 transition-colors"
+                            onClick={() => setIsUserDropdownOpen(false)}
+                          >
+                            Dashboard
+                          </Link>
+                          <button
+                            onClick={() => {
+                              handleLogout()
+                              setIsUserDropdownOpen(false)
+                            }}
+                            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 transition-colors"
+                          >
+                            <LogOut className="h-4 w-4 mr-2 inline" />
+                            Logout
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="px-3 py-2 rounded-md text-sm font-medium text-gray-800 hover:text-green-600 transition-colors"
+                    >
+                      Sign In
+                    </Link>
+
+                    <Link
+                      href="/donate"
+                      className="px-4 py-2 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-700 transition-colors"
+                    >
+                      Get Started
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Mobile Navigation */}

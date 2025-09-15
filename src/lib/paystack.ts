@@ -196,7 +196,6 @@ export const initializePaystackPayment = async (
     const data = await response.json()
     return data
   } catch (error) {
-    console.error('Payment initialization failed:', error)
     throw error
   }
 }
@@ -215,7 +214,6 @@ export const verifyPayment = async (reference: string) => {
     const data = await response.json()
     return data
   } catch (error) {
-    console.error('Payment verification failed:', error)
     throw error
   }
 }

@@ -24,7 +24,7 @@ export default function AuthCallbackPage() {
         }
 
         if (data.session) {
-          console.log('✅ Authentication successful')
+          // console.log('✅ Authentication successful')
           setStatus('success')
           setMessage('Email confirmed successfully! You can now log in.')
           
@@ -37,7 +37,7 @@ export default function AuthCallbackPage() {
           setMessage('No session found. Please try logging in.')
         }
       } catch (error) {
-        console.error('Auth callback error:', error)
+        // console.error('Auth callback error:', error)
         setStatus('error')
         setMessage('An error occurred. Please try again.')
       }

@@ -42,7 +42,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
           const userCartItems = JSON.parse(savedCart)
           setCartItems(userCartItems)
         } catch (error) {
-          console.error('Error loading user cart from localStorage:', error)
           setCartItems([])
         }
       } else if (guestCart) {
@@ -55,7 +54,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
           // Clear guest cart after merging
           localStorage.removeItem('guest_cart')
         } catch (error) {
-          console.error('Error merging guest cart:', error)
           setCartItems([])
         }
       } else {
@@ -68,7 +66,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         try {
           setCartItems(JSON.parse(guestCart))
         } catch (error) {
-          console.error('Error loading guest cart from localStorage:', error)
           setCartItems([])
         }
       } else {
@@ -165,7 +162,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
         // Clear guest cart after merging
         localStorage.removeItem('guest_cart')
       } catch (error) {
-        console.error('Error merging guest cart:', error)
       }
     }
   }

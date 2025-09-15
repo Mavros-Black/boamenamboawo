@@ -42,7 +42,7 @@ export default function BlogPage() {
       
       // Transform API data to match our interface
       const transformedPosts: BlogPost[] = (apiBlogPosts || []).map((post: any) => {
-        console.log('Processing blog post:', post)
+        // console.log('Processing blog post:', post)
         return {
           id: post.id,
           title: post.title,
@@ -60,7 +60,7 @@ export default function BlogPage() {
       })
       
       // Show all posts for now (including drafts for testing)
-      console.log('All transformed posts:', transformedPosts)
+      // console.log('All transformed posts:', transformedPosts)
       setBlogPosts(transformedPosts)
       
       // Uncomment this line to only show published posts:
@@ -161,7 +161,7 @@ export default function BlogPage() {
                             target.parentNode?.appendChild(placeholder)
                           }}
                           onLoad={() => {
-                            console.log('Image loaded successfully:', post.featured_image)
+                            // console.log('Image loaded successfully:', post.featured_image)
                           }}
                         />
                       ) : (

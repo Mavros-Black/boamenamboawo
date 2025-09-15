@@ -36,17 +36,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Get initial session
     const getInitialSession = async () => {
       try {
-        console.log('🔍 Getting initial session...')
-        
         // Check if Supabase is configured
         if (!supabase) {
-          console.warn('⚠️ Supabase not configured - using mock auth')
           setLoading(false)
           return
         }
         
         const { data: { session } } = await supabase.auth.getSession()
-        console.log('📡 Initial session:', session ? 'Found' : 'Not found')
         
         if (session?.user) {
           const authUser: AuthUser = {
@@ -56,11 +52,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             created_at: session.user.created_at,
             updated_at: session.user.updated_at || session.user.created_at
           }
-          console.log('✅ Setting user from initial session:', authUser.email)
           setUser(authUser)
         }
       } catch (error) {
-        console.error('Error getting initial session:', error)
       } finally {
         setLoading(false)
       }
@@ -73,7 +67,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     if (supabase) {
       const { data } = supabase.auth.onAuthStateChange(
         async (event, session) => {
-          console.log('🔄 Auth state changed:', event, session?.user?.email)
           
           if (session?.user) {
             const authUser: AuthUser = {
@@ -83,10 +76,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               created_at: session.user.created_at,
               updated_at: session.user.updated_at || session.user.created_at
             }
-            console.log('✅ Setting user from auth state change:', authUser.email)
             setUser(authUser)
           } else {
-            console.log('❌ Clearing user from auth state change')
             setUser(null)
           }
           setLoading(false)
@@ -104,26 +95,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     try {
-      console.log('🔐 Attempting login for:', email)
-      
       // If Supabase is not configured, return mock success for demo purposes
       if (!supabase) {
-        console.warn('⚠️ Supabase not configured - using mock login')
         return { 
           success: false, 
           error: 'Authentication service not configured. Please set up environment variables.' 
         }
       }
 
-
-      
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
       if (error) {
-        console.error('❌ Login error:', error)
         return { success: false, error: error.message }
       }
 
@@ -135,10 +120,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           created_at: data.user.created_at,
           updated_at: data.user.updated_at || data.user.created_at
         }
-        console.log('✅ Login successful for:', authUser.email)
         setUser(authUser)
-        
-
         
         // Merge guest cart with user cart after successful login
         setTimeout(() => {
@@ -169,9 +151,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               
               // Clear guest cart after merging
               localStorage.removeItem('guest_cart')
-              console.log('🛒 Guest cart merged with user cart')
             } catch (error) {
-              console.error('Error merging guest cart:', error)
             }
           }
         }, 100)
@@ -181,17 +161,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       return { success: false, error: 'Login failed' }
     } catch (error) {
-      console.error('Login error:', error)
       return { success: false, error: 'Login failed. Please try again.' }
     }
   }
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      console.log('📝 Attempting registration for:', email)
       
 
       
+      // If Supabase is not configured, return mock success for demo purposes
+      if (!supabase) {
+        return { 
+          success: false, 
+          error: 'Authentication service not configured. Please set up environment variables.' 
+        }
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -205,7 +191,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       })
 
       if (error) {
-        console.error('❌ Registration error:', error)
         return { success: false, error: error.message }
       }
 
@@ -220,14 +205,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             created_at: data.user.created_at,
             updated_at: data.user.updated_at || data.user.created_at
           }
-          console.log('✅ Registration successful for:', authUser.email)
           setUser(authUser)
         } else {
           // User needs to confirm email
-          console.log('📧 Registration successful, email confirmation required for:', data.user.email)
           return { 
             success: true, 
-            user: null, 
+            user: undefined, 
             requiresConfirmation: true,
             message: 'Please check your email to confirm your account before logging in.'
           }
@@ -241,74 +224,74 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (guestCart) {
             try {
               const guestItems = JSON.parse(guestCart)
-              const userCartKey = `cart_${authUser.id}`
+              const userCartKey = data.user ? `cart_${data.user.id}` : 'cart_new'
               
               // For new users, just move the guest cart to user cart
               localStorage.setItem(userCartKey, guestCart)
               
               // Clear guest cart after merging
               localStorage.removeItem('guest_cart')
-              console.log('🛒 Guest cart moved to new user cart')
             } catch (error) {
-              console.error('Error merging guest cart:', error)
             }
           }
         }, 100)
         
-        return { success: true, user: authUser }
+        return { success: true, user: data.user ? {
+          id: data.user.id,
+          email: data.user.email!,
+          user_metadata: data.user.user_metadata,
+          created_at: data.user.created_at,
+          updated_at: data.user.updated_at || data.user.created_at
+        } : undefined }
       }
 
       return { success: false, error: 'Registration failed' }
     } catch (error) {
-      console.error('Registration error:', error)
       return { success: false, error: 'Registration failed. Please try again.' }
     }
   }
 
   const logout = async () => {
     try {
-      console.log('🚪 Attempting logout...')
+      if (!supabase) return
       const { error } = await supabase.auth.signOut()
       if (error) {
-        console.error('❌ Logout error:', error)
       } else {
-        console.log('✅ Logout successful')
       }
       setUser(null)
     } catch (error) {
-      console.error('Logout error:', error)
     }
   }
 
   const resetPassword = async (email: string) => {
     try {
-      console.log('🔑 Attempting password reset for:', email)
+      if (!supabase) {
+        return { success: false, error: 'Authentication service not configured. Please set up environment variables.' }
+      }
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       })
 
       if (error) {
-        console.error('❌ Password reset error:', error)
         return { success: false, error: error.message }
       }
 
-      console.log('✅ Password reset email sent to:', email)
       return { success: true }
     } catch (error) {
-      console.error('Password reset error:', error)
       return { success: false, error: 'Password reset failed. Please try again.' }
     }
   }
 
   const updateProfile = async (updates: { name?: string; role?: 'admin' | 'user' }) => {
     try {
-      console.log('👤 Attempting profile update:', updates)
+      if (!supabase) {
+        return { success: false, error: 'Authentication service not configured. Please set up environment variables.' }
+      }
       const { data, error } = await supabase.auth.updateUser({
         data: updates
       })
 
       if (error) {
-        console.error('❌ Profile update error:', error)
         return { success: false, error: error.message }
       }
 
@@ -317,13 +300,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           ...user,
           user_metadata: { ...user.user_metadata, ...updates }
         }
-        console.log('✅ Profile update successful')
         setUser(updatedUser)
       }
 
       return { success: true }
     } catch (error) {
-      console.error('Profile update error:', error)
       return { success: false, error: 'Profile update failed. Please try again.' }
     }
   }

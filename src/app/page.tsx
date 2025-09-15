@@ -103,7 +103,6 @@ function DonationCard() {
         throw new Error(paymentData.message || 'Payment initialization failed')
       }
     } catch (error) {
-      console.error('Donation failed:', error)
       alert('Donation failed. Please try again.')
     } finally {
       setIsProcessing(false)

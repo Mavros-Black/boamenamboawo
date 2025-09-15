@@ -84,7 +84,6 @@ export default function BlogPage() {
       
       setBlogPosts(transformedPosts)
     } catch (error) {
-      console.error('Error fetching blog posts:', error)
       // Fallback to empty array if API fails
       setBlogPosts([])
     } finally {
@@ -103,9 +102,6 @@ export default function BlogPage() {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-
-    console.log('Image upload started:', file.name, file.size, file.type) // Debug log
-    console.log('Current user:', user) // Debug log
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
@@ -135,23 +131,19 @@ export default function BlogPage() {
         formData.append('userId', user.id)
       }
 
-      console.log('Uploading to Supabase Storage with user ID:', user?.id) // Debug log
-
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData
       })
 
-      console.log('Upload response status:', response.status) // Debug log
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.error('Upload error response:', errorData) // Debug log
+        // console.error('Upload error response:', errorData) // Debug log
         throw new Error(errorData.error || 'Upload failed')
       }
 
       const { url } = await response.json()
-      console.log('Upload successful, URL:', url) // Debug log
       
       setFormData(prev => ({
         ...prev,
@@ -160,7 +152,7 @@ export default function BlogPage() {
       setUploadingImage(false)
 
     } catch (error) {
-      console.error('Error uploading image:', error)
+      // console.error('Error uploading image:', error)
       showToast('error', `Error uploading image: ${error instanceof Error ? error.message : 'Unknown error'}`)
       setUploadingImage(false)
     }
@@ -191,7 +183,6 @@ export default function BlogPage() {
           status: formData.status
         }
         
-        console.log('Updating blog post with data:', requestBody) // Debug log
         
         const response = await fetch('/api/blog', {
           method: 'PUT',
@@ -239,7 +230,6 @@ export default function BlogPage() {
           status: formData.status
         }
         
-        console.log('Submitting blog post with data:', requestBody) // Debug log
         
         const response = await fetch('/api/blog', {
           method: 'POST',
@@ -280,7 +270,6 @@ export default function BlogPage() {
       setEditingPost(null)
       resetForm()
     } catch (error) {
-      console.error('Error saving blog post:', error)
       showToast('error', `Error saving blog post: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
@@ -315,7 +304,6 @@ export default function BlogPage() {
         setBlogPosts(prev => prev.filter(post => post.id !== postId))
         showToast('success', 'Blog post deleted successfully!')
       } catch (error) {
-        console.error('Error deleting blog post:', error)
         showToast('error', `Error deleting blog post: ${error instanceof Error ? error.message : 'Unknown error'}`)
       }
     }
