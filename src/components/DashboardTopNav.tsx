@@ -32,8 +32,12 @@ export default function DashboardTopNav({ onMenuClick, showMobileMenuButton = tr
   const [notificationsOpen, setNotificationsOpen] = useState(false)
 
   const handleLogout = async () => {
-    await logout()
-    router.push('/')
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Logout failed:', error)
+      // Optionally show an error message to the user
+    }
   }
 
   const isAdmin = user?.user_metadata?.role === 'admin'

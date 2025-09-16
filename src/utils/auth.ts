@@ -2,18 +2,14 @@ import { AuthUser } from '@/lib/supabase'
 
 // Role-based redirect utility
 export const getDashboardRedirect = (user: AuthUser | null): string => {
-  console.log('🎯 getDashboardRedirect called with user:', user?.email)
   
   if (!user) {
-    console.log('❌ No user, redirecting to login')
     return '/auth/login'
   }
   
   const role = user.user_metadata?.role || 'user'
-  console.log('👤 User role:', role)
   
   const redirectPath = role === 'admin' ? '/dashboard' : '/dashboard/user'
-  console.log('🔄 Redirecting to:', redirectPath)
   
   return redirectPath
 }

@@ -36,7 +36,12 @@ const Navbar = () => {
   ]
 
   const handleLogout = async () => {
-    await logout()
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Logout failed:', error)
+      // Optionally show an error message to the user
+    }
   }
 
   return (

@@ -37,7 +37,6 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (!user) {
-      console.log('🔄 Dashboard layout: No user, redirecting to login')
       router.push('/auth/login')
       return
     }
@@ -45,7 +44,6 @@ export default function DashboardLayout({
     // Redirect non-admin users to user dashboard when accessing main dashboard
     const userRole = user?.user_metadata?.role || 'user'
     if (user && userRole !== 'admin' && pathname === '/dashboard') {
-      console.log('🔄 Dashboard layout: Non-admin user accessing main dashboard, redirecting to user dashboard')
       setIsRedirecting(true)
       // Add a small delay to prevent race conditions with login redirects
       setTimeout(() => {
@@ -56,7 +54,6 @@ export default function DashboardLayout({
 
     // Handle redirects for other pages in useEffect to avoid render-time setState calls
     if (user && pathname !== '/dashboard' && pathname !== '/dashboard/user' && !canAccessPage(user, pathname)) {
-      console.log('🔄 Dashboard layout: Unauthorized access, redirecting to:', getUnauthorizedRedirect(user))
       setIsRedirecting(true)
       const redirectPath = getUnauthorizedRedirect(user)
       router.push(redirectPath)
@@ -65,8 +62,12 @@ export default function DashboardLayout({
   }, [user, router, pathname])
 
   const handleLogout = async () => {
-    await logout()
-    router.push('/')
+    try {
+      await logout()
+    } catch (error) {
+      console.error('Logout failed:', error)
+      // Optionally show an error message to the user
+    }
   }
 
   const navigation: { name: string; href: string; icon: any; current: boolean }[] = [

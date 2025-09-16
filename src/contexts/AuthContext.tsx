@@ -253,13 +253,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      if (!supabase) return
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-      } else {
+      if (!supabase) {
+        console.error('Supabase not configured')
+        setUser(null)
+        return
       }
-      setUser(null)
+      
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) {
+        console.error('Logout error:', error)
+        // Even if there's an error, clear the local user state
+        setUser(null)
+        throw new Error(error.message)
+      } else {
+        console.log('Logout successful')
+        setUser(null)
+      }
     } catch (error) {
+      console.error('Logout exception:', error)
+      // Clear user state even if there's an exception
+      setUser(null)
+      throw error
     }
   }
 

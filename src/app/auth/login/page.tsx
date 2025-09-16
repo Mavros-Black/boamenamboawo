@@ -25,23 +25,15 @@ function LoginForm() {
 
   // Debug logging
   useEffect(() => {
-    console.log('🔍 Login page debug info:')
-    console.log('  - User:', user)
-    console.log('  - Auth loading:', authLoading)
-    console.log('  - RedirectTo:', searchParams.get('redirectTo'))
-    console.log('  - Redirect:', searchParams.get('redirect'))
-    
     setDebugInfo(`User: ${user ? 'Logged in' : 'Not logged in'}, Loading: ${authLoading}`)
   }, [user, authLoading, searchParams])
 
   // Redirect already logged-in users
   useEffect(() => {
     if (user && !authLoading && !redirecting) {
-      console.log('✅ User already logged in, redirecting...')
       const redirectTo = searchParams.get('redirectTo')
       const redirect = searchParams.get('redirect')
       const redirectPath = redirectTo || redirect || getDashboardRedirect(user)
-      console.log('🔄 Redirecting to:', redirectPath)
       router.push(redirectPath)
     }
   }, [user, authLoading, redirecting, searchParams, router])
@@ -54,26 +46,21 @@ function LoginForm() {
     const result = await login(email, password)
     
     if (result.success) {
-      console.log('✅ Login successful, redirecting...')
       setRedirecting(true)
       
       // Check for redirect parameters first
       const redirectTo = searchParams.get('redirectTo')
       const redirect = searchParams.get('redirect')
-      console.log('🔍 Redirect parameters:', { redirectTo, redirect })
       
       if (redirectTo || redirect) {
         const redirectPath = redirectTo || redirect
-        console.log('🔄 Redirecting to:', redirectPath)
         // Add a small delay to ensure state is updated
         setTimeout(() => {
-          console.log('🚀 Actually pushing to:', redirectPath)
           router.push(redirectPath)
         }, 100)
       } else {
         // Redirect based on user role
         const redirectPath = getDashboardRedirect(result.user || null)
-        console.log('🔄 Redirecting to dashboard:', redirectPath)
         setTimeout(() => {
           router.push(redirectPath)
         }, 100)
@@ -104,7 +91,6 @@ function LoginForm() {
 
   // Show loading if user is being redirected
   if (redirecting) {
-    console.log('🔄 Showing redirect spinner...')
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -118,7 +104,6 @@ function LoginForm() {
 
   // Show loading if auth is still loading
   if (authLoading) {
-    console.log('🔄 Auth is loading...')
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

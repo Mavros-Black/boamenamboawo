@@ -9,13 +9,7 @@ export default function DebugUserPage() {
   const router = useRouter()
 
   useEffect(() => {
-    console.log('🔍 Debug User Page:')
-    console.log('  - User:', user)
-    console.log('  - Loading:', loading)
-    console.log('  - User metadata:', user?.user_metadata)
-    console.log('  - User role:', user?.user_metadata?.role)
-    console.log('  - User email:', user?.email)
-    console.log('  - User ID:', user?.id)
+    
   }, [user, loading])
 
   if (loading) {
