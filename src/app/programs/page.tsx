@@ -203,7 +203,7 @@ export default function ProgramsPage() {
                       }`}>
                         {program.status === 'active' ? 'Active' : 'Completed'}
                       </span>
-                      <span className="text-sm text-gray-500">{program.category}</span>
+                      <span className="text-sm font-medium text-gray-700">{program.category}</span>
                     </div>
 
                     {/* Title */}
@@ -214,9 +214,9 @@ export default function ProgramsPage() {
 
                     {/* Program Details */}
                     <div className="space-y-2 mb-4">
-                      <div className="flex items-center text-sm text-gray-500">
-                        <Users className="h-4 w-4 mr-2" />
-                        <span>{program.current_participants}/{program.max_participants} participants</span>
+                      <div className="flex items-center text-sm">
+                        <Users className="h-4 w-4 mr-2 text-green-600" />
+                        <span className="font-semibold text-gray-900">{program.current_participants}/{program.max_participants} participants</span>
                       </div>
                       <div className="flex items-center text-sm text-gray-500">
                         <MapPin className="h-4 w-4 mr-2" />
@@ -232,7 +232,7 @@ export default function ProgramsPage() {
                     <div className="bg-green-50 p-3 rounded-md mb-4">
                       <div className="flex items-center">
                         <Heart className="h-4 w-4 text-green-600 mr-2" />
-                        <span className="text-sm font-medium text-green-800">{generateImpact(program)}</span>
+                        <span className="text-sm font-medium text-green-700">{generateImpact(program)}</span>
                       </div>
                     </div>
 

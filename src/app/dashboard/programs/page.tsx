@@ -31,6 +31,12 @@ export default function ProgramsPage() {
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [editingProgram, setEditingProgram] = useState<Program | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [showParticipantModal, setShowParticipantModal] = useState(false)
+  const [editingParticipantProgram, setEditingParticipantProgram] = useState<Program | null>(null)
+  const [participantData, setParticipantData] = useState({
+    current_participants: 0,
+    max_participants: 0
+  })
 
   // Form state
   const [formData, setFormData] = useState({
@@ -371,6 +377,57 @@ export default function ProgramsPage() {
     }
   }
 
+  const handleEditParticipants = (program: Program) => {
+    setEditingParticipantProgram(program)
+    setParticipantData({
+      current_participants: program.current_participants,
+      max_participants: program.max_participants
+    })
+    setShowParticipantModal(true)
+  }
+
+  const handleSaveParticipants = async () => {
+    if (!editingParticipantProgram) return
+
+    try {
+      const response = await fetch('/api/programs', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: editingParticipantProgram.id,
+          title: editingParticipantProgram.title, // Add title to satisfy API requirement
+          current_participants: participantData.current_participants,
+          max_participants: participantData.max_participants
+        })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to update participants')
+      }
+
+      const { program: updatedProgram } = await response.json()
+      
+      // Update the program in the local state
+      setPrograms(prev => prev.map(program => 
+        program.id === editingParticipantProgram.id ? {
+          ...program,
+          current_participants: updatedProgram.current_participants,
+          max_participants: updatedProgram.max_participants
+        } : program
+      ))
+      
+      setShowParticipantModal(false)
+      setEditingParticipantProgram(null)
+      showToast('success', 'Participant counts updated successfully!')
+    } catch (error) {
+      console.error('Error updating participants:', error)
+      showToast('error', `Error updating participants: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    }
+  }
+
   const resetForm = () => {
     setFormData({
       title: '',
@@ -554,6 +611,13 @@ export default function ProgramsPage() {
                     title="Edit Program"
                   >
                     <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleEditParticipants(program)}
+                    className="text-green-600 hover:text-green-900 p-1"
+                    title="Edit Participants"
+                  >
+                    <Users className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(program.id)}
@@ -813,6 +877,81 @@ export default function ProgramsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Participant Edit Modal */}
+      {showParticipantModal && editingParticipantProgram && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-900">
+                Edit Participants for {editingParticipantProgram.title}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowParticipantModal(false)
+                  setEditingParticipantProgram(null)
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Current Participants
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={participantData.current_participants}
+                  onChange={(e) => setParticipantData({
+                    ...participantData,
+                    current_participants: parseInt(e.target.value) || 0
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Maximum Participants
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  value={participantData.max_participants}
+                  onChange={(e) => setParticipantData({
+                    ...participantData,
+                    max_participants: parseInt(e.target.value) || 0
+                  })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowParticipantModal(false)
+                    setEditingParticipantProgram(null)
+                  }}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveParticipants}
+                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

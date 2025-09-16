@@ -47,7 +47,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { title, description, image_url, category, status, start_date, end_date, location, max_participants } = body
+    const { title, description, image_url, category, status, start_date, end_date, location, max_participants, current_participants } = body
 
     // Validate required fields
     if (!title) {
@@ -73,10 +73,11 @@ export async function POST(request: NextRequest) {
       start_date: start_date || null,
       end_date: end_date || null,
       location: location || '',
-      max_participants: max_participants || null
+      max_participants: max_participants || null,
+      current_participants: current_participants || 0
     }
 
-    const { data: program, error } = await supabase
+    const { data: program, error } = await supabase!
       .from('programs')
       .insert([newProgram])
       .select()
@@ -104,12 +105,12 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json()
-    const { id, title, description, image_url, category, status, start_date, end_date, location, max_participants } = body
+    const { id, title, description, image_url, category, status, start_date, end_date, location, max_participants, current_participants } = body
 
-    // Validate required fields
-    if (!id || !title) {
+    // Validate required fields - only ID is required for updates
+    if (!id) {
       return NextResponse.json(
-        { error: 'ID and title are required' },
+        { error: 'ID is required' },
         { status: 400 }
       )
     }
@@ -121,20 +122,24 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const updatedProgram = {
-      title,
-      description: description || '',
-      image_url: image_url || '',
-      category: category || 'General',
-      status: status || 'active',
-      start_date: start_date || null,
-      end_date: end_date || null,
-      location: location || '',
-      max_participants: max_participants || null,
+    // Only require title for new programs, not updates
+    const updatedProgram: any = {
       updated_at: new Date().toISOString()
     }
 
-    const { data: program, error } = await supabase
+    // Add fields to update only if they are provided
+    if (title !== undefined) updatedProgram.title = title
+    if (description !== undefined) updatedProgram.description = description
+    if (image_url !== undefined) updatedProgram.image_url = image_url
+    if (category !== undefined) updatedProgram.category = category
+    if (status !== undefined) updatedProgram.status = status
+    if (start_date !== undefined) updatedProgram.start_date = start_date
+    if (end_date !== undefined) updatedProgram.end_date = end_date
+    if (location !== undefined) updatedProgram.location = location
+    if (max_participants !== undefined) updatedProgram.max_participants = max_participants
+    if (current_participants !== undefined) updatedProgram.current_participants = current_participants
+
+    const { data: program, error } = await supabase!
       .from('programs')
       .update(updatedProgram)
       .eq('id', id)
@@ -179,7 +184,7 @@ export async function DELETE(request: NextRequest) {
       )
     }
 
-    const { error } = await supabase
+    const { error } = await supabase!
       .from('programs')
       .delete()
       .eq('id', id)
