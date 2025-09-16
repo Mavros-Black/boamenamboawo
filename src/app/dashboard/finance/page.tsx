@@ -3,7 +3,25 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
 import { DollarSign, TrendingUp, TrendingDown, BarChart3 } from 'lucide-react'
+
+interface Donation {
+  id: string
+  donor_name: string
+  donor_email: string
+  amount: number
+  created_at: string
+  payment_status: string
+}
+
+interface Order {
+  id: string
+  customer_name: string
+  total: number
+  created_at: string
+  payment_status: string
+}
 
 export default function FinancePage() {
   const { user } = useAuth()
@@ -13,8 +31,13 @@ export default function FinancePage() {
     totalDonations: 0,
     totalOrders: 0,
     totalRevenue: 0,
-    monthlyGrowth: 0
+    monthlyGrowth: 0,
+    thisMonthRevenue: 0,
+    thisQuarterRevenue: 0,
+    thisYearRevenue: 0
   })
+  const [recentTransactions, setRecentTransactions] = useState<(Donation | Order)[]>([])
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     const userRole = user?.user_metadata?.role || 'user'
@@ -28,30 +51,130 @@ export default function FinancePage() {
 
   const fetchFinanceStats = async () => {
     try {
-      // Fetch donations and orders data
-      const [donationsRes, ordersRes] = await Promise.all([
-        fetch('/api/donations'),
-        fetch('/api/orders')
-      ])
+      setLoading(true)
+      setError(null)
+      
+      // Check if Supabase is configured
+      if (!supabase) {
+        throw new Error('Database not configured. Please check your environment variables.')
+      }
+      
+      // Fetch donations data
+      const { data: donationsData, error: donationsError } = await supabase
+        .from('donations')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-      const donationsData = await donationsRes.json()
-      const ordersData = await ordersRes.json()
+      if (donationsError) {
+        console.error('Error fetching donations:', donationsError)
+        throw new Error(`Failed to fetch donations: ${donationsError.message}`)
+      }
 
-      const donations = donationsData.donations || []
-      const orders = ordersData.orders || []
+      // Fetch orders data
+      const { data: ordersData, error: ordersError } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false })
 
-      const totalDonations = donations.reduce((sum: number, d: any) => sum + d.amount, 0)
-      const totalOrders = orders.reduce((sum: number, o: any) => sum + o.total, 0)
+      if (ordersError) {
+        console.error('Error fetching orders:', ordersError)
+        throw new Error(`Failed to fetch orders: ${ordersError.message}`)
+      }
+
+      // Calculate totals
+      const totalDonations = donationsData.reduce((sum: number, d: Donation) => sum + d.amount, 0)
+      const totalOrders = ordersData.reduce((sum: number, o: Order) => sum + o.total, 0)
       const totalRevenue = totalDonations + totalOrders
+
+      // Calculate this month's revenue
+      const now = new Date()
+      const thisMonth = now.getMonth()
+      const thisYear = now.getFullYear()
+      
+      const thisMonthDonations = donationsData.filter(d => {
+        const date = new Date(d.created_at)
+        return date.getMonth() === thisMonth && date.getFullYear() === thisYear
+      }).reduce((sum, d) => sum + d.amount, 0)
+      
+      const thisMonthOrders = ordersData.filter(o => {
+        const date = new Date(o.created_at)
+        return date.getMonth() === thisMonth && date.getFullYear() === thisYear
+      }).reduce((sum, o) => sum + o.total, 0)
+      
+      const thisMonthRevenue = thisMonthDonations + thisMonthOrders
+
+      // Calculate this quarter's revenue
+      const quarterStartMonth = Math.floor(thisMonth / 3) * 3
+      const thisQuarterDonations = donationsData.filter(d => {
+        const date = new Date(d.created_at)
+        return date.getMonth() >= quarterStartMonth && 
+               date.getMonth() < quarterStartMonth + 3 && 
+               date.getFullYear() === thisYear
+      }).reduce((sum, d) => sum + d.amount, 0)
+      
+      const thisQuarterOrders = ordersData.filter(o => {
+        const date = new Date(o.created_at)
+        return date.getMonth() >= quarterStartMonth && 
+               date.getMonth() < quarterStartMonth + 3 && 
+               date.getFullYear() === thisYear
+      }).reduce((sum, o) => sum + o.total, 0)
+      
+      const thisQuarterRevenue = thisQuarterDonations + thisQuarterOrders
+
+      // Calculate this year's revenue
+      const thisYearDonations = donationsData.filter(d => {
+        const date = new Date(d.created_at)
+        return date.getFullYear() === thisYear
+      }).reduce((sum, d) => sum + d.amount, 0)
+      
+      const thisYearOrders = ordersData.filter(o => {
+        const date = new Date(o.created_at)
+        return date.getFullYear() === thisYear
+      }).reduce((sum, o) => sum + o.total, 0)
+      
+      const thisYearRevenue = thisYearDonations + thisYearOrders
+
+      // Calculate monthly growth (comparing this month to last month)
+      const lastMonth = thisMonth === 0 ? 11 : thisMonth - 1
+      const lastMonthYear = thisMonth === 0 ? thisYear - 1 : thisYear
+      
+      const lastMonthDonations = donationsData.filter(d => {
+        const date = new Date(d.created_at)
+        return date.getMonth() === lastMonth && date.getFullYear() === lastMonthYear
+      }).reduce((sum, d) => sum + d.amount, 0)
+      
+      const lastMonthOrders = ordersData.filter(o => {
+        const date = new Date(o.created_at)
+        return date.getMonth() === lastMonth && date.getFullYear() === lastMonthYear
+      }).reduce((sum, o) => sum + o.total, 0)
+      
+      const lastMonthRevenue = lastMonthDonations + lastMonthOrders
+      
+      const monthlyGrowth = lastMonthRevenue > 0 
+        ? parseFloat(((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue * 100).toFixed(1))
+        : 0
+
+      // Get recent transactions (combine and sort by date)
+      const allTransactions = [
+        ...donationsData.map((d: Donation) => ({ ...d, type: 'donation' })),
+        ...ordersData.map((o: Order) => ({ ...o, type: 'order' }))
+      ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+        .slice(0, 10) // Get top 10 most recent
 
       setStats({
         totalDonations,
         totalOrders,
         totalRevenue,
-        monthlyGrowth: 12.5 // Mock data
+        monthlyGrowth,
+        thisMonthRevenue,
+        thisQuarterRevenue,
+        thisYearRevenue
       })
-    } catch (error) {
+
+      setRecentTransactions(allTransactions)
+    } catch (error: any) {
       console.error('Error fetching finance stats:', error)
+      setError(error.message || 'Failed to fetch finance data. Please try again later.')
     } finally {
       setLoading(false)
     }
@@ -68,6 +191,22 @@ export default function FinancePage() {
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
           <p className="text-gray-500 text-lg">Loading finance data...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="text-center py-12">
+          <div className="text-red-500 text-lg mb-4">Error: {error}</div>
+          <button 
+            onClick={fetchFinanceStats}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          >
+            Retry
+          </button>
         </div>
       </div>
     )
@@ -120,7 +259,9 @@ export default function FinancePage() {
             <TrendingUp className="h-8 w-8 text-green-500" />
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Monthly Growth</p>
-              <p className="text-2xl font-bold text-gray-900">+{stats.monthlyGrowth}%</p>
+              <p className={`text-2xl font-bold ${stats.monthlyGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {stats.monthlyGrowth >= 0 ? '+' : ''}{stats.monthlyGrowth}%
+              </p>
             </div>
           </div>
         </div>
@@ -141,26 +282,36 @@ export default function FinancePage() {
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Transactions</h3>
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-              <div>
-                <p className="font-medium text-gray-900">Donation</p>
-                <p className="text-sm text-gray-500">From John Doe</p>
+            {recentTransactions.length > 0 ? (
+              recentTransactions.slice(0, 5).map((transaction: any) => (
+                <div key={transaction.id} className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                  <div>
+                    <p className="font-medium text-gray-900">
+                      {transaction.type === 'donation' ? 'Donation' : 'Shop Order'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {transaction.type === 'donation' 
+                        ? `From ${transaction.donor_name}` 
+                        : `By ${transaction.customer_name}`}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-medium ${transaction.amount || transaction.total > 0 ? 'text-green-600' : 'text-gray-600'}`}>
+                      {transaction.amount || transaction.total > 0 
+                        ? `+₵${(transaction.amount || transaction.total).toFixed(2)}` 
+                        : '₵0.00'}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(transaction.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-4 text-gray-500">
+                No transactions found
               </div>
-              <div className="text-right">
-                <p className="font-medium text-green-600">+₵100.00</p>
-                <p className="text-sm text-gray-500">Today</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-              <div>
-                <p className="font-medium text-gray-900">Shop Order</p>
-                <p className="text-sm text-gray-500">T-shirt purchase</p>
-              </div>
-              <div className="text-right">
-                <p className="font-medium text-green-600">+₵25.00</p>
-                <p className="text-sm text-gray-500">Yesterday</p>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -171,31 +322,21 @@ export default function FinancePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <h4 className="text-sm font-medium text-gray-500">This Month</h4>
-            <p className="text-2xl font-bold text-gray-900">₵{(stats.totalRevenue * 0.3).toFixed(2)}</p>
-            <p className="text-sm text-green-600 flex items-center">
-              <TrendingUp className="h-4 w-4 mr-1" />
-              +15% from last month
-            </p>
+            <p className="text-2xl font-bold text-gray-900">₵{stats.thisMonthRevenue.toFixed(2)}</p>
+            <p className="text-sm text-gray-500">₵0.00 from last month</p>
           </div>
           <div>
             <h4 className="text-sm font-medium text-gray-500">This Quarter</h4>
-            <p className="text-2xl font-bold text-gray-900">₵{(stats.totalRevenue * 0.8).toFixed(2)}</p>
-            <p className="text-sm text-green-600 flex items-center">
-              <TrendingUp className="h-4 w-4 mr-1" />
-              +8% from last quarter
-            </p>
+            <p className="text-2xl font-bold text-gray-900">₵{stats.thisQuarterRevenue.toFixed(2)}</p>
+            <p className="text-sm text-gray-500">₵0.00 from last quarter</p>
           </div>
           <div>
             <h4 className="text-sm font-medium text-gray-500">This Year</h4>
-            <p className="text-2xl font-bold text-gray-900">₵{stats.totalRevenue.toFixed(2)}</p>
-            <p className="text-sm text-green-600 flex items-center">
-              <TrendingUp className="h-4 w-4 mr-1" />
-              +25% from last year
-            </p>
+            <p className="text-2xl font-bold text-gray-900">₵{stats.thisYearRevenue.toFixed(2)}</p>
+            <p className="text-sm text-gray-500">₵0.00 from last year</p>
           </div>
         </div>
       </div>
     </div>
   )
 }
-

@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ programs: [] })
     }
 
-    const { data: programs, error } = await supabase
+    const { data: programs, error } = await supabase!
       .from('programs')
       .select('*')
       .order('created_at', { ascending: false })
@@ -25,7 +25,15 @@ export async function GET() {
       )
     }
 
-    return NextResponse.json({ programs })
+    // Ensure status is one of the allowed values
+    const validatedPrograms = programs.map(program => ({
+      ...program,
+      status: ['active', 'inactive', 'completed'].includes(program.status) 
+        ? program.status 
+        : 'active'
+    }))
+
+    return NextResponse.json({ programs: validatedPrograms })
   } catch (error) {
     console.error('Error in GET /api/programs:', error)
     return NextResponse.json(

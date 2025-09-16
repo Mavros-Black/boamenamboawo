@@ -54,4 +54,3 @@ CREATE POLICY "Admins can update ticket purchases" ON ticket_purchases
 SELECT 'ticket_purchases table created successfully' as status;
 
 -- Show table structure
-\d ticket_purchases;

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Plus, Edit, Trash2, Eye, FileText, Calendar, User, Tag, Upload, X } from 'lucide-react'
 import PlaceholderImage from '@/components/PlaceholderImage'
 import { useToast } from '@/components/Toast'
+import { compressImage, formatFileSize } from '@/utils/imageCompression'
 
 interface BlogPost {
   id: string
@@ -136,11 +137,23 @@ export default function BlogPage() {
         body: formData
       })
 
-
+      // Check if response is OK before trying to parse JSON
       if (!response.ok) {
-        const errorData = await response.json()
-        // console.error('Upload error response:', errorData) // Debug log
-        throw new Error(errorData.error || 'Upload failed')
+        // Try to get error message from response
+        let errorMessage = `Upload failed with status ${response.status}`
+        try {
+          const errorData = await response.json()
+          errorMessage = errorData.error || errorMessage
+        } catch (e) {
+          // If we can't parse JSON, try to get text
+          try {
+            const errorText = await response.text()
+            errorMessage = errorText || errorMessage
+          } catch (e) {
+            // If we can't get text, use the status
+          }
+        }
+        throw new Error(errorMessage)
       }
 
       const { url } = await response.json()

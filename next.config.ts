@@ -24,6 +24,10 @@ const nextConfig: NextConfig = {
     ],
     unoptimized: false,
   },
+  // Increase body size limit for API routes
+  experimental: {
+    serverComponentsExternalPackages: [],
+  },
 }
 
 export default nextConfig

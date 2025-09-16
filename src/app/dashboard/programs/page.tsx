@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Plus, Edit, Trash2, Eye, Calendar, Users, Target, Upload, X, Image as ImageIcon } from 'lucide-react'
 import { useToast } from '@/components/Toast'
+import { compressImage, formatFileSize } from '@/utils/imageCompression'
 
 interface Program {
   id: string
@@ -106,40 +107,57 @@ export default function ProgramsPage() {
   }
 
   // Image upload handlers
-  const handleImageSelect = (file: File) => {
+  const handleImageSelect = async (file: File) => {
     if (file && file.type.startsWith('image/')) {
-      setSelectedImage(file)
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
+      try {
+        // Show compression progress
+        setUploadingImage(true);
+        
+        // Compress image if it's too large
+        let processedFile = file;
+        if (file.size > 2 * 1024 * 1024) { // 2MB
+          showToast('info', `Compressing image... (${formatFileSize(file.size)} -> smaller)`);
+          processedFile = await compressImage(file, 0.8);
+        }
+        
+        setSelectedImage(processedFile);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setImagePreview(e.target?.result as string);
+          setUploadingImage(false);
+        };
+        reader.readAsDataURL(processedFile);
+      } catch (error) {
+        console.error('Image processing error:', error);
+        showToast('error', `Error processing image: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        setUploadingImage(false);
       }
-      reader.readAsDataURL(file)
     }
   }
 
-  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  const handleFileInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      handleImageSelect(file)
+      await handleImageSelect(file);
     }
   }
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(true)
+    e.preventDefault();
+    setIsDragOver(true);
   }
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
+    e.preventDefault();
+    setIsDragOver(false);
   }
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragOver(false)
-    const file = e.dataTransfer.files[0]
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files[0];
     if (file) {
-      handleImageSelect(file)
+      await handleImageSelect(file);
     }
   }
 
@@ -153,23 +171,47 @@ export default function ProgramsPage() {
   }
 
   const uploadImage = async (file: File): Promise<string> => {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('bucket', 'images')
-    formData.append('folder', 'programs')
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      throw new Error('File must be an image');
+    }
+    
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error(`File size (${formatFileSize(file.size)}) must be less than 5MB`);
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('bucket', 'images');
+    formData.append('folder', 'programs');
 
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData
-    })
+    });
 
+    // Check if response is OK before trying to parse JSON
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || 'Upload failed')
+      // Try to get error message from response
+      let errorMessage = `Upload failed with status ${response.status}`;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch (e) {
+        // If we can't parse JSON, try to get text
+        try {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        } catch (e) {
+          // If we can't get text, use the status
+        }
+      }
+      throw new Error(errorMessage);
     }
 
-    const { url } = await response.json()
-    return url
+    const data = await response.json();
+    return data.url;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -194,14 +236,60 @@ export default function ProgramsPage() {
       }
 
       if (editingProgram) {
-        // Update existing program - TODO: Implement PUT API endpoint
-        const updatedPrograms = programs.map(program =>
-          program.id === editingProgram.id
-            ? { ...program, ...formData, max_participants: parseInt(formData.max_participants), image_url: imageUrl }
-            : program
-        )
-        setPrograms(updatedPrograms)
-        showToast('success', 'Program updated successfully!')
+        // Update existing program via API
+        try {
+          const response = await fetch('/api/programs', {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: editingProgram.id,
+              title: formData.title,
+              description: formData.description,
+              category: formData.category,
+              start_date: formData.start_date,
+              end_date: formData.end_date,
+              location: formData.location,
+              max_participants: parseInt(formData.max_participants),
+              status: formData.status,
+              image_url: imageUrl
+            })
+          })
+
+          if (!response.ok) {
+            const errorData = await response.json()
+            throw new Error(errorData.error || 'Failed to update program')
+          }
+
+          const { program: apiProgram } = await response.json()
+          
+          // Transform API response to match our interface
+          const updatedProgram: Program = {
+            id: apiProgram.id,
+            title: apiProgram.title,
+            description: apiProgram.description || '',
+            category: apiProgram.category || 'General',
+            start_date: apiProgram.start_date || '',
+            end_date: apiProgram.end_date || '',
+            max_participants: apiProgram.max_participants || 0,
+            current_participants: apiProgram.current_participants || 0,
+            status: (apiProgram.status as 'active' | 'inactive' | 'completed') || 'active',
+            location: apiProgram.location || '',
+            image_url: apiProgram.image_url || '',
+            created_at: apiProgram.created_at
+          }
+          
+          // Update the program in the local state
+          setPrograms(prev => prev.map(program => 
+            program.id === editingProgram.id ? updatedProgram : program
+          ))
+          showToast('success', 'Program updated successfully!')
+        } catch (error) {
+          console.error('Error updating program:', error)
+          showToast('error', `Error updating program: ${error instanceof Error ? error.message : 'Unknown error'}`)
+          return
+        }
       } else {
         // Create new program via API
         const response = await fetch('/api/programs', {
@@ -239,8 +327,9 @@ export default function ProgramsPage() {
           end_date: apiProgram.end_date || '',
           max_participants: apiProgram.max_participants || 0,
           current_participants: 0, // New programs start with 0 participants
-          status: apiProgram.status || 'active',
+          status: (apiProgram.status as 'active' | 'inactive' | 'completed') || 'active',
           location: apiProgram.location || '',
+          image_url: apiProgram.image_url || '',
           created_at: apiProgram.created_at
         }
         
@@ -399,16 +488,31 @@ export default function ProgramsPage() {
           {filteredPrograms.map((program) => (
             <div key={program.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               {/* Program Image */}
-              {program.image_url && (
+              {program.image_url ? (
                 <div className="h-48 bg-gray-200">
                   <img
                     src={program.image_url}
                     alt={program.title}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none'
+                      const target = e.target as HTMLImageElement;
+                      target.style.display = 'none';
+                      const parent = target.parentNode as HTMLElement;
+                      if (parent) {
+                        parent.innerHTML = `
+                          <div class="w-full h-full flex items-center justify-center bg-gray-100">
+                            <svg class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        `;
+                      }
                     }}
                   />
+                </div>
+              ) : (
+                <div className="h-48 bg-gray-200 flex items-center justify-center">
+                  <Target className="h-16 w-16 text-gray-400" />
                 </div>
               )}
               
