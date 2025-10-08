@@ -56,7 +56,7 @@ export default function AboutPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">About Boa Me</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 pt-20">About Boa Me</h1>
           <p className="text-xl max-w-3xl mx-auto">
             Empowering Youth, Building Futures. Learn about our mission, vision, and the team 
             behind our commitment to youth development in Ghana.

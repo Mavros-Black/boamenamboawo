@@ -136,7 +136,7 @@ export default function ContactPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Contact Us</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 pt-20">Contact Us</h1>
           <p className="text-xl max-w-3xl mx-auto">
                          Get in touch with us. We&apos;d love to hear from you and answer any questions 
              you might have about our work and how you can get involved.

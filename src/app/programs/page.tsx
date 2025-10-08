@@ -83,7 +83,7 @@ export default function ProgramsPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Our Programs</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 pt-20">Our Programs</h1>
           <p className="text-xl max-w-3xl mx-auto">
             Discover our comprehensive range of programs designed to empower youth 
             and create lasting positive change in communities across Ghana.

@@ -125,7 +125,7 @@ export default function DonatePage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6">Make a Donation</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 pt-20">Make a Donation</h1>
           <p className="text-xl max-w-3xl mx-auto">
             Your donation directly supports our youth empowerment programs in Ghana. 
             Every contribution, no matter the size, makes a real difference.
