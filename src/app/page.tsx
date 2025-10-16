@@ -163,7 +163,7 @@ function DonationCard() {
             <p><span className="font-medium bold">Guarantee Trust Bank</span></p>
             <p>Bank Code: <span className="font-medium">230117</span></p>
             <p>Swift Code: <span className="font-medium">GTBIGHAC</span></p>
-            <p>Account Number: <span className="font-medium">321700100046</span></p>
+            <p>Account Number: <span className="font-medium">3217001000046</span></p>
             <p>Account Name: <span className="font-medium">Boame Youth Empowerment</span></p>
           </div>
         </div>
@@ -218,7 +218,7 @@ function DonationCard() {
           <p><span className="font-medium bold">Guarantee Trust Bank</span></p>
           <p>Bank Code: <span className="font-medium">230117</span></p>
           <p>Swift Code: <span className="font-medium">GTBIGHAC</span></p>
-          <p>Account Number: <span className="font-medium">321700100046</span></p>
+          <p>Account Number: <span className="font-medium">3217001000046</span></p>
           <p>Account Name: <span className="font-medium">Boame Youth Empowerment</span></p>
         </div>
       </div>

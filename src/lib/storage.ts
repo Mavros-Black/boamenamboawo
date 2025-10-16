@@ -36,10 +36,12 @@ export async function uploadImage(
     if (!currentUser) {
       try {
         const { data: { session: sessionData }, error: sessionError } = await supabase.auth.getSession()
-        if (!sessionError && sessionData?.user) {
-          currentUser = sessionData.user
+        if (!sessionError && sessionData) {
           session = sessionData
-          console.log('User found via session:', sessionData.user.id)
+          if (sessionData.user) {
+            currentUser = sessionData.user
+            console.log('User found via session:', sessionData.user.id)
+          }
         }
       } catch (error) {
         console.log('getSession failed')
@@ -47,13 +49,17 @@ export async function uploadImage(
     }
     
     // If still no user, try to refresh the session
-    if (!currentUser) {
+    if (!currentUser && session?.refresh_token) {
       try {
-        const { data: { session: refreshSession }, error: refreshError } = await supabase.auth.refreshSession()
+        const { data: { session: refreshSession }, error: refreshError } = await supabase.auth.refreshSession({
+          refresh_token: session.refresh_token
+        })
         if (!refreshError && refreshSession?.user) {
           currentUser = refreshSession.user
           session = refreshSession
           console.log('User found via refresh:', refreshSession.user.id)
+        } else if (refreshError) {
+          console.log('refreshSession failed', refreshError.message)
         }
       } catch (error) {
         console.log('refreshSession failed')

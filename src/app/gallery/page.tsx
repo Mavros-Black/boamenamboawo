@@ -137,6 +137,134 @@ export default function GalleryPage() {
       category: 'community',
       title: 'Volunteer Initiative',
       description: 'Youth volunteers making a positive impact in their communities'
+    },
+    {
+      id: 16,
+      src: '/images/gallery/16.jpg',
+      alt: 'STEM workshop demonstration',
+      category: 'programs',
+      title: 'STEM Innovation Lab',
+      description: 'Introducing young people to science and technology through hands-on projects'
+    },
+    {
+      id: 17,
+      src: '/images/gallery/17.jpg',
+      alt: 'Community clean-up activity',
+      category: 'community',
+      title: 'Clean-Up Campaign',
+      description: 'Volunteers working together to improve neighborhood environments'
+    },
+    {
+      id: 18,
+      src: '/images/gallery/18.jpg',
+      alt: 'Award presentation on stage',
+      category: 'events',
+      title: 'Youth Awards Night',
+      description: 'Celebrating outstanding youth achievements during an annual gala'
+    },
+    {
+      id: 19,
+      src: '/images/gallery/19.jpg',
+      alt: 'Agriculture training session',
+      category: 'programs',
+      title: 'Sustainable Farming',
+      description: 'Teaching modern agricultural techniques to empower young farmers'
+    },
+    {
+      id: 20,
+      src: '/images/gallery/20.jpg',
+      alt: 'Community health outreach',
+      category: 'community',
+      title: 'Health Awareness Drive',
+      description: 'Providing health education and screenings to local families'
+    },
+    {
+      id: 21,
+      src: '/images/gallery/21.jpg',
+      alt: 'Mentorship circle discussion',
+      category: 'programs',
+      title: 'Mentorship Circle',
+      description: 'Experienced mentors guiding youth through personal development goals'
+    },
+    {
+      id: 22,
+      src: '/images/gallery/22.jpg',
+      alt: 'Cultural festival performance',
+      category: 'events',
+      title: 'Cultural Festival',
+      description: 'Showcasing traditional arts and performances at a community event'
+    },
+    {
+      id: 23,
+      src: '/images/gallery/23.jpg',
+      alt: 'Community garden project',
+      category: 'community',
+      title: 'Urban Garden Initiative',
+      description: 'Transforming open spaces into productive community gardens'
+    },
+    {
+      id: 24,
+      src: '/images/gallery/24.jpg',
+      alt: 'Coding bootcamp session',
+      category: 'programs',
+      title: 'Code for Impact',
+      description: 'Equipping youth with software development skills for social change'
+    },
+    {
+      id: 25,
+      src: '/images/gallery/25.jpg',
+      alt: 'Networking reception at event',
+      category: 'events',
+      title: 'Community Networking',
+      description: 'Connecting partners and supporters during a special reception'
+    },
+    {
+      id: 26,
+      src: '/images/gallery/26.jpg',
+      alt: 'Neighborhood outreach visit',
+      category: 'community',
+      title: 'Door-to-Door Outreach',
+      description: 'Meeting families where they are to share program opportunities'
+    },
+    {
+      id: 27,
+      src: '/images/gallery/27.jpg',
+      alt: 'Business pitch coaching',
+      category: 'programs',
+      title: 'Enterprise Coaching',
+      description: 'Preparing young entrepreneurs to pitch their business ideas'
+    },
+    {
+      id: 28,
+      src: '/images/gallery/28.jpg',
+      alt: 'Outdoor community concert',
+      category: 'events',
+      title: 'Community Concert',
+      description: 'Bringing the community together through music and celebration'
+    },
+    {
+      id: 29,
+      src: '/images/gallery/29.jpg',
+      alt: 'Art therapy workshop',
+      category: 'programs',
+      title: 'Creative Arts Therapy',
+      description: 'Using art to promote healing and emotional wellbeing among youth'
+    },
+    {
+      id: 30,
+      src: '/images/gallery/30.jpg',
+      alt: 'Community sports day',
+      category: 'community',
+      title: 'Sports for Development',
+      description: 'Encouraging teamwork and healthy lifestyles through sports activities'
+    },
+    {
+      id: 31,
+      src: '/images/gallery/31.jpg',
+      alt: 'Panel discussion at conference',
+      category: 'events',
+      title: 'Youth Leadership Summit',
+      description: 'Key stakeholders discussing strategies for youth empowerment'
     }
   ]
 
@@ -180,7 +308,7 @@ export default function GalleryPage() {
           <h1 className="text-4xl md:text-5xl font-bold mb-6 pt-20">Photo Gallery</h1>
           <p className="text-xl max-w-3xl mx-auto">
             Capturing moments of empowerment, growth, and community impact. 
-            Explore 15 powerful images showcasing our youth development programs across Ghana.
+            Explore {galleryImages.length} powerful images showcasing our youth development programs across Ghana.
           </p>
         </div>
       </section>
