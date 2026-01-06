@@ -1,4 +1,5 @@
 import { Users, Target, Heart, MapPin, Phone, Mail } from 'lucide-react'
+import Image from 'next/image'
 
 export default function AboutPage() {
   const teamMembers = [
@@ -6,7 +7,7 @@ export default function AboutPage() {
       name: 'Boatemaa Wiredu',
       role: 'Founder',
       bio: 'Leading our organization with over 10 years of experience in youth development and community engagement.',
-      image: '/api/placeholder/150/150',
+      image: '/images/team/founder.jpg',
     },
     {
       name: 'Sonny Kwaku Bedwei',
@@ -18,7 +19,7 @@ export default function AboutPage() {
       name: 'Abraham Richardson',
       role: 'General Secretary',
       bio: 'Building partnerships and connecting with communities across Ghana.',
-      image: '/api/placeholder/150/150',
+      image: '/images/team/secetary.jpeg',
     },
     {
       name: 'Gloria Wiredu',
@@ -206,8 +207,18 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {teamMembers.map((member, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md text-center">
-                <div className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <Users className="h-12 w-12 text-gray-600" />
+                <div className="w-32 h-32 bg-gray-300 rounded-full mx-auto mb-4 overflow-hidden flex items-center justify-center">
+                  {member.image.startsWith('/images/') ? (
+                    <Image
+                      src={member.image}
+                      alt={member.name}
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Users className="h-12 w-12 text-gray-600" />
+                  )}
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">{member.name}</h3>
                 <p className="text-green-600 font-medium mb-3">{member.role}</p>
