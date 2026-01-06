@@ -7,7 +7,7 @@ export default function AboutPage() {
       name: 'Boatemaa Wiredu',
       role: 'Founder',
       bio: 'Leading our organization with over 10 years of experience in youth development and community engagement.',
-      image: '/images/team/founder.jpg',
+      image: '/images/team/founder.jpeg',
     },
     {
       name: 'Sonny Kwaku Bedwei',
