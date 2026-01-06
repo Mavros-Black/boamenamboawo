@@ -60,12 +60,13 @@ export default function DashboardTopNav({ onMenuClick, showMobileMenuButton = tr
             )}
             
             {/* Logo */}
-            <Link href="/dashboard" className="flex items-center">
-              <img 
-                src="/logo.svg" 
-                alt="BOA ME Youth Empowerment" 
+            <Link href="/dashboard" className="flex items-center space-x-2">
+              <img
+                src="/asset.png"
+                alt="BOA ME Youth Empowerment"
                 className="h-10 w-auto"
               />
+              <span className="text-lg font-bold text-gray-900">Boa Me</span>
             </Link>
           </div>
 

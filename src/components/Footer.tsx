@@ -58,9 +58,13 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Organization Info */}
           <div className="lg:col-span-1">
-            <div className="flex items-center mb-4">
-              <Heart className="h-8 w-8 text-green-400" />
-              <span className="ml-2 text-xl font-bold">Boa Me</span>
+            <div className="flex items-center space-x-2 mb-4">
+              <img
+                src="/asset.png"
+                alt="Boa Me Logo"
+                className="h-12 w-auto"
+              />
+              <span className="text-xl font-bold">Boa Me</span>
             </div>
             <p className="text-gray-300 mb-4">
               Empowering Youth, Building Futures. Join us in creating opportunities 

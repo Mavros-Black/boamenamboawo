@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     siteName: 'Boa Me Youth Empowerment',
     images: [
       {
-        url: '/logo.svg',
+        url: '/asset.png',
         width: 400,
         height: 120,
         alt: 'Boa Me Youth Empowerment Logo',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Boa Me Youth Empowerment',
     description: 'Empowering Youth, Building Futures. Join us in creating opportunities for young people in Ghana.',
-    images: ['/logo.svg'],
+    images: ['/asset.png'],
   },
 }
 

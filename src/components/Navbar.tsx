@@ -55,12 +55,13 @@ const Navbar = () => {
           <div className="w-full flex justify-between items-center px-4">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link href="/" className="flex items-center">
-                <img 
-                  src="/logo.svg" 
-                  alt="Boame Logo" 
+              <Link href="/" className="flex items-center space-x-2">
+                <img
+                  src="/asset.png"
+                  alt="Boame Logo"
                   className="h-12 w-auto drop-shadow-sm"
                 />
+                <span className="text-xl font-bold text-gray-900">Boa Me</span>
               </Link>
             </div>
 
@@ -86,12 +87,13 @@ const Navbar = () => {
             <div className="w-full max-w-7xl mx-auto flex justify-between items-center px-4">
               {/* Logo */}
               <div className="flex-shrink-0">
-                <Link href="/" className="flex items-center">
-                  <img 
-                    src="/logo.svg" 
-                    alt="Boame Logo" 
+                <Link href="/" className="flex items-center space-x-2">
+                  <img
+                    src="/asset.png"
+                    alt="Boame Logo"
                     className="h-12 w-auto drop-shadow-sm"
                   />
+                  <span className="text-xl font-bold text-gray-900">Boa Me</span>
                 </Link>
               </div>
 
