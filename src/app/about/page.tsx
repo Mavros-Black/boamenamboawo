@@ -3,25 +3,25 @@ import { Users, Target, Heart, MapPin, Phone, Mail } from 'lucide-react'
 export default function AboutPage() {
   const teamMembers = [
     {
-      name: 'Kwame Asante',
-      role: 'Executive Director',
+      name: 'Boatemaa Wiredu',
+      role: 'Founder',
       bio: 'Leading our organization with over 10 years of experience in youth development and community engagement.',
       image: '/api/placeholder/150/150',
     },
     {
-      name: 'Ama Osei',
-      role: 'Programs Manager',
+      name: 'Sonny Kwaku Bedwei',
+      role: 'Executive Director',
       bio: 'Overseeing our educational and skills training programs to ensure maximum impact.',
       image: '/api/placeholder/150/150',
     },
     {
-      name: 'Kofi Mensah',
-      role: 'Community Outreach Coordinator',
+      name: 'Abraham Richardson',
+      role: 'General Secretary',
       bio: 'Building partnerships and connecting with communities across Ghana.',
       image: '/api/placeholder/150/150',
     },
     {
-      name: 'Efua Addo',
+      name: 'Gloria Wiredu',
       role: 'Finance & Operations',
       bio: 'Managing our resources efficiently to maximize our impact on youth development.',
       image: '/api/placeholder/150/150',
