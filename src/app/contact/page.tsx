@@ -95,7 +95,7 @@ export default function ContactPage() {
     {
       icon: Phone,
       title: 'Phone',
-      value: '+233 54 481 8418',
+      value: '+233 24 529 0748',
       description: 'Mon-Fri from 8am to 6pm',
     },
     {

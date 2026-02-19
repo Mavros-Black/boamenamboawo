@@ -111,7 +111,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center">
                 <Phone className="h-5 w-5 text-green-400 mr-3" />
-                <span className="text-gray-300">+233 54 481 8418</span>
+                <span className="text-gray-300">+233 24 529 0748</span>
               </div>
               <div className="flex items-start">
                 <MapPin className="h-5 w-5 text-green-400 mr-3 mt-1" />
@@ -154,7 +154,7 @@ const Footer = () => {
             © {new Date().getFullYear()} Boa Me Youth Empowerment. All rights reserved.
           </p>
           <p className="text-gray-500 text-sm mt-2">
-            Registered NGO in Ghana | Tax ID: XXXXXXXX
+            Registered NGO in Ghana | Tax ID: XXXXXXXX | Designed with <Heart className="inline-block h-4 w-4 text-red-500"/> by <a href="https://mavrosblack.com" target="_blank" rel="noopener noreferrer" className="text-green-400 hover:text-green-300"> Mavros Black Team</a>
           </p>
         </div>
       </div>
