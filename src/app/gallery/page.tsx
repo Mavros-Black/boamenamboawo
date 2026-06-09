@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { X, ChevronLeft, ChevronRight, Camera, Users, Award } from 'lucide-react'
-import Image from 'next/image'
 
 export default function GalleryPage() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null)
@@ -16,257 +15,14 @@ export default function GalleryPage() {
     { id: 'community', name: 'Community', icon: Users }
   ]
 
-  // Gallery images from actual photos
-  const galleryImages = [
-    {
-      id: 1,
-      src: '/images/gallery/1.jpg',
-      alt: 'Youth empowerment activities in Taifa',
-      category: 'community',
-      title: 'Outreach & Engagement',
-      description: 'Local youth and volunteers gathered at the Taifa project center to kick off the community outreach initiative.'
-    },
-    {
-      id: 2,
-      src: '/images/gallery/2.jpg',
-      alt: 'Skills training workshop in Taifa',
-      category: 'programs',
-      title: 'Vocational Training',
-      description: 'Hands-on training session for young people developing practical vocational skills at our Taifa center.'
-    },
-    {
-      id: 3,
-      src: '/images/gallery/3.jpg',
-      alt: 'Educational program session in Taifa',
-      category: 'programs',
-      title: 'Literacy Workshop',
-      description: 'Interactive educational class focused on improving literacy and life skills for kids in Taifa.'
-    },
-    {
-      id: 4,
-      src: '/images/gallery/4.jpg',
-      alt: 'Community celebration event in Taifa',
-      category: 'events',
-      title: 'Launch Celebration',
-      description: 'Celebrating the official launch of the youth empowerment initiative with the Taifa community.'
-    },
-    {
-      id: 5,
-      src: '/images/gallery/5.jpg',
-      alt: 'Youth leadership training in Taifa',
-      category: 'programs',
-      title: 'Leadership Academy',
-      description: 'Empowering selected young leaders from Taifa to spearhead future community development.'
-    },
-    {
-      id: 6,
-      src: '/images/gallery/6.jpg',
-      alt: 'Community outreach activity in Taifa',
-      category: 'community',
-      title: 'Neighborhood Mobilization',
-      description: 'Working alongside Taifa local leaders to register participants for the upcoming training cohorts.'
-    },
-    {
-      id: 7,
-      src: '/images/gallery/7.jpg',
-      alt: 'Graduation ceremony in Taifa',
-      category: 'events',
-      title: 'First Cohort Graduation',
-      description: 'Celebrating the hard work and graduation of our first batch of vocational students in Taifa.'
-    },
-    {
-      id: 8,
-      src: '/images/gallery/8.jpg',
-      alt: 'Vocational training session in Taifa',
-      category: 'programs',
-      title: 'Hands-on Craftsmanship',
-      description: 'Practical workshop session in Taifa focusing on technical crafts and electrical installation basics.'
-    },
-    {
-      id: 9,
-      src: '/images/gallery/9.jpg',
-      alt: 'Youth empowerment gathering in Taifa',
-      category: 'community',
-      title: 'Youth Town Hall',
-      description: 'A collaborative meeting where Taifa youth discussed challenges and proposed local solutions.'
-    },
-    {
-      id: 10,
-      src: '/images/gallery/10.jpg',
-      alt: 'Special recognition event in Taifa',
-      category: 'events',
-      title: 'Meritorious Awards',
-      description: 'Recognizing outstanding student leaders and volunteers during the Taifa project evaluation ceremony.'
-    },
-    {
-      id: 11,
-      src: '/images/gallery/11.jpg',
-      alt: 'Entrepreneurship workshop in Taifa',
-      category: 'programs',
-      title: 'Entrepreneurship Boot Camp',
-      description: 'Instructing young Taifa entrepreneurs on financial literacy, budgeting, and startup management.'
-    },
-    {
-      id: 12,
-      src: '/images/gallery/12.jpg',
-      alt: 'Community development project in Taifa',
-      category: 'community',
-      title: 'Sanitation Infrastructure',
-      description: 'Collaborative effort by local youth to install waste management bins across the Taifa neighborhood.'
-    },
-    {
-      id: 13,
-      src: '/images/gallery/13.jpg',
-      alt: 'Annual conference event in Taifa',
-      category: 'events',
-      title: 'Annual Progress Summit',
-      description: 'Stakeholders and community members reviewing the social and economic impact of the project in Taifa.'
-    },
-    {
-      id: 14,
-      src: '/images/gallery/14.jpg',
-      alt: 'Technology skills training in Taifa',
-      category: 'programs',
-      title: 'Digital Literacy Class',
-      description: 'Introducing basic computer skills and internet safety to young students in the Taifa community.'
-    },
-    {
-      id: 15,
-      src: '/images/gallery/15.jpg',
-      alt: 'Community volunteer activity in Taifa',
-      category: 'community',
-      title: 'Sanitation Campaign',
-      description: 'Youth volunteer mobilization for clean-up exercises around local markets and drains in Taifa.'
-    },
-    {
-      id: 16,
-      src: '/images/gallery/16.jpg',
-      alt: 'STEM workshop demonstration in Taifa',
-      category: 'programs',
-      title: 'STEM Science Lab',
-      description: 'Exploring practical science and technology applications using lab equipment provided at our Taifa center.'
-    },
-    {
-      id: 17,
-      src: '/images/gallery/17.jpg',
-      alt: 'Community clean-up activity in Taifa',
-      category: 'community',
-      title: 'Environmental Awareness',
-      description: 'Educating local households in Taifa on plastic recycling and clean environmental habits.'
-    },
-    {
-      id: 18,
-      src: '/images/gallery/18.jpg',
-      alt: 'Award presentation on stage in Taifa',
-      category: 'events',
-      title: 'Gala Dinner',
-      description: 'A celebratory dinner in Taifa honoring our corporate sponsors, local chiefs, and partner organizations.'
-    },
-    {
-      id: 19,
-      src: '/images/gallery/19.jpg',
-      alt: 'Agriculture training session in Taifa',
-      category: 'programs',
-      title: 'Urban Agriculture',
-      description: 'Introducing modern backyard farming and organic vegetable cultivation to Taifa youth.'
-    },
-    {
-      id: 20,
-      src: '/images/gallery/20.jpg',
-      alt: 'Community health outreach in Taifa',
-      category: 'community',
-      title: 'Health & Screening Drive',
-      description: 'Providing free blood pressure checks, health education, and counseling to Taifa families.'
-    },
-    {
-      id: 21,
-      src: '/images/gallery/21.jpg',
-      alt: 'Mentorship circle discussion in Taifa',
-      category: 'programs',
-      title: 'Career Mentorship Circle',
-      description: 'Professional mentors discussing career pathways and CV writing tips with senior high graduates in Taifa.'
-    },
-    {
-      id: 22,
-      src: '/images/gallery/22.jpg',
-      alt: 'Cultural festival performance in Taifa',
-      category: 'events',
-      title: 'Cultural Showcase',
-      description: 'Youth displaying traditional drumming and dance performances during our cultural festival day in Taifa.'
-    },
-    {
-      id: 23,
-      src: '/images/gallery/23.jpg',
-      alt: 'Community garden project in Taifa',
-      category: 'community',
-      title: 'Community Garden',
-      description: 'Setting up green spaces and communal food gardens to promote self-sufficiency in Taifa.'
-    },
-    {
-      id: 24,
-      src: '/images/gallery/24.jpg',
-      alt: 'Coding bootcamp session in Taifa',
-      category: 'programs',
-      title: 'Code Training',
-      description: 'An intensive introductory course to HTML, CSS, and basic software development logic for Taifa youth.'
-    },
-    {
-      id: 25,
-      src: '/images/gallery/25.jpg',
-      alt: 'Networking reception at event in Taifa',
-      category: 'events',
-      title: 'Partners Round-table',
-      description: 'Connecting program graduates in Taifa with local employers and internship coordinators.'
-    },
-    {
-      id: 26,
-      src: '/images/gallery/26.jpg',
-      alt: 'Neighborhood outreach visit in Taifa',
-      category: 'community',
-      title: 'Home Outreach Visits',
-      description: 'Field officers visiting households in Taifa to check on the progress and wellbeing of training participants.'
-    },
-    {
-      id: 27,
-      src: '/images/gallery/27.jpg',
-      alt: 'Business pitch coaching in Taifa',
-      category: 'programs',
-      title: 'Pitching Competition',
-      description: 'Graduating entrepreneurship students pitching business ideas to a panel of local business leaders in Taifa.'
-    },
-    {
-      id: 28,
-      src: '/images/gallery/28.jpg',
-      alt: 'Outdoor community concert in Taifa',
-      category: 'events',
-      title: 'Peace Concert',
-      description: 'A massive community gathering in Taifa utilizing music to promote unity and peaceful coexistence among youth.'
-    },
-    {
-      id: 29,
-      src: '/images/gallery/29.jpg',
-      alt: 'Art therapy workshop in Taifa',
-      category: 'programs',
-      title: 'Creative Arts Workshop',
-      description: 'Providing creative outlets for youth expression through painting, sculpting, and design in Taifa.'
-    },
-    {
-      id: 30,
-      src: '/images/gallery/30.jpg',
-      alt: 'Community sports day in Taifa',
-      category: 'community',
-      title: 'Community Sports Gala',
-      description: 'Building teamwork, physical fitness, and friendly competition through soccer matches in Taifa.'
-    },
-    {
-      id: 31,
-      src: '/images/gallery/31.jpg',
-      alt: 'Panel discussion at conference in Taifa',
-      category: 'events',
-      title: 'Stakeholders Forum',
-      description: 'Reflecting on Taifa project milestones and planning for scalability to adjacent communities.'
-    }
-  ]
+  // Gallery images generated dynamically from actual photos (all currently under community category)
+  const galleryImages = Array.from({ length: 31 }, (_, i) => ({
+    id: i + 1,
+    src: `/images/gallery/${i + 1}.jpg`,
+    alt: 'Taifa Community Project',
+    category: 'community',
+    title: 'Taifa Community Project'
+  }))
 
   // Filter images based on selected category
   const filteredImages = selectedCategory === 'all' 
@@ -309,7 +65,7 @@ export default function GalleryPage() {
           <p className="text-lg text-green-100 font-medium mb-6 uppercase tracking-wider">Photo Gallery</p>
           <p className="text-xl max-w-3xl mx-auto">
             Capturing moments of empowerment, growth, and community impact. 
-            Explore {galleryImages.length} powerful images showcasing our youth development initiatives in Taifa.
+            Explore our powerful images showcasing the youth development initiatives in Taifa.
           </p>
         </div>
       </section>
@@ -323,16 +79,16 @@ export default function GalleryPage() {
               <div className="text-gray-600">Photos</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-green-600 mb-2">8</div>
-              <div className="text-gray-600">Events</div>
+              <div className="text-3xl font-bold text-green-600 mb-2">1</div>
+              <div className="text-gray-600">Project</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-green-600 mb-2">500+</div>
               <div className="text-gray-600">Youth Featured</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-green-600 mb-2">15+</div>
-              <div className="text-gray-600">Communities</div>
+              <div className="text-3xl font-bold text-green-600 mb-2">Taifa</div>
+              <div className="text-gray-600">Community</div>
             </div>
           </div>
         </div>
@@ -373,6 +129,9 @@ export default function GalleryPage() {
                     alt={image.alt}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
+                  <div className="absolute top-4 left-4 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                    {image.category}
+                  </div>
                 </div>
                 <div className="p-4 text-center">
                   <h3 className="text-base font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
