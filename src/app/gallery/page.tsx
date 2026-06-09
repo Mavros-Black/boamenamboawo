@@ -23,7 +23,7 @@ export default function GalleryPage() {
       src: '/images/gallery/1.jpg',
       alt: 'Youth empowerment activities in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Outreach & Engagement',
+      title: 'Outreach & Engagement',
       description: 'Local youth and volunteers gathered at the Taifa project center to kick off the community outreach initiative.'
     },
     {
@@ -31,7 +31,7 @@ export default function GalleryPage() {
       src: '/images/gallery/2.jpg',
       alt: 'Skills training workshop in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Vocational Training',
+      title: 'Vocational Training',
       description: 'Hands-on training session for young people developing practical vocational skills at our Taifa center.'
     },
     {
@@ -39,7 +39,7 @@ export default function GalleryPage() {
       src: '/images/gallery/3.jpg',
       alt: 'Educational program session in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Literacy Workshop',
+      title: 'Literacy Workshop',
       description: 'Interactive educational class focused on improving literacy and life skills for kids in Taifa.'
     },
     {
@@ -47,7 +47,7 @@ export default function GalleryPage() {
       src: '/images/gallery/4.jpg',
       alt: 'Community celebration event in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - Launch Celebration',
+      title: 'Launch Celebration',
       description: 'Celebrating the official launch of the youth empowerment initiative with the Taifa community.'
     },
     {
@@ -55,7 +55,7 @@ export default function GalleryPage() {
       src: '/images/gallery/5.jpg',
       alt: 'Youth leadership training in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Leadership Academy',
+      title: 'Leadership Academy',
       description: 'Empowering selected young leaders from Taifa to spearhead future community development.'
     },
     {
@@ -63,7 +63,7 @@ export default function GalleryPage() {
       src: '/images/gallery/6.jpg',
       alt: 'Community outreach activity in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Neighborhood Mobilization',
+      title: 'Neighborhood Mobilization',
       description: 'Working alongside Taifa local leaders to register participants for the upcoming training cohorts.'
     },
     {
@@ -71,7 +71,7 @@ export default function GalleryPage() {
       src: '/images/gallery/7.jpg',
       alt: 'Graduation ceremony in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - First Cohort Graduation',
+      title: 'First Cohort Graduation',
       description: 'Celebrating the hard work and graduation of our first batch of vocational students in Taifa.'
     },
     {
@@ -79,7 +79,7 @@ export default function GalleryPage() {
       src: '/images/gallery/8.jpg',
       alt: 'Vocational training session in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Hands-on Craftsmanship',
+      title: 'Hands-on Craftsmanship',
       description: 'Practical workshop session in Taifa focusing on technical crafts and electrical installation basics.'
     },
     {
@@ -87,7 +87,7 @@ export default function GalleryPage() {
       src: '/images/gallery/9.jpg',
       alt: 'Youth empowerment gathering in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Youth Town Hall',
+      title: 'Youth Town Hall',
       description: 'A collaborative meeting where Taifa youth discussed challenges and proposed local solutions.'
     },
     {
@@ -95,7 +95,7 @@ export default function GalleryPage() {
       src: '/images/gallery/10.jpg',
       alt: 'Special recognition event in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - Meritorious Awards',
+      title: 'Meritorious Awards',
       description: 'Recognizing outstanding student leaders and volunteers during the Taifa project evaluation ceremony.'
     },
     {
@@ -103,7 +103,7 @@ export default function GalleryPage() {
       src: '/images/gallery/11.jpg',
       alt: 'Entrepreneurship workshop in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Entrepreneurship Boot Camp',
+      title: 'Entrepreneurship Boot Camp',
       description: 'Instructing young Taifa entrepreneurs on financial literacy, budgeting, and startup management.'
     },
     {
@@ -111,7 +111,7 @@ export default function GalleryPage() {
       src: '/images/gallery/12.jpg',
       alt: 'Community development project in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Sanitation Infrastructure',
+      title: 'Sanitation Infrastructure',
       description: 'Collaborative effort by local youth to install waste management bins across the Taifa neighborhood.'
     },
     {
@@ -119,7 +119,7 @@ export default function GalleryPage() {
       src: '/images/gallery/13.jpg',
       alt: 'Annual conference event in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - Annual Progress Summit',
+      title: 'Annual Progress Summit',
       description: 'Stakeholders and community members reviewing the social and economic impact of the project in Taifa.'
     },
     {
@@ -127,7 +127,7 @@ export default function GalleryPage() {
       src: '/images/gallery/14.jpg',
       alt: 'Technology skills training in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Digital Literacy Class',
+      title: 'Digital Literacy Class',
       description: 'Introducing basic computer skills and internet safety to young students in the Taifa community.'
     },
     {
@@ -135,7 +135,7 @@ export default function GalleryPage() {
       src: '/images/gallery/15.jpg',
       alt: 'Community volunteer activity in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Sanitation Campaign',
+      title: 'Sanitation Campaign',
       description: 'Youth volunteer mobilization for clean-up exercises around local markets and drains in Taifa.'
     },
     {
@@ -143,7 +143,7 @@ export default function GalleryPage() {
       src: '/images/gallery/16.jpg',
       alt: 'STEM workshop demonstration in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - STEM Science Lab',
+      title: 'STEM Science Lab',
       description: 'Exploring practical science and technology applications using lab equipment provided at our Taifa center.'
     },
     {
@@ -151,7 +151,7 @@ export default function GalleryPage() {
       src: '/images/gallery/17.jpg',
       alt: 'Community clean-up activity in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Environmental Awareness',
+      title: 'Environmental Awareness',
       description: 'Educating local households in Taifa on plastic recycling and clean environmental habits.'
     },
     {
@@ -159,7 +159,7 @@ export default function GalleryPage() {
       src: '/images/gallery/18.jpg',
       alt: 'Award presentation on stage in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - Gala Dinner',
+      title: 'Gala Dinner',
       description: 'A celebratory dinner in Taifa honoring our corporate sponsors, local chiefs, and partner organizations.'
     },
     {
@@ -167,7 +167,7 @@ export default function GalleryPage() {
       src: '/images/gallery/19.jpg',
       alt: 'Agriculture training session in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Urban Agriculture',
+      title: 'Urban Agriculture',
       description: 'Introducing modern backyard farming and organic vegetable cultivation to Taifa youth.'
     },
     {
@@ -175,7 +175,7 @@ export default function GalleryPage() {
       src: '/images/gallery/20.jpg',
       alt: 'Community health outreach in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Health & Screening Drive',
+      title: 'Health & Screening Drive',
       description: 'Providing free blood pressure checks, health education, and counseling to Taifa families.'
     },
     {
@@ -183,7 +183,7 @@ export default function GalleryPage() {
       src: '/images/gallery/21.jpg',
       alt: 'Mentorship circle discussion in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Career Mentorship Circle',
+      title: 'Career Mentorship Circle',
       description: 'Professional mentors discussing career pathways and CV writing tips with senior high graduates in Taifa.'
     },
     {
@@ -191,7 +191,7 @@ export default function GalleryPage() {
       src: '/images/gallery/22.jpg',
       alt: 'Cultural festival performance in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - Cultural Showcase',
+      title: 'Cultural Showcase',
       description: 'Youth displaying traditional drumming and dance performances during our cultural festival day in Taifa.'
     },
     {
@@ -199,7 +199,7 @@ export default function GalleryPage() {
       src: '/images/gallery/23.jpg',
       alt: 'Community garden project in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Community Garden',
+      title: 'Community Garden',
       description: 'Setting up green spaces and communal food gardens to promote self-sufficiency in Taifa.'
     },
     {
@@ -207,7 +207,7 @@ export default function GalleryPage() {
       src: '/images/gallery/24.jpg',
       alt: 'Coding bootcamp session in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Code Training',
+      title: 'Code Training',
       description: 'An intensive introductory course to HTML, CSS, and basic software development logic for Taifa youth.'
     },
     {
@@ -215,7 +215,7 @@ export default function GalleryPage() {
       src: '/images/gallery/25.jpg',
       alt: 'Networking reception at event in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - Partners Round-table',
+      title: 'Partners Round-table',
       description: 'Connecting program graduates in Taifa with local employers and internship coordinators.'
     },
     {
@@ -223,7 +223,7 @@ export default function GalleryPage() {
       src: '/images/gallery/26.jpg',
       alt: 'Neighborhood outreach visit in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Home Outreach Visits',
+      title: 'Home Outreach Visits',
       description: 'Field officers visiting households in Taifa to check on the progress and wellbeing of training participants.'
     },
     {
@@ -231,7 +231,7 @@ export default function GalleryPage() {
       src: '/images/gallery/27.jpg',
       alt: 'Business pitch coaching in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Pitching Competition',
+      title: 'Pitching Competition',
       description: 'Graduating entrepreneurship students pitching business ideas to a panel of local business leaders in Taifa.'
     },
     {
@@ -239,7 +239,7 @@ export default function GalleryPage() {
       src: '/images/gallery/28.jpg',
       alt: 'Outdoor community concert in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - Peace Concert',
+      title: 'Peace Concert',
       description: 'A massive community gathering in Taifa utilizing music to promote unity and peaceful coexistence among youth.'
     },
     {
@@ -247,7 +247,7 @@ export default function GalleryPage() {
       src: '/images/gallery/29.jpg',
       alt: 'Art therapy workshop in Taifa',
       category: 'programs',
-      title: 'Taifa Community Project - Creative Arts Workshop',
+      title: 'Creative Arts Workshop',
       description: 'Providing creative outlets for youth expression through painting, sculpting, and design in Taifa.'
     },
     {
@@ -255,7 +255,7 @@ export default function GalleryPage() {
       src: '/images/gallery/30.jpg',
       alt: 'Community sports day in Taifa',
       category: 'community',
-      title: 'Taifa Community Project - Community Sports Gala',
+      title: 'Community Sports Gala',
       description: 'Building teamwork, physical fitness, and friendly competition through soccer matches in Taifa.'
     },
     {
@@ -263,7 +263,7 @@ export default function GalleryPage() {
       src: '/images/gallery/31.jpg',
       alt: 'Panel discussion at conference in Taifa',
       category: 'events',
-      title: 'Taifa Community Project - Stakeholders Forum',
+      title: 'Stakeholders Forum',
       description: 'Reflecting on Taifa project milestones and planning for scalability to adjacent communities.'
     }
   ]
@@ -305,10 +305,11 @@ export default function GalleryPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-6 pt-20">Photo Gallery</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 pt-20">Taifa Community Project</h1>
+          <p className="text-lg text-green-100 font-medium mb-6 uppercase tracking-wider">Photo Gallery</p>
           <p className="text-xl max-w-3xl mx-auto">
             Capturing moments of empowerment, growth, and community impact. 
-            Explore {galleryImages.length} powerful images showcasing our youth development programs across Ghana.
+            Explore {galleryImages.length} powerful images showcasing our youth development initiatives in Taifa.
           </p>
         </div>
       </section>
@@ -378,6 +379,9 @@ export default function GalleryPage() {
                 </div>
                 <div className="p-5 flex-grow flex flex-col justify-between">
                   <div>
+                    <span className="text-xs font-semibold text-green-600 uppercase tracking-wider block mb-1">
+                      Taifa Community Project
+                    </span>
                     <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
                       {image.title}
                     </h3>
@@ -447,6 +451,9 @@ export default function GalleryPage() {
                   
                   {/* Image Info */}
                   <div className="text-white mt-4">
+                    <span className="text-sm font-semibold text-green-400 uppercase tracking-wider block mb-1">
+                      Taifa Community Project
+                    </span>
                     <h3 className="text-xl font-semibold mb-2">{selectedImageData.title}</h3>
                     <p className="text-gray-300">{selectedImageData.description}</p>
                   </div>
