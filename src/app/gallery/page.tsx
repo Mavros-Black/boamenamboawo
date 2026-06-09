@@ -21,250 +21,250 @@ export default function GalleryPage() {
     {
       id: 1,
       src: '/images/gallery/1.jpg',
-      alt: 'Youth empowerment activities',
+      alt: 'Youth empowerment activities in Taifa',
       category: 'community',
-      title: 'Taifa Community Project',
-      description: 'Youth actively participating in community development and cleanup initiatives in Taifa.'
+      title: 'Taifa Community Project - Outreach & Engagement',
+      description: 'Local youth and volunteers gathered at the Taifa project center to kick off the community outreach initiative.'
     },
     {
       id: 2,
       src: '/images/gallery/2.jpg',
-      alt: 'Skills training workshop',
+      alt: 'Skills training workshop in Taifa',
       category: 'programs',
-      title: 'Chorkor Skills Center',
-      description: 'Hands-on vocational training session building practical skills for youth in Chorkor.'
+      title: 'Taifa Community Project - Vocational Training',
+      description: 'Hands-on training session for young people developing practical vocational skills at our Taifa center.'
     },
     {
       id: 3,
       src: '/images/gallery/3.jpg',
-      alt: 'Educational program session',
+      alt: 'Educational program session in Taifa',
       category: 'programs',
-      title: 'Jamestown Educational Workshop',
-      description: 'Interactive learning environment fostering knowledge, literacy, and growth in Jamestown.'
+      title: 'Taifa Community Project - Literacy Workshop',
+      description: 'Interactive educational class focused on improving literacy and life skills for kids in Taifa.'
     },
     {
       id: 4,
       src: '/images/gallery/4.jpg',
-      alt: 'Community celebration event',
+      alt: 'Community celebration event in Taifa',
       category: 'events',
-      title: 'Madina Community Celebration',
-      description: 'Celebrating local milestones and youth achievements with the Madina community.'
+      title: 'Taifa Community Project - Launch Celebration',
+      description: 'Celebrating the official launch of the youth empowerment initiative with the Taifa community.'
     },
     {
       id: 5,
       src: '/images/gallery/5.jpg',
-      alt: 'Youth leadership training',
+      alt: 'Youth leadership training in Taifa',
       category: 'programs',
-      title: 'Tema Leadership Academy',
-      description: 'Empowering young leaders in Tema to drive positive social change.'
+      title: 'Taifa Community Project - Leadership Academy',
+      description: 'Empowering selected young leaders from Taifa to spearhead future community development.'
     },
     {
       id: 6,
       src: '/images/gallery/6.jpg',
-      alt: 'Community outreach activity',
+      alt: 'Community outreach activity in Taifa',
       category: 'community',
-      title: 'Kumasi Community Outreach',
-      description: 'Extending our outreach programs to support communities and young farmers in Kumasi.'
+      title: 'Taifa Community Project - Neighborhood Mobilization',
+      description: 'Working alongside Taifa local leaders to register participants for the upcoming training cohorts.'
     },
     {
       id: 7,
       src: '/images/gallery/7.jpg',
-      alt: 'Graduation ceremony',
+      alt: 'Graduation ceremony in Taifa',
       category: 'events',
-      title: 'Cape Coast Program Graduation',
-      description: 'Celebrating the success of Cape Coast vocational program participants and graduates.'
+      title: 'Taifa Community Project - First Cohort Graduation',
+      description: 'Celebrating the hard work and graduation of our first batch of vocational students in Taifa.'
     },
     {
       id: 8,
       src: '/images/gallery/8.jpg',
-      alt: 'Vocational training session',
+      alt: 'Vocational training session in Taifa',
       category: 'programs',
-      title: 'Koforidua Vocational Workshop',
-      description: 'Practical skills training preparing youth for meaningful employment in Koforidua.'
+      title: 'Taifa Community Project - Hands-on Craftsmanship',
+      description: 'Practical workshop session in Taifa focusing on technical crafts and electrical installation basics.'
     },
     {
       id: 9,
       src: '/images/gallery/9.jpg',
-      alt: 'Youth empowerment gathering',
+      alt: 'Youth empowerment gathering in Taifa',
       category: 'community',
-      title: 'Tamale Youth Gathering',
-      description: 'Young people in Tamale coming together to share experiences and build networks.'
+      title: 'Taifa Community Project - Youth Town Hall',
+      description: 'A collaborative meeting where Taifa youth discussed challenges and proposed local solutions.'
     },
     {
       id: 10,
       src: '/images/gallery/10.jpg',
-      alt: 'Special recognition event',
+      alt: 'Special recognition event in Taifa',
       category: 'events',
-      title: 'Ho Recognition Ceremony',
-      description: 'Honoring outstanding youth achievements and community contributions in Ho.'
+      title: 'Taifa Community Project - Meritorious Awards',
+      description: 'Recognizing outstanding student leaders and volunteers during the Taifa project evaluation ceremony.'
     },
     {
       id: 11,
       src: '/images/gallery/11.jpg',
-      alt: 'Entrepreneurship workshop',
+      alt: 'Entrepreneurship workshop in Taifa',
       category: 'programs',
-      title: 'Ashaiman Entrepreneurship Boot Camp',
-      description: 'Teaching business skills and fostering entrepreneurial spirit in Ashaiman.'
+      title: 'Taifa Community Project - Entrepreneurship Boot Camp',
+      description: 'Instructing young Taifa entrepreneurs on financial literacy, budgeting, and startup management.'
     },
     {
       id: 12,
       src: '/images/gallery/12.jpg',
-      alt: 'Community development project',
+      alt: 'Community development project in Taifa',
       category: 'community',
-      title: 'Nima Infrastructure Project',
-      description: 'Collaborative youth-led efforts to improve local community infrastructure in Nima.'
+      title: 'Taifa Community Project - Sanitation Infrastructure',
+      description: 'Collaborative effort by local youth to install waste management bins across the Taifa neighborhood.'
     },
     {
       id: 13,
       src: '/images/gallery/13.jpg',
-      alt: 'Annual conference event',
+      alt: 'Annual conference event in Taifa',
       category: 'events',
-      title: 'Osu Annual Planning Conference',
-      description: 'Bringing together key stakeholders in Osu to design future youth initiatives.'
+      title: 'Taifa Community Project - Annual Progress Summit',
+      description: 'Stakeholders and community members reviewing the social and economic impact of the project in Taifa.'
     },
     {
       id: 14,
       src: '/images/gallery/14.jpg',
-      alt: 'Technology skills training',
+      alt: 'Technology skills training in Taifa',
       category: 'programs',
-      title: 'Labadi Beach Conservation Hub',
-      description: 'Preparing youth for environmental leadership and ocean conservation at Labadi.'
+      title: 'Taifa Community Project - Digital Literacy Class',
+      description: 'Introducing basic computer skills and internet safety to young students in the Taifa community.'
     },
     {
       id: 15,
       src: '/images/gallery/15.jpg',
-      alt: 'Community volunteer activity',
+      alt: 'Community volunteer activity in Taifa',
       category: 'community',
-      title: 'Dansoman Youth Initiative',
-      description: 'Youth volunteers making a positive impact on digital literacy in Dansoman.'
+      title: 'Taifa Community Project - Sanitation Campaign',
+      description: 'Youth volunteer mobilization for clean-up exercises around local markets and drains in Taifa.'
     },
     {
       id: 16,
       src: '/images/gallery/16.jpg',
-      alt: 'STEM workshop demonstration',
+      alt: 'STEM workshop demonstration in Taifa',
       category: 'programs',
-      title: 'Spintex Tech & Innovation Lab',
-      description: 'Introducing young people to programming and electronics at our Spintex hub.'
+      title: 'Taifa Community Project - STEM Science Lab',
+      description: 'Exploring practical science and technology applications using lab equipment provided at our Taifa center.'
     },
     {
       id: 17,
       src: '/images/gallery/17.jpg',
-      alt: 'Community clean-up activity',
+      alt: 'Community clean-up activity in Taifa',
       category: 'community',
-      title: 'Legon Environmental Campaign',
-      description: 'Students and local youth working together for clean-up and sanitation campaigns near Legon.'
+      title: 'Taifa Community Project - Environmental Awareness',
+      description: 'Educating local households in Taifa on plastic recycling and clean environmental habits.'
     },
     {
       id: 18,
       src: '/images/gallery/18.jpg',
-      alt: 'Award presentation on stage',
+      alt: 'Award presentation on stage in Taifa',
       category: 'events',
-      title: 'Dome Youth Gala Night',
-      description: 'Celebrating achievements during the annual youth awards ceremony in Dome.'
+      title: 'Taifa Community Project - Gala Dinner',
+      description: 'A celebratory dinner in Taifa honoring our corporate sponsors, local chiefs, and partner organizations.'
     },
     {
       id: 19,
       src: '/images/gallery/19.jpg',
-      alt: 'Agriculture training session',
+      alt: 'Agriculture training session in Taifa',
       category: 'programs',
-      title: 'Achimota Sustainable Farm',
-      description: 'Teaching modern agricultural techniques and smart farming practices in Achimota.'
+      title: 'Taifa Community Project - Urban Agriculture',
+      description: 'Introducing modern backyard farming and organic vegetable cultivation to Taifa youth.'
     },
     {
       id: 20,
       src: '/images/gallery/20.jpg',
-      alt: 'Community health outreach',
+      alt: 'Community health outreach in Taifa',
       category: 'community',
-      title: 'Gbawe Health Outreach Drive',
-      description: 'Providing vital health education and basic medical screenings to families in Gbawe.'
+      title: 'Taifa Community Project - Health & Screening Drive',
+      description: 'Providing free blood pressure checks, health education, and counseling to Taifa families.'
     },
     {
       id: 21,
       src: '/images/gallery/21.jpg',
-      alt: 'Mentorship circle discussion',
+      alt: 'Mentorship circle discussion in Taifa',
       category: 'programs',
-      title: 'Kwabenya Mentorship Circle',
-      description: 'Experienced professionals guiding local youth through career development goals in Kwabenya.'
+      title: 'Taifa Community Project - Career Mentorship Circle',
+      description: 'Professional mentors discussing career pathways and CV writing tips with senior high graduates in Taifa.'
     },
     {
       id: 22,
       src: '/images/gallery/22.jpg',
-      alt: 'Cultural festival performance',
+      alt: 'Cultural festival performance in Taifa',
       category: 'events',
-      title: 'Adenta Cultural Celebration',
-      description: 'Showcasing traditional Ghanaian arts and music at our Adenta community event.'
+      title: 'Taifa Community Project - Cultural Showcase',
+      description: 'Youth displaying traditional drumming and dance performances during our cultural festival day in Taifa.'
     },
     {
       id: 23,
       src: '/images/gallery/23.jpg',
-      alt: 'Community garden project',
+      alt: 'Community garden project in Taifa',
       category: 'community',
-      title: 'Tesano Urban Garden Project',
-      description: 'Transforming vacant city spaces in Tesano into productive vegetable gardens.'
+      title: 'Taifa Community Project - Community Garden',
+      description: 'Setting up green spaces and communal food gardens to promote self-sufficiency in Taifa.'
     },
     {
       id: 24,
       src: '/images/gallery/24.jpg',
-      alt: 'Coding bootcamp session',
+      alt: 'Coding bootcamp session in Taifa',
       category: 'programs',
-      title: 'Cantonments Coding Bootcamp',
-      description: 'Equipping youth in Accra with advanced web development skills for the future.'
+      title: 'Taifa Community Project - Code Training',
+      description: 'An intensive introductory course to HTML, CSS, and basic software development logic for Taifa youth.'
     },
     {
       id: 25,
       src: '/images/gallery/25.jpg',
-      alt: 'Networking reception at event',
+      alt: 'Networking reception at event in Taifa',
       category: 'events',
-      title: 'Kasoa Networking Hub',
-      description: 'Connecting young change-makers and business partners during a networking event in Kasoa.'
+      title: 'Taifa Community Project - Partners Round-table',
+      description: 'Connecting program graduates in Taifa with local employers and internship coordinators.'
     },
     {
       id: 26,
       src: '/images/gallery/26.jpg',
-      alt: 'Neighborhood outreach visit',
+      alt: 'Neighborhood outreach visit in Taifa',
       category: 'community',
-      title: 'Sakumono Neighborhood Visit',
-      description: 'Meeting families in Sakumono to share vocational scholarship and training opportunities.'
+      title: 'Taifa Community Project - Home Outreach Visits',
+      description: 'Field officers visiting households in Taifa to check on the progress and wellbeing of training participants.'
     },
     {
       id: 27,
       src: '/images/gallery/27.jpg',
-      alt: 'Business pitch coaching',
+      alt: 'Business pitch coaching in Taifa',
       category: 'programs',
-      title: 'Teshie Business Coaching Hub',
-      description: 'Preparing local startup founders in Teshie to pitch their projects to investors.'
+      title: 'Taifa Community Project - Pitching Competition',
+      description: 'Graduating entrepreneurship students pitching business ideas to a panel of local business leaders in Taifa.'
     },
     {
       id: 28,
       src: '/images/gallery/28.jpg',
-      alt: 'Outdoor community concert',
+      alt: 'Outdoor community concert in Taifa',
       category: 'events',
-      title: 'Korle Gonno Youth Concert',
-      description: 'Uniting local youth and families through music and creative arts in Korle Gonno.'
+      title: 'Taifa Community Project - Peace Concert',
+      description: 'A massive community gathering in Taifa utilizing music to promote unity and peaceful coexistence among youth.'
     },
     {
       id: 29,
       src: '/images/gallery/29.jpg',
-      alt: 'Art therapy workshop',
+      alt: 'Art therapy workshop in Taifa',
       category: 'programs',
-      title: 'Lapaz Creative Expression Workshop',
-      description: 'Using visual arts to build self-confidence and mental wellbeing among Lapaz youth.'
+      title: 'Taifa Community Project - Creative Arts Workshop',
+      description: 'Providing creative outlets for youth expression through painting, sculpting, and design in Taifa.'
     },
     {
       id: 30,
       src: '/images/gallery/30.jpg',
-      alt: 'Community sports day',
+      alt: 'Community sports day in Taifa',
       category: 'community',
-      title: 'East Legon Athletic Club',
-      description: 'Fostering teamwork, discipline, and healthy living through community sports in East Legon.'
+      title: 'Taifa Community Project - Community Sports Gala',
+      description: 'Building teamwork, physical fitness, and friendly competition through soccer matches in Taifa.'
     },
     {
       id: 31,
       src: '/images/gallery/31.jpg',
-      alt: 'Panel discussion at conference',
+      alt: 'Panel discussion at conference in Taifa',
       category: 'events',
-      title: 'Accra Youth Leadership Summit',
-      description: 'National and regional stakeholders discussing the future of youth empowerment in Ghana.'
+      title: 'Taifa Community Project - Stakeholders Forum',
+      description: 'Reflecting on Taifa project milestones and planning for scalability to adjacent communities.'
     }
   ]
 
