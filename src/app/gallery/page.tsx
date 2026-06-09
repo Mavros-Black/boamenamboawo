@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { X, ChevronLeft, ChevronRight, Camera, Users, Award } from 'lucide-react'
 
 export default function GalleryPage() {
-  const [selectedImage, setSelectedImage] = useState<number | null>(null)
+  const [expandedProject, setExpandedProject] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [selectedImage, setSelectedImage] = useState<number | null>(null)
 
   // Gallery categories
   const categories = [
@@ -15,19 +16,41 @@ export default function GalleryPage() {
     { id: 'community', name: 'Community', icon: Users }
   ]
 
-  // Gallery images generated dynamically from actual photos (all currently under community category)
-  const galleryImages = Array.from({ length: 31 }, (_, i) => ({
-    id: i + 1,
-    src: `/images/gallery/${i + 1}.jpg`,
-    alt: 'Taifa Community Project',
-    category: 'community',
-    title: 'Taifa Community Project'
-  }))
+  // Projects list
+  const projects = [
+    {
+      id: 'taifa',
+      title: 'Taifa Community Project',
+      category: 'community',
+      imageCount: 31,
+      coverImage: '/images/gallery/1.jpg',
+      images: Array.from({ length: 31 }, (_, i) => `/images/gallery/${i + 1}.jpg`)
+    }
+  ]
 
-  // Filter images based on selected category
-  const filteredImages = selectedCategory === 'all' 
-    ? galleryImages 
-    : galleryImages.filter(img => img.category === selectedCategory)
+  // Filter projects in project list view
+  const filteredProjects = selectedCategory === 'all'
+    ? projects
+    : projects.filter(p => p.category === selectedCategory)
+
+  // Find currently active expanded project
+  const currentProject = projects.find(p => p.id === expandedProject)
+
+  // Get project images
+  const projectImages = currentProject
+    ? Array.from({ length: currentProject.imageCount }, (_, i) => ({
+        id: i + 1,
+        src: `/images/gallery/${i + 1}.jpg`,
+        alt: currentProject.title,
+        category: 'community', // Current pictures are all community category
+        title: currentProject.title
+      }))
+    : []
+
+  // Filter images inside expanded project view
+  const filteredImages = selectedCategory === 'all'
+    ? projectImages
+    : projectImages.filter(img => img.category === selectedCategory)
 
   const openModal = (imageId: number) => {
     setSelectedImage(imageId)
@@ -61,38 +84,45 @@ export default function GalleryPage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-green-600 to-green-800 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-3 pt-20">Taifa Community Project</h1>
-          <p className="text-lg text-green-100 font-medium mb-6 uppercase tracking-wider">Photo Gallery</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-3 pt-20">
+            {expandedProject && currentProject ? currentProject.title : 'Photo Gallery'}
+          </h1>
+          <p className="text-lg text-green-100 font-medium mb-6 uppercase tracking-wider">
+            {expandedProject && currentProject ? 'Project Images' : 'Youth Empowerment Initiatives'}
+          </p>
           <p className="text-xl max-w-3xl mx-auto">
-            Capturing moments of empowerment, growth, and community impact. 
-            Explore our powerful images showcasing the youth development initiatives in Taifa.
+            {expandedProject && currentProject
+              ? `Exploring the impact of the ${currentProject.title} through our visual journey.`
+              : 'Capturing moments of empowerment, growth, and community impact across our projects.'}
           </p>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-3xl font-bold text-green-600 mb-2">{galleryImages.length}</div>
-              <div className="text-gray-600">Photos</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-green-600 mb-2">1</div>
-              <div className="text-gray-600">Project</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-green-600 mb-2">500+</div>
-              <div className="text-gray-600">Youth Featured</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-green-600 mb-2">Taifa</div>
-              <div className="text-gray-600">Community</div>
+      {!expandedProject && (
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-3xl font-bold text-green-600 mb-2">31</div>
+                <div className="text-gray-600">Photos</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-green-600 mb-2">{projects.length}</div>
+                <div className="text-gray-600">Active Projects</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-green-600 mb-2">500+</div>
+                <div className="text-gray-600">Youth Featured</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-green-600 mb-2">Ghana</div>
+                <div className="text-gray-600">Communities</div>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Gallery Section */}
       <section className="py-16">
@@ -115,45 +145,124 @@ export default function GalleryPage() {
             ))}
           </div>
 
-          {/* Image Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredImages.map((image) => (
-              <div
-                key={image.id}
-                className="group bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden flex flex-col border border-gray-100"
-                onClick={() => openModal(image.id)}
-              >
-                <div className="relative h-64 overflow-hidden">
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-4 left-4 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                    {image.category}
-                  </div>
-                </div>
-                <div className="p-4 text-center">
-                  <h3 className="text-base font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
-                    {image.title}
-                  </h3>
+          {expandedProject && currentProject ? (
+            /* EXPANDED VIEW: MASONRY GRID OF PROJECT IMAGES */
+            <div>
+              {/* Back Button and Context info */}
+              <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <button
+                  onClick={() => setExpandedProject(null)}
+                  className="flex items-center text-green-600 hover:text-green-700 font-semibold transition-colors self-start"
+                >
+                  <ChevronLeft className="h-5 w-5 mr-1" />
+                  Back to Projects
+                </button>
+                <div className="text-gray-500 text-sm font-medium">
+                  Showing {filteredImages.length} of {currentProject.imageCount} photos
                 </div>
               </div>
-            ))}
-          </div>
 
-          {/* Empty State */}
-          {filteredImages.length === 0 && (
-            <div className="text-center py-12">
-              <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No photos found</h3>
-              <p className="text-gray-500">Try selecting a different category.</p>
+              {/* Masonry Grid */}
+              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                {filteredImages.map((image) => (
+                  <div
+                    key={image.id}
+                    className="break-inside-avoid bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 flex flex-col"
+                    onClick={() => openModal(image.id)}
+                  >
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 left-4 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                        {image.category}
+                      </div>
+                    </div>
+                    <div className="p-4 text-center">
+                      <h3 className="text-base font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
+                        {image.title}
+                      </h3>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Empty State */}
+              {filteredImages.length === 0 && (
+                <div className="text-center py-12">
+                  <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-600 mb-2">No photos found</h3>
+                  <p className="text-gray-500">Try selecting a different category filter.</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* PROJECT LIST VIEW: STACKED PHOTO DECKS */
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 pt-6">
+                {filteredProjects.map((project) => (
+                  <div
+                    key={project.id}
+                    onClick={() => setExpandedProject(project.id)}
+                    className="group relative w-full max-w-sm mx-auto h-96 cursor-pointer"
+                  >
+                    {/* Third photo (bottom of stack) */}
+                    <div className="absolute inset-0 bg-white rounded-xl shadow-md border border-gray-100 transform -rotate-3 translate-y-2 translate-x-1 group-hover:-rotate-6 group-hover:translate-y-4 transition-all duration-300 overflow-hidden">
+                      <img
+                        src={project.images[2] || project.coverImage}
+                        alt=""
+                        className="w-full h-full object-cover opacity-60"
+                      />
+                    </div>
+                    {/* Second photo (middle of stack) */}
+                    <div className="absolute inset-0 bg-white rounded-xl shadow-md border border-gray-100 transform rotate-2 -translate-y-1 translate-x-2 group-hover:rotate-4 group-hover:-translate-y-2 group-hover:translate-x-4 transition-all duration-300 overflow-hidden">
+                      <img
+                        src={project.images[1] || project.coverImage}
+                        alt=""
+                        className="w-full h-full object-cover opacity-80"
+                      />
+                    </div>
+                    {/* Top photo (main card) */}
+                    <div className="absolute inset-0 bg-white rounded-xl shadow-lg border border-gray-200 transform group-hover:-translate-y-4 transition-all duration-300 overflow-hidden flex flex-col">
+                      <div className="relative h-72 w-full overflow-hidden">
+                        <img
+                          src={project.coverImage}
+                          alt={project.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute top-4 left-4 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                          {project.category}
+                        </div>
+                        <div className="absolute bottom-4 right-4 bg-black/60 text-white text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm">
+                          {project.imageCount} Photos
+                        </div>
+                      </div>
+                      <div className="p-4 flex-grow flex items-center justify-center text-center">
+                        <h3 className="text-lg font-bold text-gray-950 group-hover:text-green-600 transition-colors">
+                          {project.title}
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Empty State */}
+              {filteredProjects.length === 0 && (
+                <div className="text-center py-12">
+                  <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-600 mb-2">No projects found</h3>
+                  <p className="text-gray-500">Try selecting a different category.</p>
+                </div>
+              )}
             </div>
           )}
         </div>
       </section>
 
-      {/* Modal */}
+      {/* Modal Lightbox */}
       {selectedImage && selectedImageData && (
         <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
           <div className="relative max-w-4xl max-h-full p-4">
