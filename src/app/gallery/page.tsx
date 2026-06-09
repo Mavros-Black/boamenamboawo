@@ -373,26 +373,11 @@ export default function GalleryPage() {
                     alt={image.alt}
                     className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-4 left-4 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                    {image.category}
-                  </div>
                 </div>
-                <div className="p-5 flex-grow flex flex-col justify-between">
-                  <div>
-                    <span className="text-xs font-semibold text-green-600 uppercase tracking-wider block mb-1">
-                      Taifa Community Project
-                    </span>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-green-600 transition-colors">
-                      {image.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 line-clamp-2">
-                      {image.description}
-                    </p>
-                  </div>
-                  <div className="mt-4 pt-3 border-t border-gray-50 flex items-center justify-between text-xs text-gray-400">
-                    <span>View full photo</span>
-                    <span className="text-green-600 font-semibold group-hover:underline">Click to open &rarr;</span>
-                  </div>
+                <div className="p-4 text-center">
+                  <h3 className="text-base font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
+                    {image.title}
+                  </h3>
                 </div>
               </div>
             ))}
@@ -451,11 +436,7 @@ export default function GalleryPage() {
                   
                   {/* Image Info */}
                   <div className="text-white mt-4">
-                    <span className="text-sm font-semibold text-green-400 uppercase tracking-wider block mb-1">
-                      Taifa Community Project
-                    </span>
-                    <h3 className="text-xl font-semibold mb-2">{selectedImageData.title}</h3>
-                    <p className="text-gray-300">{selectedImageData.description}</p>
+                    <h3 className="text-lg font-medium">{selectedImageData.title}</h3>
                   </div>
                 </>
               )}
