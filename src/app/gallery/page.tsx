@@ -25,6 +25,22 @@ export default function GalleryPage() {
       imageCount: 31,
       coverImage: '/images/gallery/1.jpg',
       images: Array.from({ length: 31 }, (_, i) => `/images/gallery/${i + 1}.jpg`)
+    },
+    {
+      id: 'youth-boys-event',
+      title: 'Youth Boys Event',
+      category: 'events',
+      imageCount: 0,
+      coverImage: '',
+      images: []
+    },
+    {
+      id: 'boy-football-games',
+      title: 'boy Football Games',
+      category: 'events',
+      imageCount: 0,
+      coverImage: '',
+      images: []
     }
   ]
 
@@ -42,7 +58,7 @@ export default function GalleryPage() {
         id: i + 1,
         src: `/images/gallery/${i + 1}.jpg`,
         alt: currentProject.title,
-        category: 'community', // Current pictures are all community category
+        category: currentProject.category,
         title: currentProject.title
       }))
     : []
@@ -163,38 +179,42 @@ export default function GalleryPage() {
               </div>
 
               {/* Masonry Grid */}
-              <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-                {filteredImages.map((image) => (
-                  <div
-                    key={image.id}
-                    className="break-inside-avoid bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 flex flex-col"
-                    onClick={() => openModal(image.id)}
-                  >
-                    <div className="relative overflow-hidden">
-                      <img
-                        src={image.src}
-                        alt={image.alt}
-                        className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
-                      />
-                      <div className="absolute top-4 left-4 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
-                        {image.category}
+              {filteredImages.length > 0 && (
+                <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+                  {filteredImages.map((image) => (
+                    <div
+                      key={image.id}
+                      className="break-inside-avoid bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100 flex flex-col"
+                      onClick={() => openModal(image.id)}
+                    >
+                      <div className="relative overflow-hidden">
+                        <img
+                          src={image.src}
+                          alt={image.alt}
+                          className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute top-4 left-4 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
+                          {image.category}
+                        </div>
+                      </div>
+                      <div className="p-4 text-center">
+                        <h3 className="text-base font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
+                          {image.title}
+                        </h3>
                       </div>
                     </div>
-                    <div className="p-4 text-center">
-                      <h3 className="text-base font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
-                        {image.title}
-                      </h3>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
 
               {/* Empty State */}
               {filteredImages.length === 0 && (
-                <div className="text-center py-12">
-                  <Camera className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-600 mb-2">No photos found</h3>
-                  <p className="text-gray-500">Try selecting a different category filter.</p>
+                <div className="text-center py-16">
+                  <Camera className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-700 mb-2">Photos coming soon</h3>
+                  <p className="text-gray-500 max-w-sm mx-auto">
+                    We are currently organizing the photo gallery for this event. Please check back later!
+                  </p>
                 </div>
               )}
             </div>
@@ -210,28 +230,43 @@ export default function GalleryPage() {
                   >
                     {/* Third photo (bottom of stack) */}
                     <div className="absolute inset-0 bg-white rounded-xl shadow-md border border-gray-100 transform -rotate-3 translate-y-2 translate-x-1 group-hover:-rotate-6 group-hover:translate-y-4 transition-all duration-300 overflow-hidden">
-                      <img
-                        src={project.images[2] || project.coverImage}
-                        alt=""
-                        className="w-full h-full object-cover opacity-60"
-                      />
+                      {project.images.length >= 3 ? (
+                        <img
+                          src={project.images[2]}
+                          alt=""
+                          className="w-full h-full object-cover opacity-60"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 opacity-60" />
+                      )}
                     </div>
                     {/* Second photo (middle of stack) */}
                     <div className="absolute inset-0 bg-white rounded-xl shadow-md border border-gray-100 transform rotate-2 -translate-y-1 translate-x-2 group-hover:rotate-4 group-hover:-translate-y-2 group-hover:translate-x-4 transition-all duration-300 overflow-hidden">
-                      <img
-                        src={project.images[1] || project.coverImage}
-                        alt=""
-                        className="w-full h-full object-cover opacity-80"
-                      />
+                      {project.images.length >= 2 ? (
+                        <img
+                          src={project.images[1]}
+                          alt=""
+                          className="w-full h-full object-cover opacity-80"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 opacity-80" />
+                      )}
                     </div>
                     {/* Top photo (main card) */}
                     <div className="absolute inset-0 bg-white rounded-xl shadow-lg border border-gray-200 transform group-hover:-translate-y-4 transition-all duration-300 overflow-hidden flex flex-col">
-                      <div className="relative h-72 w-full overflow-hidden">
-                        <img
-                          src={project.coverImage}
-                          alt={project.title}
-                          className="w-full h-full object-cover"
-                        />
+                      <div className="relative h-72 w-full overflow-hidden bg-gray-50 flex-shrink-0">
+                        {project.images.length > 0 ? (
+                          <img
+                            src={project.coverImage}
+                            alt={project.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-green-500/10 to-emerald-600/20 flex flex-col items-center justify-center p-6 text-green-700">
+                            <Camera className="h-12 w-12 mb-2 opacity-50" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-green-600">No Photos Yet</span>
+                          </div>
+                        )}
                         <div className="absolute top-4 left-4 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                           {project.category}
                         </div>
