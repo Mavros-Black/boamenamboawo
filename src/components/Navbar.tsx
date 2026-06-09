@@ -31,7 +31,6 @@ const Navbar = () => {
     { name: 'Programs', href: '/programs' },
     { name: 'Gallery', href: '/gallery' },
     // { name: 'Shop', href: '/shop' }, // Temporarily disabled
-    { name: 'Blog', href: '/blog' },
     { name: 'Donate', href: '/donate' },
     { name: 'Contact', href: '/contact' },
   ]
