@@ -28,11 +28,11 @@ export default function GalleryPage() {
     },
     {
       id: 'youth-boys-event',
-      title: 'Youth Boys Event',
+      title: 'Building Self Aware, Skilled And Purpose Driven Youth',
       category: 'events',
-      imageCount: 0,
-      coverImage: '',
-      images: []
+      imageCount: 56,
+      coverImage: '/images/youth-boys-event/1.jpeg',
+      images: Array.from({ length: 56 }, (_, i) => `/images/youth-boys-event/${i + 1}.jpeg`)
     },
     {
       id: 'boy-football-games',
@@ -52,16 +52,19 @@ export default function GalleryPage() {
   // Find currently active expanded project
   const currentProject = projects.find(p => p.id === expandedProject)
 
-  // Get project images
+  // Get project images dynamically from each project's images array
   const projectImages = currentProject
-    ? Array.from({ length: currentProject.imageCount }, (_, i) => ({
+    ? currentProject.images.map((imgSrc, i) => ({
         id: i + 1,
-        src: `/images/gallery/${i + 1}.jpg`,
+        src: imgSrc,
         alt: currentProject.title,
         category: currentProject.category,
         title: currentProject.title
       }))
     : []
+
+  // Total photos count across all projects
+  const totalPhotosCount = projects.reduce((acc, p) => acc + p.imageCount, 0)
 
   // Filter images inside expanded project view
   const filteredImages = selectedCategory === 'all'
@@ -120,7 +123,7 @@ export default function GalleryPage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div>
-                <div className="text-3xl font-bold text-green-600 mb-2">31</div>
+                <div className="text-3xl font-bold text-green-600 mb-2">{totalPhotosCount}</div>
                 <div className="text-gray-600">Photos</div>
               </div>
               <div>
@@ -197,11 +200,7 @@ export default function GalleryPage() {
                           {image.category}
                         </div>
                       </div>
-                      <div className="p-4 text-center">
-                        <h3 className="text-base font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
-                          {image.title}
-                        </h3>
-                      </div>
+
                     </div>
                   ))}
                 </div>
@@ -337,10 +336,7 @@ export default function GalleryPage() {
                     className="max-w-full max-h-[70vh] object-contain rounded-lg"
                   />
                   
-                  {/* Image Info */}
-                  <div className="text-white mt-4">
-                    <h3 className="text-lg font-medium">{selectedImageData.title}</h3>
-                  </div>
+
                 </>
               )}
             </div>
