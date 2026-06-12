@@ -36,11 +36,11 @@ export default function GalleryPage() {
     },
     {
       id: 'boy-football-games',
-      title: 'boy Football Games',
+      title: 'Boy Football Games',
       category: 'events',
-      imageCount: 0,
-      coverImage: '',
-      images: []
+      imageCount: 2,
+      coverImage: '/images/boy-football-games/1.jpeg',
+      images: Array.from({ length: 2 }, (_, i) => `/images/boy-football-games/${i + 1}.jpeg`)
     }
   ]
 
